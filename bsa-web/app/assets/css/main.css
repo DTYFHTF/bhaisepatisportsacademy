@@ -1,0 +1,78 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-canvas text-ink font-sans antialiased;
+  }
+
+  ::selection {
+    background: #E8967A;
+    color: #FFF8F5;
+  }
+
+  /* Focus ring for accessibility (WCAG 2.1 AA) */
+  :focus-visible {
+    @apply outline-2 outline-offset-2 outline-accent;
+  }
+
+  /* Smooth scrolling */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Remove default button styles */
+  button {
+    @apply cursor-pointer;
+  }
+}
+
+@layer components {
+  /* Display typography using Playfair Display */
+  .text-display-2xl {
+    @apply font-serif text-6xl font-normal tracking-tight;
+  }
+
+  .text-display-xl {
+    @apply font-serif text-5xl font-normal tracking-tight;
+  }
+
+  .text-display-lg {
+    @apply font-serif text-4xl font-normal tracking-tight;
+  }
+
+  /* Heading typography — Playfair Display for h1–h4 */
+  .text-heading-xl {
+    @apply font-serif text-3xl font-medium;
+  }
+
+  .text-heading-lg {
+    @apply font-serif text-2xl font-medium;
+  }
+
+  .text-heading-md {
+    @apply font-serif text-xl font-medium;
+  }
+
+  /* Label / overline */
+  .text-label {
+    @apply font-sans text-xs font-medium uppercase tracking-[0.05em];
+  }
+
+  /* Section layout helpers */
+  .section-padding {
+    @apply py-16 lg:py-24;
+  }
+
+  .section-container {
+    @apply mx-auto max-w-7xl px-4 lg:px-8;
+  }
+}
+
+@layer utilities {
+  /* NPR currency formatting */
+  .format-npr::before {
+    content: 'NPR ';
+  }
+}

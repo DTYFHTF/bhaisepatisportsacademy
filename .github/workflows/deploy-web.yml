@@ -1,0 +1,119 @@
+name: Deploy Frontend
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'bsa-web/**'
+      - '.github/workflows/deploy-web.yml'
+
+env:
+  NODE_VERSION: '20'
+
+jobs:
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bsa-web
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+          cache-dependency-path: bsa-web/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Resolve build environment
+        # Use secrets when set; fall back to production defaults for non-sensitive vars.
+        # This prevents localhost from being baked into the bundle if secrets aren't configured.
+        run: |
+          echo "NUXT_API_BASE=${NUXT_API_BASE:-https://api.bsa.example.com/api}" >> $GITHUB_ENV
+          echo "NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-https://api.bsa.example.com/api}" >> $GITHUB_ENV
+          echo "NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://bsa.example.com}" >> $GITHUB_ENV
+        env:
+          NUXT_API_BASE: ${{ secrets.NUXT_API_BASE }}
+          NUXT_PUBLIC_API_BASE: ${{ secrets.NUXT_PUBLIC_API_BASE }}
+          NUXT_PUBLIC_SITE_URL: ${{ secrets.NUXT_PUBLIC_SITE_URL }}
+
+      - name: Build
+        run: npm run build
+        env:
+          NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
+          NUXT_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.NUXT_PUBLIC_GOOGLE_MAPS_KEY }}
+          NUXT_PUBLIC_UMAMI_HOST: ${{ secrets.NUXT_PUBLIC_UMAMI_HOST }}
+          NUXT_PUBLIC_UMAMI_WEBSITE_ID: ${{ secrets.NUXT_PUBLIC_UMAMI_WEBSITE_ID }}
+
+      - name: Check bundle size
+        run: |
+          BUNDLE_SIZE=$(du -sk .output/public | cut -f1)
+          echo "Bundle size: ${BUNDLE_SIZE}KB"
+          if [ "$BUNDLE_SIZE" -gt 51200 ]; then
+            echo "::warning::Bundle size exceeds 50MB target"
+          fi
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: nuxt-output
+          path: bsa-web/.output
+          include-hidden-files: true
+          retention-days: 1
+
+  deploy:
+    name: Deploy to Production
+    needs: build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: nuxt-output
+          path: .output
+
+      - name: Clear old build on server
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            rm -rf ~/bsa/bsa-web/.output
+            mkdir -p ~/bsa/bsa-web/.output
+
+      - name: Copy build to server
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          source: '.output/'
+          target: '/home/${{ secrets.VPS_USER }}/bsa/bsa-web/'
+
+      - name: Restart application
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.VPS_HOST }}
+          username: ${{ secrets.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ secrets.VPS_PORT }}
+          script: |
+            # CloudLinux Passenger manages process lifecycle — touch restart.txt is the only correct restart mechanism.
+            # DO NOT use PM2 or manually kill lsnode processes; that causes NPROC exhaustion on shared hosting.
+            mkdir -p ~/bsa/bsa-web/tmp
+            touch ~/bsa/bsa-web/tmp/restart.txt
+
+            # Clear Nitro ISR cache so stale pages don't persist after deploy
+            rm -rf ~/bsa/bsa-web/.output/cache 2>/dev/null || true
+
+            echo "✅ BSA frontend deployed successfully"

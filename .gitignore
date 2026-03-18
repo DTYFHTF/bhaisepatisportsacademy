@@ -1,0 +1,19 @@
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Editor
+*.swp
+*.swo
+*.bak
+
+# Logs
+*.log
+logs/
+
+# Terminal session recordings (created by `script` command)
+typescript
+typescript.*
+
+# OS artifacts
+Thumbs.db
