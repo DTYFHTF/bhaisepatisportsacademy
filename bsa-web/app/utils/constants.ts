@@ -291,3 +291,44 @@ export const COD_LIMIT = 1500000 // NPR 15,000 in paisa
 // Recently viewed products
 export const RECENTLY_VIEWED_MAX = 4
 export const RECENTLY_VIEWED_DAYS = 7
+
+// ─── Kitchen ──────────────────────────────────────────
+
+export interface KitchenItem {
+  id: string
+  name: string
+  description: string
+  price: number // paisa
+  category: 'pre-workout' | 'post-workout' | 'snacks' | 'drinks'
+  isPopular?: boolean
+}
+
+export const KITCHEN_CATEGORIES = {
+  'pre-workout': 'Pre-Workout',
+  'post-workout': 'Post-Workout Recovery',
+  snacks: 'Snacks',
+  drinks: 'Drinks & Shakes',
+} as const
+
+export const KITCHEN_MENU: KitchenItem[] = [
+  // Pre-workout
+  { id: 'banana-dates', name: 'Banana & Dates Pack', description: 'Natural energy boost with 2 ripe bananas and a handful of Medjool dates', price: 15000, category: 'pre-workout', isPopular: true },
+  { id: 'oats-bowl', name: 'Overnight Oats Bowl', description: 'Rolled oats soaked overnight with honey, chia seeds, and seasonal fruit', price: 25000, category: 'pre-workout' },
+  { id: 'granola-bar', name: 'Homemade Granola Bar', description: 'Oats, nuts, and honey pressed into a dense energy bar', price: 12000, category: 'pre-workout' },
+
+  // Post-workout
+  { id: 'protein-wrap', name: 'Chicken Protein Wrap', description: 'Grilled chicken, egg whites, veggies, and yogurt sauce in a wholewheat wrap', price: 35000, category: 'post-workout', isPopular: true },
+  { id: 'dal-bhat', name: 'Recovery Dal Bhat', description: 'Classic Nepali dal bhat with lentils, rice, vegetables, and achaar', price: 30000, category: 'post-workout' },
+  { id: 'egg-platter', name: 'Boiled Egg Platter', description: '4 boiled eggs with a sprinkle of black salt, chilli flakes, and crackers', price: 20000, category: 'post-workout' },
+
+  // Snacks
+  { id: 'peanut-butter-toast', name: 'Peanut Butter Toast', description: 'Whole-grain toast with natural peanut butter and banana slices', price: 18000, category: 'snacks' },
+  { id: 'fruit-platter', name: 'Seasonal Fruit Platter', description: 'Mixed seasonal fruits from Nepal, freshly cut and served with chilli-salt', price: 22000, category: 'snacks', isPopular: true },
+  { id: 'chana-chaat', name: 'Spiced Chickpea Chaat', description: 'Boiled chickpeas with onion, tomato, green chilli, and lemon juice', price: 15000, category: 'snacks' },
+
+  // Drinks
+  { id: 'protein-shake', name: 'Protein Shake', description: 'Whey protein blended with milk, banana, and peanut butter', price: 28000, category: 'drinks', isPopular: true },
+  { id: 'green-smoothie', name: 'Green Recovery Smoothie', description: 'Spinach, cucumber, ginger, lemon, and apple blended fresh', price: 25000, category: 'drinks' },
+  { id: 'lemon-electrolyte', name: 'Lemon Electrolyte Water', description: 'Chilled lemon water with Himalayan salt, honey, and tulsi', price: 10000, category: 'drinks' },
+  { id: 'masala-tea', name: 'Masala Chiya', description: 'Traditional Nepali spiced milk tea, brewed to order', price: 8000, category: 'drinks' },
+]

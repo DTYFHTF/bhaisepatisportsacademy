@@ -8,6 +8,7 @@ const mobileMenuOpen = ref(false)
 const navLinks = [
   { label: 'Programs', to: '/programs' },
   { label: 'Facilities', to: '/facilities' },
+  { label: 'Kitchen', to: '/kitchen' },
   { label: 'Shop', to: '/shop' },
   { label: 'About', to: '/about' },
   { label: 'FAQ', to: '/faq' },

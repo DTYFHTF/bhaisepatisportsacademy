@@ -46,9 +46,7 @@ const pillars = [
 
 // Today's schedule
 const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
-const todaySchedule = WEEKLY_SCHEDULE.filter(
-  (s) => s.days.includes(today) || s.days.includes('Sunday-Friday'),
-).slice(0, 5)
+const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
 </script>
 
 <template>
