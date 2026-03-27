@@ -90,7 +90,7 @@ class ProductResource extends Resource
 
                     Section::make('Images')
                         ->icon('heroicon-o-photo')
-                        ->description('Upload images — they go straight to Cloudinary.')
+                        ->description('Upload images - they go straight to Cloudinary.')
                         ->schema([
                             Repeater::make('images')
                                 ->relationship()
@@ -113,7 +113,7 @@ class ProductResource extends Resource
                                         ->columnSpanFull(),
                                     TextInput::make('alt_text')
                                         ->label('Alt text')
-                                        ->placeholder('e.g. Aloe Vera Gel — Product shot')
+                                        ->placeholder('e.g. Aloe Vera Gel - Product shot')
                                         ->maxLength(200)
                                         ->columnSpanFull(),
                                 ])
@@ -144,7 +144,7 @@ class ProductResource extends Resource
                         ]),
                 ])->columnSpan(2),
 
-                // Right column (1/3) — sidebar
+                // Right column (1/3) - sidebar
                 Grid::make(1)->schema([
                     Section::make('Status')
                         ->schema([

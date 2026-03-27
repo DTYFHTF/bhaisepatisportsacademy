@@ -1,158 +1,358 @@
 <script setup lang="ts">
-import { Calendar, Shield, Heart, Sparkles, Clock, MapPin, Phone } from 'lucide-vue-next'
-import type { Product } from '~/types/product'
-import { BRAND, WAX_TYPES } from '~/utils/constants'
-import { formatPrice, formatDuration } from '~/utils/formatters'
-import type { Service } from '~/types/service'
+import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame } from 'lucide-vue-next'
+import { BRAND, PROGRAMS, FACILITIES, STATS, TESTIMONIALS, WEEKLY_SCHEDULE } from '~/utils/constants'
+import { formatPrice, formatTime } from '~/utils/formatters'
 
-const config = useRuntimeConfig()
+// Animated counter composable
+function useCounter(target: number, duration = 2000) {
+  const count = ref(0)
+  const el = ref<HTMLElement | null>(null)
 
-const { data: popularServices } = await useFetch<Service[]>(`${config.public.apiBase}/services`, {
-  query: { popular: true },
-  default: () => [],
-})
+  onMounted(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const start = performance.now()
+          const animate = (now: number) => {
+            const progress = Math.min((now - start) / duration, 1)
+            const eased = 1 - Math.pow(1 - progress, 3) // easeOutCubic
+            count.value = Math.floor(eased * target)
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 },
+    )
+    if (el.value) observer.observe(el.value)
+  })
 
-const { data: featuredProducts } = await useFetch<Product[]>(`${config.public.apiBase}/products`, {
-  query: { limit: 4, featured: true },
-  default: () => [],
-})
+  return { count, el }
+}
 
-const trustPillars = [
-  { icon: Shield, title: 'Premium Waxes', desc: 'Rica, honey, chocolate & sugar — chosen for your skin type' },
-  { icon: Heart, title: 'Gentle Process', desc: 'Trained professionals, minimal discomfort, maximum results' },
-  { icon: Clock, title: 'Quick & Clean', desc: 'Walk in bare, walk out smooth — most sessions under an hour' },
+const stats = STATS.map((s) => ({
+  ...s,
+  ...useCounter(s.value),
+}))
+
+const popularPrograms = PROGRAMS.filter((p) => p.isPopular).slice(0, 3)
+
+const pillars = [
+  { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting' },
+  { icon: Zap, title: 'Elite Coaching', desc: 'Trained coaches for every skill level, from beginner to competitive' },
+  { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together' },
 ]
+
+// Today's schedule
+const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
+const todaySchedule = WEEKLY_SCHEDULE.filter(
+  (s) => s.days.includes(today) || s.days.includes('Sunday-Friday'),
+).slice(0, 5)
 </script>
 
 <template>
   <div>
-    <!-- Hero -->
-    <section class="relative flex min-h-[70vh] sm:min-h-[80vh] items-center justify-center overflow-hidden bg-peach-50">
-      <div class="absolute inset-0 bg-gradient-to-b from-peach-100/50 to-transparent" />
+    <!-- ═══ HERO ═══ -->
+    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
+      <!-- Animated background -->
+      <div class="absolute inset-0 bg-gradient-to-br from-canvas via-surface to-canvas">
+        <!-- Diagonal accent lines -->
+        <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(45deg, #FFB800 0, #FFB800 1px, transparent 0, transparent 50%); background-size: 60px 60px;" />
+        <!-- Glow orb -->
+        <div class="absolute top-1/4 -right-32 h-96 w-96 rounded-full bg-accent/5 blur-3xl" />
+        <div class="absolute bottom-1/4 -left-32 h-72 w-72 rounded-full bg-court/5 blur-3xl" />
+      </div>
 
-      <div class="relative z-10 text-center px-4 py-20 max-w-2xl mx-auto">
-        <p class="text-label text-accent mb-3">Premium Waxing Studio in Kathmandu</p>
-        <h1 class="text-display-lg text-ink">Smooth skin starts here.</h1>
-        <p class="mt-4 text-lg text-ink-muted max-w-lg mx-auto">
-          Professional waxing with premium products and expert hands. Because you deserve to feel confident in your skin.
+      <!-- Shuttlecock SVG decoration -->
+      <div class="absolute top-20 right-10 sm:right-20 opacity-10 animate-float">
+        <svg width="80" height="80" viewBox="0 0 100 100" fill="none" class="text-accent">
+          <circle cx="50" cy="75" r="12" fill="currentColor" />
+          <path d="M50 63 L35 15 Q50 25 50 25" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
+          <path d="M50 63 L50 10 Q50 20 50 20" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
+          <path d="M50 63 L65 15 Q50 25 50 25" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
+        </svg>
+      </div>
+
+      <div class="relative z-10 text-center px-4 py-20 max-w-4xl mx-auto">
+        <!-- Badge -->
+        <div class="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 mb-6">
+          <span class="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
+          <span class="text-xs font-medium uppercase tracking-wider text-accent">Now Open | Bhaisepati, Lalitpur</span>
+        </div>
+
+        <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl uppercase leading-none tracking-tight">
+          <span class="text-ink">Train Harder.</span><br />
+          <span class="text-accent">Move Faster.</span><br />
+          <span class="text-ink">Grow Stronger.</span>
+        </h1>
+
+        <p class="mt-6 text-lg sm:text-xl text-ink-muted max-w-xl mx-auto leading-relaxed">
+          Professional badminton courts, fully equipped gym, and recovery facilities, all under one roof in Bhaisepati.
         </p>
-        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <NuxtLink to="/services">
+
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <NuxtLink to="/book">
             <UiAppButton variant="primary" size="lg">
-              <Calendar class="h-4 w-4 mr-2" />
-              Book Appointment
+              Book a Court
+              <ChevronRight class="h-4 w-4 ml-1" />
             </UiAppButton>
           </NuxtLink>
-          <NuxtLink to="/glow-guide">
-            <UiAppButton variant="ghost" size="lg">
-              <Sparkles class="h-4 w-4 mr-2" />
-              Take Glow Quiz
+          <NuxtLink to="/programs">
+            <UiAppButton variant="secondary" size="lg">
+              View Programs
             </UiAppButton>
           </NuxtLink>
         </div>
+
+        <!-- Quick info -->
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-ink-muted">
+          <span class="flex items-center gap-1.5">
+            <MapPin class="h-4 w-4 text-accent" />
+            Bhaisepati, Lalitpur
+          </span>
+          <span class="flex items-center gap-1.5">
+            <Clock class="h-4 w-4 text-accent" />
+            {{ BRAND.openingHours }}
+          </span>
+          <a :href="`tel:+977${BRAND.phone}`" class="flex items-center gap-1.5 hover:text-accent transition-colors">
+            <Phone class="h-4 w-4 text-accent" />
+            +977 {{ BRAND.phone }}
+          </a>
+        </div>
+      </div>
+
+      <!-- Scroll indicator -->
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
+        <span class="text-xs uppercase tracking-wider text-ink-faint">Scroll</span>
+        <div class="h-8 w-[1px] bg-gradient-to-b from-accent/50 to-transparent animate-pulse" />
       </div>
     </section>
 
-    <!-- Trust pillars -->
-    <section class="border-y border-border bg-canvas">
-      <div class="mx-auto max-w-7xl px-4 py-12 lg:px-8">
+    <!-- ═══ TRUST PILLARS ═══ -->
+    <section class="border-y border-border bg-surface">
+      <div class="mx-auto max-w-7xl px-4 py-14 lg:px-8">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div v-for="pillar in trustPillars" :key="pillar.title" class="text-center">
-            <component :is="pillar.icon" class="h-6 w-6 text-accent mx-auto mb-3" />
-            <h3 class="font-medium text-ink">{{ pillar.title }}</h3>
-            <p class="mt-1 text-sm text-ink-muted">{{ pillar.desc }}</p>
+          <div v-for="pillar in pillars" :key="pillar.title" class="text-center group">
+            <div class="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-accent/10 mb-4 group-hover:bg-accent/20 transition-colors">
+              <component :is="pillar.icon" class="h-6 w-6 text-accent" />
+            </div>
+            <h3 class="font-display text-lg uppercase tracking-wider text-ink">{{ pillar.title }}</h3>
+            <p class="mt-2 text-sm text-ink-muted leading-relaxed">{{ pillar.desc }}</p>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- Popular services -->
+    <!-- ═══ FACILITIES SHOWCASE ═══ -->
     <section class="section-padding">
       <div class="section-container">
-        <div class="flex items-end justify-between mb-8">
-          <div>
-            <p class="text-label text-accent mb-1">Most Booked</p>
-            <h2 class="text-heading-xl">Popular Services</h2>
-          </div>
-          <NuxtLink to="/services" class="text-sm text-accent hover:underline underline-offset-4">
-            View all services →
-          </NuxtLink>
+        <div class="text-center mb-12">
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">World-Class Amenities</p>
+          <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Our Facilities</h2>
         </div>
 
-        <ServiceGrid :services="popularServices" :columns="3" />
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            v-for="facility in FACILITIES"
+            :key="facility.id"
+            class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-6 hover:border-accent/30 transition-all duration-300"
+          >
+            <!-- Accent corner -->
+            <div class="absolute top-0 right-0 h-20 w-20 bg-gradient-to-bl from-accent/10 to-transparent rounded-bl-3xl" />
+
+            <div class="relative z-10">
+              <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
+                <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
+                <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
+                <svg v-else class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="5" r="3" />
+                  <path d="M12 8L6 20M12 8L18 20" />
+                </svg>
+              </div>
+
+              <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ facility.name }}</h3>
+              <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ facility.description }}</p>
+
+              <ul class="space-y-2">
+                <li v-for="feature in facility.features.slice(0, 3)" :key="feature" class="flex items-center gap-2 text-sm text-ink-muted">
+                  <span class="h-1 w-1 rounded-full bg-accent flex-shrink-0" />
+                  {{ feature }}
+                </li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-8">
+          <NuxtLink to="/facilities" class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline underline-offset-4">
+            Explore all facilities
+            <ChevronRight class="h-4 w-4" />
+          </NuxtLink>
+        </div>
       </div>
     </section>
 
-    <!-- Wax types education -->
+    <!-- ═══ POPULAR PROGRAMS ═══ -->
     <section class="section-padding bg-surface">
       <div class="section-container">
-        <div class="text-center mb-10">
-          <p class="text-label text-accent mb-1">Know Your Wax</p>
-          <h2 class="text-heading-xl">We Use the Best</h2>
-          <p class="mt-2 text-ink-muted max-w-lg mx-auto">Every skin type has its perfect match. Our waxes are imported and chosen for safety, comfort, and results.</p>
-        </div>
-
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div
-            v-for="wax in WAX_TYPES"
-            :key="wax.name"
-            class="rounded-xl border border-border bg-canvas p-5 text-center"
-          >
-            <div class="inline-flex items-center justify-center h-12 w-12 rounded-full bg-peach-100 mb-3">
-              <span class="text-xl">{{ wax.name === 'Rica' ? '🌿' : wax.name === 'Honey' ? '🍯' : wax.name === 'Chocolate' ? '🍫' : '🌸' }}</span>
-            </div>
-            <h3 class="font-medium text-ink">{{ wax.name }}</h3>
-            <p class="mt-1 text-sm text-ink-muted">{{ wax.description }}</p>
-            <p class="mt-2 text-xs text-accent font-medium">Best for: {{ wax.bestFor }}</p>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Products teaser -->
-    <section v-if="featuredProducts && featuredProducts.length > 0" class="section-padding">
-      <div class="section-container">
-        <div class="flex items-end justify-between mb-8">
+        <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
           <div>
-            <p class="text-label text-accent mb-1">Aftercare</p>
-            <h2 class="text-heading-xl">Skincare Products</h2>
+            <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Train With Us</p>
+            <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Popular Programs</h2>
           </div>
-          <NuxtLink to="/shop" class="text-sm text-accent hover:underline underline-offset-4">
-            Browse all →
+          <NuxtLink to="/programs" class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline underline-offset-4">
+            View all programs
+            <ChevronRight class="h-4 w-4" />
           </NuxtLink>
         </div>
 
-        <ProductGrid :products="featuredProducts" :columns="3" />
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div
+            v-for="program in popularPrograms"
+            :key="program.id"
+            class="group rounded-2xl border border-border bg-canvas overflow-hidden hover:border-accent/30 transition-all duration-300"
+          >
+            <!-- Header stripe -->
+            <div class="h-1 bg-gradient-to-r from-accent via-accent to-accent/50" />
+
+            <div class="p-6">
+              <!-- Category badge -->
+              <span class="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent mb-3">
+                {{ program.category }}
+              </span>
+
+              <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ program.name }}</h3>
+              <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ program.description }}</p>
+
+              <!-- Features -->
+              <ul class="space-y-2 mb-6">
+                <li v-for="feature in program.features.slice(0, 3)" :key="feature" class="flex items-center gap-2 text-sm text-ink-muted">
+                  <span class="h-1 w-1 rounded-full bg-accent flex-shrink-0" />
+                  {{ feature }}
+                </li>
+              </ul>
+
+              <!-- Price + CTA -->
+              <div class="flex items-end justify-between pt-4 border-t border-border">
+                <div>
+                  <p class="text-2xl font-bold text-ink">{{ formatPrice(program.priceMonthly) }}</p>
+                  <p class="text-xs text-ink-muted">per month</p>
+                </div>
+                <NuxtLink to="/programs" class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline underline-offset-4">
+                  Learn more
+                  <ChevronRight class="h-4 w-4" />
+                </NuxtLink>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
 
-    <!-- Booking CTA -->
-    <section class="bg-peach-50 border-t border-peach-200">
-      <div class="mx-auto max-w-3xl px-4 py-16 text-center lg:px-8">
-        <h2 class="text-display-lg text-ink">Ready for smooth skin?</h2>
-        <p class="mt-3 text-ink-muted max-w-md mx-auto">
-          Book your appointment today. Walk in confident, walk out glowing.
+    <!-- ═══ STATS COUNTER ═══ -->
+    <section class="border-y border-border bg-canvas">
+      <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
+          <div v-for="stat in stats" :key="stat.label" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
+            <p class="font-display text-4xl sm:text-5xl text-accent tracking-tight">
+              {{ stat.count.value }}<span class="text-accent/60">{{ stat.suffix }}</span>
+            </p>
+            <p class="mt-2 text-sm uppercase tracking-wider text-ink-muted">{{ stat.label }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TODAY'S SCHEDULE ═══ -->
+    <section v-if="todaySchedule.length > 0" class="section-padding bg-surface">
+      <div class="section-container">
+        <div class="max-w-2xl mx-auto">
+          <div class="text-center mb-8">
+            <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">{{ today }}'s Schedule</p>
+            <h2 class="font-display text-3xl uppercase tracking-tight text-ink">What's On Today</h2>
+          </div>
+
+          <div class="space-y-3">
+            <div
+              v-for="slot in todaySchedule"
+              :key="slot.time"
+              class="flex items-center justify-between rounded-xl border border-border bg-canvas px-5 py-4 hover:border-accent/30 transition-colors"
+            >
+              <div class="flex items-center gap-4">
+                <span class="font-display text-lg text-accent">{{ formatTime(slot.time) }}</span>
+                <div>
+                  <p class="font-medium text-ink">{{ slot.program }}</p>
+                  <p class="text-xs text-ink-muted">{{ slot.coach }} · {{ slot.duration }} min</p>
+                </div>
+              </div>
+              <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
+                {{ slot.level }}
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ TESTIMONIALS ═══ -->
+    <section class="section-padding">
+      <div class="section-container">
+        <div class="text-center mb-10">
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Community Voices</p>
+          <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">What Players Say</h2>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div
+            v-for="testimonial in TESTIMONIALS"
+            :key="testimonial.name"
+            class="rounded-2xl border border-border bg-surface p-6"
+          >
+            <!-- Stars -->
+            <div class="flex gap-0.5 mb-4">
+              <Star v-for="i in testimonial.rating" :key="i" class="h-4 w-4 fill-accent text-accent" />
+            </div>
+            <p class="text-sm text-ink-muted leading-relaxed italic">"{{ testimonial.text }}"</p>
+            <div class="mt-4 flex items-center gap-3">
+              <div class="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center">
+                <span class="text-xs font-bold text-accent">{{ testimonial.name[0] }}</span>
+              </div>
+              <div>
+                <p class="text-sm font-medium text-ink">{{ testimonial.name }}</p>
+                <p class="text-xs text-ink-muted">{{ testimonial.program }}</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ CTA ═══ -->
+    <section class="relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-accent/10 via-accent/5 to-transparent" />
+      <div class="absolute inset-0 opacity-[0.02]" style="background-image: repeating-linear-gradient(-45deg, #FFB800 0, #FFB800 1px, transparent 0, transparent 50%); background-size: 40px 40px;" />
+
+      <div class="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
+        <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">
+          Ready to <span class="text-accent">Play?</span>
+        </h2>
+        <p class="mt-4 text-lg text-ink-muted max-w-md mx-auto">
+          Book a court, join a program, or drop in for a session. Your game starts here.
         </p>
-        <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-3">
-          <NuxtLink to="/services">
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+          <NuxtLink to="/book">
             <UiAppButton variant="primary" size="lg">
-              <Calendar class="h-4 w-4 mr-2" />
-              Book Now
+              Book a Court
+              <ChevronRight class="h-4 w-4 ml-1" />
             </UiAppButton>
           </NuxtLink>
           <a :href="`tel:+977${BRAND.phone}`">
             <UiAppButton variant="ghost" size="lg">
               <Phone class="h-4 w-4 mr-2" />
-              Call Us
+              Call {{ BRAND.phone }}
             </UiAppButton>
           </a>
-        </div>
-        <div class="mt-6 flex items-center justify-center gap-4 text-sm text-ink-muted">
-          <span class="flex items-center gap-1">
-            <MapPin class="h-4 w-4" />
-            {{ BRAND.address }}
-          </span>
-          <span>{{ BRAND.openingHours }}</span>
         </div>
       </div>
     </section>

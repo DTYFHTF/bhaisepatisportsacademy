@@ -1,6 +1,6 @@
 <template>
-  <div class="min-h-screen flex flex-col">
-    <NuxtLoadingIndicator color="#E8967A" :height="2" />
+  <div class="min-h-screen flex flex-col bg-canvas text-ink">
+    <NuxtLoadingIndicator color="#FFB800" :height="2" />
     <NuxtRouteAnnouncer />
     <LayoutAppHeader />
     <main class="flex-1">

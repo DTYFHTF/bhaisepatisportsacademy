@@ -48,7 +48,7 @@ class SiteSettingsPage extends Page implements HasForms
                     ]),
 
                 Section::make('Logos')
-                    ->description('Upload updated logo or icon. Changes take effect immediately — no redeployment needed.')
+                    ->description('Upload updated logo or icon. Changes take effect immediately - no redeployment needed.')
                     ->columns(2)
                     ->schema([
                         FileUpload::make('logo_path')

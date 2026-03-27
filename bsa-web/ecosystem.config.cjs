@@ -1,4 +1,11 @@
-// PM2 Configuration for production deployment on babal.host
+// DEPLOYMENT NOTE:
+// This project runs as a STATIC SPA (no Node.js process on server).
+// Build: `npx nuxi generate`
+// Output: `.output/public/`
+// Upload the contents of `.output/public/` to the domain's document root.
+// The .htaccess file handles SPA routing (all paths serve index.html).
+//
+// PM2 config below is kept for local dev/testing only.
 module.exports = {
   apps: [
     {
@@ -14,10 +21,10 @@ module.exports = {
         NODE_ENV: 'production',
         PORT: 3001,
         // Server-side API base (resolved at runtime by Nuxt SSR)
-        NUXT_API_BASE: 'https://api.bsa.example.com/api',
+        NUXT_API_BASE: 'https://api.bsa.abinmaharjan.com.np/api',
         // Public runtime config overrides (baked at build, but PM2 can override)
-        NUXT_PUBLIC_API_BASE: 'https://api.bsa.example.com/api',
-        NUXT_PUBLIC_SITE_URL: 'https://bsa.example.com',
+        NUXT_PUBLIC_API_BASE: 'https://api.bsa.abinmaharjan.com.np/api',
+        NUXT_PUBLIC_SITE_URL: 'https://bsa.abinmaharjan.com.np',
         NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME: 'dhknx0eac',
         NUXT_PUBLIC_UMAMI_HOST: 'https://cloud.umami.is',
         NUXT_PUBLIC_UMAMI_WEBSITE_ID: 'cffc5868-c5ec-4824-81fb-34b170c74051',

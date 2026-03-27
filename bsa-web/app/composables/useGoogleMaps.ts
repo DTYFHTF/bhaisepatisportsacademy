@@ -184,7 +184,7 @@ export function useGoogleMaps() {
         }
       }
     } catch {
-      // Geocoding failed silently — user can still type address manually
+      // Geocoding failed silently - user can still type address manually
     }
   }
 

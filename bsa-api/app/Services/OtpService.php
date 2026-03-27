@@ -39,7 +39,7 @@ class OtpService
             return ['dev_otp' => null];
         }
 
-        // Dev mode: no SMS configured — log and return the code so it can be shown in the UI
+        // Dev mode: no SMS configured - log and return the code so it can be shown in the UI
         Log::info("[DEV] OTP for {$phone}: {$otp}");
 
         return ['dev_otp' => (string) $otp];

@@ -5,7 +5,7 @@ namespace App\Services;
 class StyleExplanationService
 {
     private array $templates = [
-        'olive+sand+bottom'       => 'Earth tones in different weights — the jacket anchors the look.',
+        'olive+sand+bottom'       => 'Earth tones in different weights - the jacket anchors the look.',
         'olive+charcoal+bottom'   => 'Dark base, muted top. Everything finds its place.',
         'olive+cream+top'         => 'Warm neutral layers. The olive sits right at the center.',
         'olive+black+bottom'      => 'An everyday palette that wears in, not out.',
@@ -15,7 +15,7 @@ class StyleExplanationService
         'charcoal+sand+bottom'    => 'Muted tones that shift from café to trail without trying.',
         'charcoal+cream+top'      => 'Quiet warmth. Cream lifts what charcoal grounds.',
         'charcoal+olive+bottom'   => 'Two grounded neutrals that don't compete.',
-        'sand+olive+bottom'       => 'A natural palette — warm and unfussy.',
+        'sand+olive+bottom'       => 'A natural palette - warm and unfussy.',
         'sand+charcoal+top'       => 'Light over dark. Clean without being stark.',
         'sand+black+bottom'       => 'The sand pulls this whole thing together.',
         'sand+brown+bottom'       => 'Tonal dressing at its simplest.',
@@ -28,12 +28,12 @@ class StyleExplanationService
         'cream+brown+bottom'      => 'Soft palette, no filler. Exactly enough.',
         'cream+black+bottom'      => 'As clean as it gets.',
         'olive+sand+top'          => 'Relaxed layers that feel pulled together, not assembled.',
-        'olive+cream+bottom'      => 'Weighted neutrals — the olive does the talking.',
+        'olive+cream+bottom'      => 'Weighted neutrals - the olive does the talking.',
         'black+charcoal+top'      => 'A monochrome base with just enough texture.',
         'charcoal+black+bottom'   => 'Two darks, different weights. It works because it's intentional.',
         'sand+cream+top'          => 'Tonal lightness. The quietest kind of statement.',
         'brown+charcoal+bottom'   => 'Earthy and decisive.',
-        'olive+brown+bottom'      => 'Natural pairing — these shades grew up together.',
+        'olive+brown+bottom'      => 'Natural pairing - these shades grew up together.',
         'cream+sand+bottom'       => 'Light, warm, and effortless.',
     ];
 

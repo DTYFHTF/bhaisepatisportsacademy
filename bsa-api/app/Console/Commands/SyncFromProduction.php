@@ -11,7 +11,7 @@ class SyncFromProduction extends Command
 {
     protected $signature = 'sync:production
                             {--url=https://api.bsa.example.com : Production API base URL}
-                            ';  // sync — pulls all products from production API
+                            ';  // sync - pulls all products from production API
 
     protected $description = 'Pull products and site settings from production into local DB';
 
@@ -61,7 +61,7 @@ class SyncFromProduction extends Command
             return;
         }
 
-        // API returns camelCase — convert to snake_case for the DB
+        // API returns camelCase - convert to snake_case for the DB
         $mapped = collect($data)
             ->mapWithKeys(fn ($v, $k) => [Str::snake($k) => $v])
             ->toArray();
@@ -96,7 +96,7 @@ class SyncFromProduction extends Command
             return;
         }
 
-        $this->line("  Found " . count($products) . " products — importing...");
+        $this->line("  Found " . count($products) . " products - importing...");
 
         $productFields = [
             'id', 'name', 'slug', 'color_name', 'category', 'description',
@@ -107,7 +107,7 @@ class SyncFromProduction extends Command
         $variantFields = ['id', 'product_id', 'size', 'stock', 'sku', 'created_at', 'updated_at'];
         $imageFields   = ['id', 'product_id', 'url', 'alt_text', 'cloudinary_id', 'order', 'created_at', 'updated_at'];
 
-        // Production IDs differ from seeder IDs — wipe local tables and re-insert fresh.
+        // Production IDs differ from seeder IDs - wipe local tables and re-insert fresh.
         // FK checks off so we can clear in any order; seeded test-orders become orphaned
         // (acceptable on local dev).
         DB::statement('PRAGMA foreign_keys = OFF');

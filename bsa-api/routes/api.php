@@ -46,7 +46,7 @@ Route::middleware(TrackingTokenAuth::class)->group(function () {
     Route::get('/orders/track', [OrderController::class, 'show']);
 });
 
-// Public — order lookup by phone and/or order ID (no auth required)
+// Public - order lookup by phone and/or order ID (no auth required)
 Route::post('/orders/lookup', [OrderController::class, 'lookup']);
 
 // Restock alerts

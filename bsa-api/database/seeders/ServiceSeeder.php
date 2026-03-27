@@ -119,7 +119,7 @@ class ServiceSeeder extends Seeder
             [
                 'slug'        => 'full-body-wax',
                 'name'        => 'Full Body Wax',
-                'description' => 'Complete body waxing — arms, legs, underarms, and stomach. Our signature treatment.',
+                'description' => 'Complete body waxing - arms, legs, underarms, and stomach. Our signature treatment.',
                 'category'    => ServiceCategory::WAXING,
                 'duration'    => 90,
                 'price'       => 250000,
@@ -181,7 +181,7 @@ class ServiceSeeder extends Seeder
             [
                 'slug'        => 'full-face-wax',
                 'name'        => 'Full Face Wax',
-                'description' => 'Complete facial waxing — forehead, cheeks, upper lip, chin, and sideburns.',
+                'description' => 'Complete facial waxing - forehead, cheeks, upper lip, chin, and sideburns.',
                 'category'    => ServiceCategory::FACIAL,
                 'duration'    => 25,
                 'price'       => 50000,

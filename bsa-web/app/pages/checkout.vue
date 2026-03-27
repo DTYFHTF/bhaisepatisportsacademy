@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Checkout — Bhaisepati Sports Academy' })
+useHead({ title: 'Checkout | Bhaisepati Sports Academy' })
 
 const checkout = useCheckoutStore()
 const cart = useCartStore()

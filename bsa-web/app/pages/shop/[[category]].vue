@@ -5,7 +5,7 @@ import { CATEGORY_LABELS, CATEGORY_SLUGS, CATEGORY_SLUG_BY_KEY } from '~/utils/c
 const config = useRuntimeConfig()
 const route = useRoute()
 
-// Route param is the URL slug (e.g. 'jackets') — map it to the DB enum key
+// Route param is the URL slug (e.g. 'jackets') - map it to the DB enum key
 const category = computed(() => (route.params.category as string) || null)
 const categoryKey = computed(() =>
   category.value ? (CATEGORY_SLUGS[category.value.toLowerCase()] ?? null) : null
@@ -16,7 +16,7 @@ const pageTitle = computed(() =>
 )
 
 useHead({
-  title: `${pageTitle.value} — Bhaisepati Sports Academy`,
+  title: `${pageTitle.value} | Bhaisepati Sports Academy`,
 })
 
 const { data: products, status } = await useFetch<Product[]>(`${config.public.apiBase}/products`, {

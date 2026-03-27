@@ -9,7 +9,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('site_settings', function (Blueprint $table) {
-            // Paths relative to storage/app/public — served via /storage/...
+            // Paths relative to storage/app/public - served via /storage/...
             $table->string('logo_path')->nullable()->after('store_tagline')
                 ->comment('Uploaded logo. Served via Storage::url(). Null = use static fallback.');
             $table->string('icon_path')->nullable()->after('logo_path')

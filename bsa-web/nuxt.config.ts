@@ -21,13 +21,13 @@ export default defineNuxtConfig({
 
   app: {
     head: {
-      title: 'Bhaisepati Sports Academy — Train Harder, Move Faster, Grow Stronger',
+      title: 'Bhaisepati Sports Academy | Train Harder, Move Faster, Grow Stronger',
       htmlAttrs: { lang: 'en' },
       meta: [
         { charset: 'utf-8' },
         { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-        { name: 'description', content: 'Bhaisepati Sports Academy — Badminton training, gym & fitness, and recovery facilities in Bhaisepati, Kathmandu. Enroll in programs today.' },
-        { name: 'theme-color', content: '#FFF8F5' },
+        { name: 'description', content: 'Bhaisepati Sports Academy | Badminton training, gym & fitness, and recovery facilities in Bhaisepati, Kathmandu. Enroll in programs today.' },
+        { name: 'theme-color', content: '#0A0A0F' },
       ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon.png' },
@@ -36,7 +36,7 @@ export default defineNuxtConfig({
         { rel: 'preconnect', href: 'https://fonts.gstatic.com', crossorigin: '' },
         {
           rel: 'stylesheet',
-          href: 'https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap',
+          href: 'https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500;600;700&display=swap',
         },
       ],
     },
@@ -54,13 +54,8 @@ export default defineNuxtConfig({
     },
   },
 
-  routeRules: {
-    '/glow-guide': { prerender: true },
-    '/about': { prerender: true },
-    '/story': { prerender: true },
-    '/care': { prerender: true },
-    '/faq': { prerender: true },
-  },
+  // Static SPA: build with `npx nuxi generate`, deploy .output/public/ to server
+  // No Node.js process needed on shared hosting
 
   image: {
     provider: 'cloudinary',

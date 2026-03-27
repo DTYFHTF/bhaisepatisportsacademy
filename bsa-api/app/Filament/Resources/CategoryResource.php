@@ -84,7 +84,7 @@ class CategoryResource extends Resource
                     ->color('gray')
                     ->copyable(),
                 TextColumn::make('description')
-                    ->placeholder('—')
+                    ->placeholder('-')
                     ->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('products_count')
                     ->label('Products')

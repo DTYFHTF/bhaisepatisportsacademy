@@ -1,184 +1,269 @@
-// Bhaisepati Sports Academy constants
+// Bhaisepati Sports Academy | Constants & Static Data
+
+// ─── Brand ────────────────────────────────────────────
 
 export const BRAND = {
   name: 'Bhaisepati Sports Academy',
+  shortName: 'BSA',
   tagline: 'Train Harder. Move Faster. Grow Stronger.',
   origin: 'Bhaisepati, Kathmandu, Nepal',
   phone: '9821357118',
   whatsapp: '9779821357118',
-  email: 'hello@bsa.example.com',
+  email: 'info@bsa.abinmaharjan.com.np',
   address: 'Bhaisepati, Lalitpur, Nepal',
-  instagram: 'bsa.example.com',
-  openingHours: 'Sunday–Friday, 6am–9pm',
+  instagram: 'https://www.instagram.com/bhaisepatisportsacademy/',
+  instagramHandle: '@bhaisepatisportsacademy',
+  googleMaps: 'https://maps.app.goo.gl/MUW8SZTasKzDuWaA7',
+  openingHours: 'Sunday–Friday, 6:00 AM – 9:00 PM',
+  closedDay: 'Saturday',
 } as const
 
-// ─── Services ─────────────────────────────────────────
+// ─── Facility Categories ──────────────────────────────
 
-export const SERVICE_CATEGORIES = ['WAXING', 'FACIAL', 'BODY_CARE', 'BROW'] as const
-export type ServiceCategory = (typeof SERVICE_CATEGORIES)[number]
+export const FACILITY_CATEGORIES = ['BADMINTON', 'GYM', 'SAUNA'] as const
+export type FacilityCategory = (typeof FACILITY_CATEGORIES)[number]
 
-export const SERVICE_CATEGORY_LABELS: Record<ServiceCategory, string> = {
-  WAXING: 'Waxing',
-  FACIAL: 'Facial Treatments',
-  BODY_CARE: 'Body Care',
-  BROW: 'Brow Services',
+export const FACILITY_LABELS: Record<FacilityCategory, string> = {
+  BADMINTON: 'Badminton Courts',
+  GYM: 'Gym & Strength',
+  SAUNA: 'Sauna & Steam',
 }
 
-export const SERVICE_CATEGORY_ICONS: Record<ServiceCategory, string> = {
-  WAXING: '💆',
-  FACIAL: '✨',
-  BODY_CARE: '🧴',
-  BROW: '👁️',
+export const FACILITY_ICONS: Record<FacilityCategory, string> = {
+  BADMINTON: '🏸',
+  GYM: '💪',
+  SAUNA: '♨️',
 }
 
-export interface WaxType {
-  id: string
-  name: string
-  description: string
-  icon: string
-  recommendedServices: string[]
+// ─── Programs ─────────────────────────────────────────
+
+export const PROGRAM_CATEGORIES = ['BADMINTON', 'FITNESS', 'RECOVERY'] as const
+export type ProgramCategory = (typeof PROGRAM_CATEGORIES)[number]
+
+export const PROGRAM_CATEGORY_LABELS: Record<ProgramCategory, string> = {
+  BADMINTON: 'Badminton',
+  FITNESS: 'Fitness & Conditioning',
+  RECOVERY: 'Recovery',
 }
 
-export const WAX_TYPES: WaxType[] = [
-  {
-    id: 'hard',
-    name: 'Hard Wax',
-    description: 'Gentle on sensitive areas, grips hair not skin. Our most popular choice for Brazilian and bikini waxing.',
-    icon: '💎',
-    recommendedServices: ['brazilian-wax', 'bikini-wax', 'underarm-wax'],
-  },
-  {
-    id: 'rica',
-    name: 'Rica Wax',
-    description: 'Plant-based formula with natural oils. Ideal for sensitive and reactive skin types.',
-    icon: '🌿',
-    recommendedServices: ['full-body-wax', 'arm-wax', 'leg-wax', 'bikini-wax'],
-  },
-  {
-    id: 'honey',
-    name: 'Honey Wax',
-    description: 'Traditional warm wax, perfect for larger surface areas. Effective and affordable.',
-    icon: '🍯',
-    recommendedServices: ['full-body-wax', 'leg-wax', 'half-body-wax'],
-  },
-  {
-    id: 'luxury',
-    name: 'Luxury Wax',
-    description: 'Premium lavender & chamomile blend. The most comfortable waxing experience available.',
-    icon: '✨',
-    recommendedServices: ['brazilian-wax', 'full-body-wax'],
-  },
-]
-
-export interface ServiceDef {
+export interface ProgramDef {
   id: string
   slug: string
   name: string
   description: string
-  category: ServiceCategory
-  duration: number  // minutes
-  price: number     // paisa
-  waxTypes: string[]
+  category: ProgramCategory
+  level: 'beginner' | 'intermediate' | 'advanced' | 'all'
+  ageGroup: string
+  duration: string // e.g. "1 month", "3 months"
+  sessionsPerWeek: number
+  price: number // paisa
   isPopular: boolean
+  features: string[]
 }
 
-// Static service definitions used for quiz/combo logic (deterministic features).
-// The live /api/services endpoint is the source of truth for pages.
-export const SERVICES: ServiceDef[] = [
+export const PROGRAMS: ProgramDef[] = [
   {
-    id: 'srv-01',
-    slug: 'full-arms-wax',
-    name: 'Full Arms Wax',
-    description: 'Complete waxing for both arms from shoulder to wrist. Smooth, clean results every time.',
-    category: 'WAXING',
-    duration: 30,
-    price: 80000,
-    waxTypes: ['Rica', 'Honey', 'Chocolate'],
+    id: 'prog-01',
+    slug: 'badminton-foundation',
+    name: 'Badminton Foundation',
+    description: 'Perfect for beginners. Learn grips, footwork, basic strokes, and court rules. Build a strong foundation for competitive play.',
+    category: 'BADMINTON',
+    level: 'beginner',
+    ageGroup: 'All ages',
+    duration: '1 month',
+    sessionsPerWeek: 3,
+    price: 300000, // NPR 3,000
     isPopular: true,
+    features: ['Basic stroke techniques', 'Court movement & footwork', 'Rules & scoring', 'Equipment guidance'],
   },
   {
-    id: 'srv-02',
-    slug: 'full-legs-wax',
-    name: 'Full Legs Wax',
-    description: 'Both legs from hip to ankle. Our most popular service for consistently smooth skin.',
-    category: 'WAXING',
-    duration: 45,
-    price: 120000,
-    waxTypes: ['Rica', 'Honey', 'Chocolate'],
+    id: 'prog-02',
+    slug: 'badminton-intermediate',
+    name: 'Intermediate Development',
+    description: 'Refine your game. Advanced strokes, rally strategies, match play, and competitive mindset training.',
+    category: 'BADMINTON',
+    level: 'intermediate',
+    ageGroup: 'All ages',
+    duration: '1 month',
+    sessionsPerWeek: 4,
+    price: 500000, // NPR 5,000
     isPopular: true,
+    features: ['Advanced stroke techniques', 'Rally strategy', 'Match play & doubles', 'Video analysis'],
   },
   {
-    id: 'srv-03',
-    slug: 'underarm-wax',
-    name: 'Underarm Wax',
-    description: 'Clean, precise underarm waxing. Fast and virtually pain-free with our premium wax.',
-    category: 'WAXING',
-    duration: 15,
-    price: 30000,
-    waxTypes: ['Rica', 'Honey', 'Chocolate', 'Sugar'],
-    isPopular: true,
-  },
-  {
-    id: 'srv-04',
-    slug: 'full-body-wax',
-    name: 'Full Body Wax',
-    description: 'Complete body waxing — arms, legs, underarms, and stomach. Our signature treatment.',
-    category: 'WAXING',
-    duration: 90,
-    price: 250000,
-    waxTypes: ['Rica', 'Chocolate'],
-    isPopular: true,
-  },
-  {
-    id: 'srv-05',
-    slug: 'upper-lip-wax',
-    name: 'Upper Lip Wax',
-    description: 'Precise upper lip hair removal. Quick, clean, and gentle on sensitive facial skin.',
-    category: 'FACIAL',
-    duration: 10,
-    price: 15000,
-    waxTypes: ['Rica', 'Sugar'],
-    isPopular: true,
-  },
-  {
-    id: 'srv-06',
-    slug: 'full-face-wax',
-    name: 'Full Face Wax',
-    description: 'Complete facial waxing — forehead, cheeks, upper lip, chin, and sideburns.',
-    category: 'FACIAL',
-    duration: 25,
-    price: 50000,
-    waxTypes: ['Rica', 'Sugar'],
-    isPopular: true,
-  },
-  {
-    id: 'srv-07',
-    slug: 'eyebrow-threading',
-    name: 'Eyebrow Threading',
-    description: 'Precise eyebrow shaping using the threading technique. Clean lines, natural shape.',
-    category: 'BROW',
-    duration: 15,
-    price: 20000,
-    waxTypes: [],
-    isPopular: true,
-  },
-  {
-    id: 'srv-08',
-    slug: 'body-scrub-treatment',
-    name: 'Body Scrub Treatment',
-    description: 'Full body exfoliation with natural scrub. Removes dead skin, prep for waxing or standalone glow treatment.',
-    category: 'BODY_CARE',
-    duration: 40,
-    price: 100000,
-    waxTypes: [],
+    id: 'prog-03',
+    slug: 'badminton-competitive',
+    name: 'Advanced & Competitive',
+    description: 'Tournament-ready training. Speed drills, endurance, tactical play, and match simulation under pressure.',
+    category: 'BADMINTON',
+    level: 'advanced',
+    ageGroup: '13+',
+    duration: '1 month',
+    sessionsPerWeek: 5,
+    price: 800000, // NPR 8,000
     isPopular: false,
+    features: ['Tournament preparation', 'Speed & agility drills', 'Match simulation', 'Fitness integration'],
+  },
+  {
+    id: 'prog-04',
+    slug: 'youth-academy',
+    name: 'Youth Academy',
+    description: 'Age-appropriate training for junior players. Focus on fun, fundamentals, and building a love for the sport.',
+    category: 'BADMINTON',
+    level: 'beginner',
+    ageGroup: 'Under 16',
+    duration: '1 month',
+    sessionsPerWeek: 3,
+    price: 250000, // NPR 2,500
+    isPopular: true,
+    features: ['Fun-first approach', 'Age-appropriate drills', 'Mini tournaments', 'Physical literacy'],
+  },
+  {
+    id: 'prog-05',
+    slug: 'gym-membership',
+    name: 'Gym & Strength Training',
+    description: 'Full gym access with strength training equipment. Build power, prevent injuries, and improve athletic performance.',
+    category: 'FITNESS',
+    level: 'all',
+    ageGroup: '16+',
+    duration: '1 month',
+    sessionsPerWeek: 6,
+    price: 400000, // NPR 4,000
+    isPopular: true,
+    features: ['Full gym access', 'Strength equipment', 'Cardio machines', 'Flexible schedule'],
+  },
+  {
+    id: 'prog-06',
+    slug: 'full-membership',
+    name: 'Full Membership Package',
+    description: 'Complete access to everything BSA offers: badminton courts, gym, sauna & steam. The ultimate training package.',
+    category: 'FITNESS',
+    level: 'all',
+    ageGroup: '16+',
+    duration: '1 month',
+    sessionsPerWeek: 7,
+    price: 600000, // NPR 6,000
+    isPopular: true,
+    features: ['Unlimited court booking', 'Full gym access', 'Sauna & steam access', 'Priority scheduling'],
   },
 ]
 
-// ─── Products ─────────────────────────────────────────
+// ─── Facilities ───────────────────────────────────────
 
-export const PRODUCT_CATEGORIES = ['SKINCARE', 'AFTERCARE', 'WAX_KIT'] as const
-export type ProductCategory = (typeof PRODUCT_CATEGORIES)[number]
+export interface FacilityDef {
+  id: string
+  name: string
+  category: FacilityCategory
+  description: string
+  features: string[]
+  icon: string
+}
+
+export const FACILITIES: FacilityDef[] = [
+  {
+    id: 'fac-01',
+    name: 'Badminton Courts',
+    category: 'BADMINTON',
+    description: 'Professional-grade badminton courts with proper lighting, regulation markings, and quality playing surface. Available for training and court booking.',
+    features: ['Professional playing surface', 'Proper court lighting', 'Regulation markings', 'Equipment available', 'Court booking system'],
+    icon: '🏸',
+  },
+  {
+    id: 'fac-02',
+    name: 'Gym & Strength Training',
+    category: 'GYM',
+    description: 'Fully equipped gym with modern strength training equipment. Designed for athletic conditioning and injury prevention.',
+    features: ['Modern equipment', 'Free weights & machines', 'Cardio zone', 'Mirrors & ventilation', 'Personal training available'],
+    icon: '💪',
+  },
+  {
+    id: 'fac-03',
+    name: 'Sauna & Steam Room',
+    category: 'SAUNA',
+    description: 'Recover faster after intense training sessions. Our sauna and steam facilities help with muscle recovery and relaxation.',
+    features: ['Sauna therapy', 'Steam room', 'Muscle recovery', 'Post-workout relaxation', 'Clean & hygienic'],
+    icon: '♨️',
+  },
+]
+
+// ─── Stats (for homepage) ─────────────────────────────
+
+export const STATS = [
+  { value: '200+', label: 'Active Members' },
+  { value: '5+', label: 'Expert Coaches' },
+  { value: '3', label: 'Badminton Courts' },
+  { value: '6', label: 'Years Experience' },
+] as const
+
+// ─── Testimonials ─────────────────────────────────────
+
+export const TESTIMONIALS = [
+  {
+    name: 'Rajan Shrestha',
+    role: 'Competitive Player',
+    quote: 'BSA transformed my game. The coaching here is serious and the facilities are top-notch for Nepal.',
+  },
+  {
+    name: 'Sita Maharjan',
+    role: 'Youth Academy Parent',
+    quote: 'My son loves coming here. The coaches know how to make training fun while teaching real skills.',
+  },
+  {
+    name: 'Bikash Tamang',
+    role: 'Gym Member',
+    quote: 'Best gym in Bhaisepati. Clean, well-equipped, and the staff actually cares about your progress.',
+  },
+] as const
+
+// ─── Court Booking ────────────────────────────────────
+
+export const COURT_BOOKING = {
+  minDuration: 60, // minutes
+  maxDuration: 120,
+  openTime: '06:00',
+  closeTime: '21:00',
+  pricePerHour: 50000, // NPR 500 in paisa
+  discountPercentage: 15, // 15% discount on booking
+} as const
+
+// ─── OTP ──────────────────────────────────────────────
+
+export const OTP = {
+  length: 6,
+  expiryMinutes: 10,
+  resendCooldownSeconds: 60,
+  maxResends: 3,
+} as const
+
+// ─── Schedule ─────────────────────────────────────────
+
+export interface ScheduleSlot {
+  day: string
+  time: string
+  program: string
+  court: string
+  coach: string
+  level: 'beginner' | 'intermediate' | 'advanced' | 'all'
+}
+
+export const WEEKLY_SCHEDULE: ScheduleSlot[] = [
+  { day: 'Sunday', time: '6:00 AM – 8:00 AM', program: 'Badminton Foundation', court: 'Court 1 & 2', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Sunday', time: '8:00 AM – 10:00 AM', program: 'Intermediate Development', court: 'Court 1 & 2', coach: 'Coach Sunil', level: 'intermediate' },
+  { day: 'Sunday', time: '4:00 PM – 6:00 PM', program: 'Youth Academy', court: 'Court 1', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Monday', time: '6:00 AM – 8:00 AM', program: 'Advanced & Competitive', court: 'All Courts', coach: 'Coach Sunil', level: 'advanced' },
+  { day: 'Monday', time: '4:00 PM – 6:00 PM', program: 'Badminton Foundation', court: 'Court 1 & 2', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Tuesday', time: '6:00 AM – 8:00 AM', program: 'Intermediate Development', court: 'Court 1 & 2', coach: 'Coach Sunil', level: 'intermediate' },
+  { day: 'Tuesday', time: '4:00 PM – 6:00 PM', program: 'Youth Academy', court: 'Court 1', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Wednesday', time: '6:00 AM – 8:00 AM', program: 'Advanced & Competitive', court: 'All Courts', coach: 'Coach Sunil', level: 'advanced' },
+  { day: 'Wednesday', time: '4:00 PM – 6:00 PM', program: 'Badminton Foundation', court: 'Court 1 & 2', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Thursday', time: '6:00 AM – 8:00 AM', program: 'Intermediate Development', court: 'Court 1 & 2', coach: 'Coach Sunil', level: 'intermediate' },
+  { day: 'Thursday', time: '4:00 PM – 6:00 PM', program: 'Youth Academy', court: 'Court 1', coach: 'Coach Ramesh', level: 'beginner' },
+  { day: 'Friday', time: '6:00 AM – 8:00 AM', program: 'All Levels Open Play', court: 'All Courts', coach: 'Staff', level: 'all' },
+  { day: 'Friday', time: '4:00 PM – 6:00 PM', program: 'Match Practice', court: 'All Courts', coach: 'Coach Sunil', level: 'intermediate' },
+]
+
+// Product categories (shop)
+export type ProductCategory = 'SKINCARE' | 'AFTERCARE' | 'WAX_KIT'
 
 export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
   SKINCARE: 'Skincare',
@@ -186,7 +271,6 @@ export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
   WAX_KIT: 'Wax Kits',
 }
 
-// Alias for shop page backwards compat
 export const CATEGORY_LABELS = PRODUCT_CATEGORY_LABELS
 
 export const CATEGORY_SLUGS: Record<string, string> = {
@@ -201,28 +285,9 @@ export const CATEGORY_SLUG_BY_KEY: Record<string, string> = {
   WAX_KIT: 'wax-kits',
 }
 
-// ─── Delivery ─────────────────────────────────────────
-
-export const DELIVERY = {
-  valleyFee: 10000,      // NPR 100 in paisa
-  otherFee: 15000,       // NPR 150
-  freeThreshold: 500000, // NPR 5,000
-  valleyDays: '1–2 days',
-  otherDays: '3–5 days',
-} as const
-
+// Payment
 export const COD_LIMIT = 1500000 // NPR 15,000 in paisa
 
-// ─── OTP ──────────────────────────────────────────────
-
-export const OTP = {
-  length: 6,
-  expiryMinutes: 10,
-  resendCooldownSeconds: 60,
-  maxResends: 3,
-} as const
-
-// ─── Misc ─────────────────────────────────────────────
-
+// Recently viewed products
 export const RECENTLY_VIEWED_MAX = 4
 export const RECENTLY_VIEWED_DAYS = 7

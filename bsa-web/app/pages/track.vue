@@ -2,7 +2,7 @@
 import type { Order } from '~/types/order'
 import { ORDER_STATUS_LABELS } from '~/types/order'
 
-useHead({ title: 'Track Order — Bhaisepati Sports Academy' })
+useHead({ title: 'Track Order | Bhaisepati Sports Academy' })
 
 const config = useRuntimeConfig()
 const route = useRoute()

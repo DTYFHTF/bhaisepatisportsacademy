@@ -10,9 +10,9 @@ const booking = useBookingStore()
     <div class="flex h-full flex-col">
       <!-- Header -->
       <div class="flex items-center justify-between border-b border-border px-4 py-4">
-        <h2 class="text-heading-md">Your Booking</h2>
+        <h2 class="font-display text-lg uppercase tracking-wider text-ink">Your Booking</h2>
         <button
-          class="p-1 text-ink-muted hover:text-ink"
+          class="p-1 text-ink-muted hover:text-accent transition-colors"
           aria-label="Close booking"
           @click="booking.closeDrawer()"
         >
@@ -26,13 +26,13 @@ const booking = useBookingStore()
         class="flex flex-1 flex-col items-center justify-center px-4"
       >
         <Calendar class="h-12 w-12 text-ink-faint mb-4" />
-        <p class="text-ink-muted">No services selected yet.</p>
+        <p class="text-ink-muted">No programs selected yet.</p>
         <NuxtLink
-          to="/services"
+          to="/programs"
           class="mt-4 text-sm text-accent underline underline-offset-4"
           @click="booking.closeDrawer()"
         >
-          Browse services
+          Browse programs
         </NuxtLink>
       </div>
 
@@ -41,10 +41,10 @@ const booking = useBookingStore()
         <div
           v-for="item in booking.items"
           :key="item.serviceId"
-          class="flex items-start justify-between rounded-lg border border-border p-3"
+          class="flex items-start justify-between rounded-xl border border-border bg-surface p-3"
         >
           <div>
-            <p class="text-sm font-medium">{{ item.serviceName }}</p>
+            <p class="text-sm font-medium text-ink">{{ item.serviceName }}</p>
             <div class="mt-1 flex items-center gap-3 text-xs text-ink-muted">
               <span class="flex items-center gap-1">
                 <Clock class="h-3 w-3" />
@@ -54,7 +54,7 @@ const booking = useBookingStore()
             </div>
           </div>
           <button
-            class="p-1 text-ink-faint hover:text-red-500"
+            class="p-1 text-ink-faint hover:text-energy transition-colors"
             :aria-label="`Remove ${item.serviceName}`"
             @click="booking.removeService(item.serviceId)"
           >
@@ -65,18 +65,17 @@ const booking = useBookingStore()
 
       <!-- Footer -->
       <div v-if="!booking.isEmpty" class="border-t border-border px-4 py-4 space-y-3">
-        <!-- Summary -->
         <div class="flex items-center justify-between text-sm">
           <span class="text-ink-muted">
-            {{ booking.itemCount }} service{{ booking.itemCount > 1 ? 's' : '' }}
+            {{ booking.itemCount }} item{{ booking.itemCount > 1 ? 's' : '' }}
             · {{ formatDuration(booking.totalDuration) }}
           </span>
-          <span class="text-base font-medium">{{ formatPrice(booking.total) }}</span>
+          <span class="text-base font-bold text-accent">{{ formatPrice(booking.total) }}</span>
         </div>
 
         <NuxtLink to="/book" @click="booking.closeDrawer()">
           <UiAppButton variant="primary" size="lg" class="w-full">
-            Book Appointment
+            Book Now
           </UiAppButton>
         </NuxtLink>
       </div>

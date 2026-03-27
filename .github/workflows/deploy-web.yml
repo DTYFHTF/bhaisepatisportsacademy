@@ -32,18 +32,15 @@ jobs:
 
       - name: Resolve build environment
         # Use secrets when set; fall back to production defaults for non-sensitive vars.
-        # This prevents localhost from being baked into the bundle if secrets aren't configured.
         run: |
-          echo "NUXT_API_BASE=${NUXT_API_BASE:-https://api.bsa.example.com/api}" >> $GITHUB_ENV
-          echo "NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-https://api.bsa.example.com/api}" >> $GITHUB_ENV
-          echo "NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://bsa.example.com}" >> $GITHUB_ENV
+          echo "NUXT_PUBLIC_API_BASE=${NUXT_PUBLIC_API_BASE:-https://api.bsa.abinmaharjan.com.np/api}" >> $GITHUB_ENV
+          echo "NUXT_PUBLIC_SITE_URL=${NUXT_PUBLIC_SITE_URL:-https://bsa.abinmaharjan.com.np}" >> $GITHUB_ENV
         env:
-          NUXT_API_BASE: ${{ secrets.NUXT_API_BASE }}
           NUXT_PUBLIC_API_BASE: ${{ secrets.NUXT_PUBLIC_API_BASE }}
           NUXT_PUBLIC_SITE_URL: ${{ secrets.NUXT_PUBLIC_SITE_URL }}
 
-      - name: Build
-        run: npm run build
+      - name: Generate static SPA
+        run: npx nuxi generate
         env:
           NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME: ${{ secrets.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME }}
           NUXT_PUBLIC_GOOGLE_MAPS_KEY: ${{ secrets.NUXT_PUBLIC_GOOGLE_MAPS_KEY }}
@@ -100,7 +97,7 @@ jobs:
           source: '.output/'
           target: '/home/${{ secrets.VPS_USER }}/bsa/bsa-web/'
 
-      - name: Restart application
+      - name: Deploy static files to document root
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.VPS_HOST }}
@@ -108,12 +105,12 @@ jobs:
           key: ${{ secrets.VPS_SSH_KEY }}
           port: ${{ secrets.VPS_PORT }}
           script: |
-            # CloudLinux Passenger manages process lifecycle — touch restart.txt is the only correct restart mechanism.
-            # DO NOT use PM2 or manually kill lsnode processes; that causes NPROC exhaustion on shared hosting.
-            mkdir -p ~/bsa/bsa-web/tmp
-            touch ~/bsa/bsa-web/tmp/restart.txt
+            # Static SPA deployment - copy files to domain document root
+            DOCROOT="$HOME/bsa.abinmaharjan.com.np"
+            mkdir -p "$DOCROOT"
 
-            # Clear Nitro ISR cache so stale pages don't persist after deploy
-            rm -rf ~/bsa/bsa-web/.output/cache 2>/dev/null || true
+            # Copy generated static files
+            cp -r ~/bsa/bsa-web/.output/public/* "$DOCROOT/"
+            cp ~/bsa/bsa-web/.output/public/.htaccess "$DOCROOT/" 2>/dev/null || true
 
-            echo "✅ BSA frontend deployed successfully"
+            echo "BSA frontend deployed as static SPA (zero Node.js processes)"

@@ -54,7 +54,7 @@ class VariantsRelationManager extends RelationManager
                 TextColumn::make('sku')
                     ->copyable(),
                 TextColumn::make('price_override')
-                    ->formatStateUsing(fn (?int $state) => $state ? 'NPR ' . number_format($state / 100) : '—')
+                    ->formatStateUsing(fn (?int $state) => $state ? 'NPR ' . number_format($state / 100) : '-')
                     ->label('Price Override'),
                 TextColumn::make('stock')
                     ->sortable(),

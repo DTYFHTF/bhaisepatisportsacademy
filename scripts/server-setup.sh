@@ -1,12 +1,15 @@
 #!/usr/bin/env bash
-# ═══════════════════════════════════════════════════════════════
-#  Bhaisepati Sports Academy — First-time server setup
+# ===============================================================
+#  Bhaisepati Sports Academy - First-time server setup
 #  Run this ONCE on the production server (babal.host, rishipa2)
+#
+#  Frontend: Static SPA (no Node.js process needed)
+#  Backend:  Laravel API with Filament admin
 #
 #  Usage:
 #    chmod +x server-setup.sh
 #    bash server-setup.sh
-# ═══════════════════════════════════════════════════════════════
+# ===============================================================
 set -euo pipefail
 
 # ── Config ────────────────────────────────────────────────────
@@ -23,7 +26,7 @@ step()  { echo; echo -e "${GREEN}═══════════════�
 pause() { echo; warn "$*"; echo "    Press ENTER to continue..."; read -r; }
 
 # ── Step 1: GitHub deploy key ─────────────────────────────────
-step "Step 1/5 — GitHub Deploy Key"
+step "Step 1/5 - GitHub Deploy Key"
 
 if [[ ! -f "$HOME/.ssh/bsa_github" ]]; then
   info "Generating SSH deploy key..."
@@ -48,7 +51,7 @@ chmod 600 "$HOME/.ssh/config"
 
 echo
 echo -e "${YELLOW}┌─────────────────────────────────────────────────────────────┐${NC}"
-echo -e "${YELLOW}│  Add this deploy key on GitHub — READ ONLY, no write needed  │${NC}"
+echo -e "${YELLOW}│  Add this deploy key on GitHub - READ ONLY, no write needed  │${NC}"
 echo -e "${YELLOW}│  → github.com/DTYFHTF/bhaisepatisportacademy → Settings → Deploy keys  │${NC}"
 echo -e "${YELLOW}└─────────────────────────────────────────────────────────────┘${NC}"
 echo
@@ -63,7 +66,7 @@ ssh -o StrictHostKeyChecking=no -T git@github.com 2>&1 | grep -q "successfully a
   || warn "Could not verify GitHub connection, continuing anyway..."
 
 # ── Step 2: Clone monorepo ────────────────────────────────────
-step "Step 2/5 — Clone Monorepo"
+step "Step 2/5 - Clone Monorepo"
 
 if [[ -d "$PROJECT_DIR/.git" ]]; then
   info "Repo already cloned, pulling latest..."
@@ -75,7 +78,7 @@ else
 fi
 
 # ── Step 3: Laravel API ───────────────────────────────────────
-step "Step 3/5 — Laravel API Setup"
+step "Step 3/5 - Laravel API Setup"
 
 cd "$PROJECT_DIR/bsa-api"
 
@@ -134,57 +137,68 @@ php artisan event:cache
 
 echo -e "${GREEN}✅ API setup complete${NC}"
 
-# ── Step 4: Nuxt Frontend ─────────────────────────────────────
-step "Step 4/5 — Nuxt Frontend Build + PM2"
+# -- Step 4: Nuxt Frontend (Static SPA) -------------------------
+step "Step 4/5 - Nuxt Frontend (Static SPA)"
 
 cd "$PROJECT_DIR/bsa-web"
-
-# Make tmp/ for Passenger restart signal
-mkdir -p tmp
 
 info "Installing npm dependencies..."
 npm ci --quiet
 
-info "Building Nuxt app (this takes ~60s)..."
-npm run build
+info "Generating static SPA (npx nuxi generate)..."
+npx nuxi generate
 
-info "Starting PM2..."
-pm2 start ecosystem.config.cjs --env production || pm2 reload ecosystem.config.cjs --env production
+# The static files are in .output/public/
+# They need to be copied to the domain's document root
+FRONTEND_DOCROOT="$HOME/bsa.abinmaharjan.com.np"
 
-# Persist PM2 process list
-pm2 save
-
-# Try setting up auto-start via cron (no sudo needed)
-if ! crontab -l 2>/dev/null | grep -q "pm2 resurrect"; then
-  (crontab -l 2>/dev/null; echo "@reboot export PATH=$NODE_BIN:$NVM_BIN:\$PATH && pm2 resurrect") | crontab -
-  info "Added PM2 resurrect to crontab (auto-start on reboot)"
+if [[ -d "$FRONTEND_DOCROOT" ]]; then
+  info "Deploying static files to $FRONTEND_DOCROOT..."
+  # Backup existing .htaccess if it exists and is not ours
+  if [[ -f "$FRONTEND_DOCROOT/.htaccess" ]] && ! grep -q "SPA Fallback" "$FRONTEND_DOCROOT/.htaccess" 2>/dev/null; then
+    cp "$FRONTEND_DOCROOT/.htaccess" "$FRONTEND_DOCROOT/.htaccess.bak"
+    warn "Backed up existing .htaccess to .htaccess.bak"
+  fi
+  # Copy generated files (preserving any existing non-BSA files)
+  cp -r .output/public/* "$FRONTEND_DOCROOT/"
+  cp -r .output/public/.htaccess "$FRONTEND_DOCROOT/" 2>/dev/null || true
+  echo -e "${GREEN}Static SPA deployed to $FRONTEND_DOCROOT${NC}"
+else
+  warn "Document root $FRONTEND_DOCROOT not found."
+  warn "Create the subdomain in cPanel first, then copy files:"
+  echo "  cp -r $PROJECT_DIR/bsa-web/.output/public/* $FRONTEND_DOCROOT/"
 fi
 
-echo -e "${GREEN}✅ Frontend built and PM2 started on port 3001${NC}"
+echo -e "${GREEN}No Node.js process needed - pure static file serving!${NC}"
 
-# ── Step 5: Summary ───────────────────────────────────────────
-step "Step 5/5 — cPanel Manual Steps"
+# -- Step 5: Summary -----------------------------------------------
+step "Step 5/5 - cPanel Manual Steps"
 
 echo
-echo -e "  ${YELLOW}Two things still need to be done in cPanel:${NC}"
+echo -e "  ${YELLOW}Things to do in cPanel:${NC}"
 echo
 echo -e "  ${GREEN}A) API subdomain${NC}"
-echo -e "     cPanel → Subdomains → Create Subdomain"
+echo -e "     cPanel > Subdomains > Create Subdomain"
 echo -e "     Subdomain:     api"
-echo -e "     Domain:        bsa.example.com"
+echo -e "     Domain:        bsa.abinmaharjan.com.np"
 echo -e "     Document Root: bsa/bsa-api/public"
 echo
-echo -e "  ${GREEN}B) Node.js app for bsa.example.com${NC}"
-echo -e "     cPanel → Setup Node.js App → Create Application"
-echo -e "     Node.js version:   20"
-echo -e "     Application mode:  Production"
-echo -e "     Application root:  bsa/bsa-web"
-echo -e "     Application URL:   bsa.example.com"
-echo -e "     Startup file:      .output/server/index.mjs"
-echo -e "     ↑ This creates the .htaccess proxy to port 3001"
+echo -e "  ${GREEN}B) Frontend subdomain (STATIC, no Node.js app needed)${NC}"
+echo -e "     cPanel > Subdomains > Create Subdomain (if not already done)"
+echo -e "     Domain:        bsa.abinmaharjan.com.np"
+echo -e "     Document Root: bsa.abinmaharjan.com.np"
+echo -e "     Then copy the static files:"
+echo -e "       cp -r ~/bsa/bsa-web/.output/public/* ~/bsa.abinmaharjan.com.np/"
+echo -e "     The .htaccess handles SPA routing automatically."
+echo -e "     NO Node.js app, NO PM2, NO Passenger needed."
 echo
-echo -e "  ${GREEN}C) GitHub Actions secrets${NC}"
-echo -e "     github.com/DTYFHTF/bhaisepatisportacademy → Settings → Secrets → Actions"
+echo -e "  ${GREEN}C) Kill any leftover Node.js processes${NC}"
+echo -e "     If you had a PM2/Passenger Node.js app before, remove it:"
+echo -e "       cPanel > Setup Node.js App > Delete the bsa app"
+echo -e "       pm2 delete all (if PM2 is running)"
+echo
+echo -e "  ${GREEN}D) GitHub Actions secrets${NC}"
+echo -e "     github.com/DTYFHTF/bhaisepatisportacademy > Settings > Secrets > Actions"
 echo
 echo -e "     VPS_HOST     = 192.250.235.21"
 echo -e "     VPS_USER     = rishipa2"
@@ -193,6 +207,7 @@ echo -e "     VPS_SSH_KEY  = (paste your local ~/.ssh/id_ed25519 private key)"
 echo
 echo -e "     NUXT_PUBLIC_GOOGLE_MAPS_KEY = (your restricted Google Maps key)"
 echo
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
-echo -e "${GREEN}  🚀  Setup complete! Visit https://bsa.example.com${NC}"
-echo -e "${GREEN}════════════════════════════════════════════${NC}"
+echo -e "${GREEN}================================================${NC}"
+echo -e "${GREEN}  Setup complete! Visit https://bsa.abinmaharjan.com.np${NC}"
+echo -e "${GREEN}  Zero Node.js processes - pure static serving.${NC}"
+echo -e "${GREEN}================================================${NC}"

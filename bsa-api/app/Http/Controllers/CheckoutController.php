@@ -38,7 +38,7 @@ class CheckoutController extends Controller
         }
 
         if ($data['payment_method'] === 'ESEWA') {
-            // Don't create order yet — hold data in cache until eSewa confirms
+            // Don't create order yet - hold data in cache until eSewa confirms
             $pendingKey = Str::uuid()->toString();
             Cache::put("esewa_pending:{$pendingKey}", $data, now()->addMinutes(30));
 
@@ -50,7 +50,7 @@ class CheckoutController extends Controller
             ]);
         }
 
-        // COD — create immediately
+        // COD - create immediately
         $order = $this->orderService->place($data);
 
         return response()->json([
@@ -89,7 +89,7 @@ class CheckoutController extends Controller
     {
         // Failure redirect
         if ($request->query('status') === 'failure') {
-            // No order was created yet for eSewa — nothing to cancel
+            // No order was created yet for eSewa - nothing to cancel
             return redirect(config('app.frontend_url') . '/checkout?error=payment_failed');
         }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
+useHead({ title: 'Privacy Policy | Bhaisepati Sports Academy' })
 </script>
 
 <template>
@@ -23,14 +23,14 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
 
         <h3 class="font-medium text-ink mt-4 mb-2">Information you provide</h3>
         <ul class="list-disc pl-5 space-y-1.5">
-          <li><strong>Phone number</strong> — for OTP verification and order updates via SMS.</li>
-          <li><strong>Name &amp; delivery address</strong> — to fulfill your order.</li>
-          <li><strong>Location data</strong> — only when you choose to share it via the map feature, to improve delivery accuracy.</li>
+          <li><strong>Phone number</strong>: for OTP verification and order updates via SMS.</li>
+          <li><strong>Name &amp; delivery address</strong>: to fulfill your order.</li>
+          <li><strong>Location data</strong>: only when you choose to share it via the map feature, to improve delivery accuracy.</li>
         </ul>
 
         <h3 class="font-medium text-ink mt-4 mb-2">Information collected automatically</h3>
         <ul class="list-disc pl-5 space-y-1.5">
-          <li>Basic device and browser information (screen size, browser type) for a better shopping experience.</li>
+          <li>Basic device and browser information (screen size, browser type) for a better user experience.</li>
           <li>Pages visited and interactions, to understand how we can improve.</li>
         </ul>
       </section>
@@ -46,7 +46,7 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
         </ul>
         <p class="mt-3">
           We do <strong>not</strong> use your data for targeted advertising, profiling, or automated decision-making.
-          We have zero AI/ML data processing — all features use simple deterministic logic.
+          We have zero AI/ML data processing. All features use simple deterministic logic.
         </p>
       </section>
 
@@ -55,7 +55,7 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">4. Phone Number Security</h2>
         <p>
           We take phone number privacy seriously. Your phone number is <strong>hashed using HMAC-SHA256</strong>
-          before storage — we do not store your actual phone number in our database. This means even if our database
+          before storage. We do not store your actual phone number in our database. This means even if our database
           were compromised, your phone number cannot be recovered.
         </p>
       </section>
@@ -65,9 +65,9 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">5. Data Sharing</h2>
         <p>We do not sell, rent, or trade your personal data. We share information only with:</p>
         <ul class="list-disc pl-5 space-y-1.5 mt-2">
-          <li><strong>Delivery partners</strong> — your name, address, and phone number to complete delivery.</li>
-          <li><strong>Payment gateways</strong> (eSewa) — transaction details required to process your payment. We do not store your payment credentials.</li>
-          <li><strong>SMS provider</strong> (Sparrow SMS) — your phone number to send OTP codes and order updates.</li>
+          <li><strong>Delivery partners</strong>: your name, address, and phone number to complete delivery.</li>
+          <li><strong>Payment gateways</strong> (eSewa): transaction details required to process your payment. We do not store your payment credentials.</li>
+          <li><strong>SMS provider</strong> (Sparrow SMS): your phone number to send OTP codes and order updates.</li>
         </ul>
       </section>
 
@@ -101,7 +101,7 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
         </ul>
         <p class="mt-3">
           To exercise these rights, contact us at
-          <a href="mailto:hello@bsa.example.com" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">hello@bsa.example.com</a>.
+          <a href="mailto:info@bsa.abinmaharjan.com.np" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">info@bsa.abinmaharjan.com.np</a>.
         </p>
       </section>
 
@@ -136,7 +136,7 @@ useHead({ title: 'Privacy Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">12. Contact</h2>
         <p>
           For privacy-related questions, reach us at
-          <a href="mailto:hello@bsa.example.com" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">hello@bsa.example.com</a>.
+          <a href="mailto:info@bsa.abinmaharjan.com.np" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">info@bsa.abinmaharjan.com.np</a>.
         </p>
       </section>
     </div>

@@ -44,21 +44,37 @@ export function getCloudinarySrcSet(cloudinaryId: string): string {
 }
 
 /**
+ * Format enrollment ID in BSA-YYMM-XXXX format.
+ */
+export function formatEnrollmentId(enrollmentId: string): string {
+  return enrollmentId.startsWith('BSA-') ? enrollmentId : `BSA-${enrollmentId}`
+}
+
+/**
+ * Format order ID.
+ */
+export function formatOrderId(orderId: string): string {
+  return orderId.startsWith('BSA-') ? orderId : `BSA-${orderId}`
+}
+
+/**
  * Calculate delivery fee based on city and subtotal.
+ * Subtotal and return values are in paisa (NPR x 100).
  */
 export function calculateDeliveryFee(city: string, subtotal: number): number {
-  // Subtotal and return values are in paisa (NPR × 100)
   if (subtotal >= 500000) return 0 // free above NPR 5,000
-
   const valleyCities = ['kathmandu', 'lalitpur', 'bhaktapur']
   return valleyCities.includes(city.toLowerCase()) ? 10000 : 15000 // NPR 100 / 150
 }
 
 /**
- * Format order ID in PP-YYMM-XXXX format.
+ * Format a time slot string "HH:MM" to 12-hour format.
  */
-export function formatOrderId(orderId: string): string {
-  return orderId.startsWith('PP-') ? orderId : `PP-${orderId}`
+export function formatTime(time: string): string {
+  const [h, m] = time.split(':').map(Number)
+  const period = h >= 12 ? 'PM' : 'AM'
+  const hour = h % 12 || 12
+  return `${hour}:${m.toString().padStart(2, '0')} ${period}`
 }
 
 /**

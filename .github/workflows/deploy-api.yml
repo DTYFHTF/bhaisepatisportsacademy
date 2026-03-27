@@ -111,8 +111,8 @@ jobs:
             # Restart queue workers if running
             php artisan queue:restart 2>/dev/null || true
 
-            # LiteSpeed/OPcache invalidation — touch entry points so cached bytecode is dropped.
+            # LiteSpeed/OPcache invalidation - touch entry points so cached bytecode is dropped.
             touch ~/bsa/bsa-api/public/index.php
             touch ~/bsa/bsa-api/public/.htaccess 2>/dev/null || true
 
-            echo "✅ Bhaisepati Sports Academy API deployed successfully"
+            echo "BSA API deployed successfully"

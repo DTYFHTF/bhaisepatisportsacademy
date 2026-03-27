@@ -19,7 +19,7 @@ watch(product, (p) => {
 
 // SEO
 useHead(() => ({
-  title: product.value ? `${product.value.name} — Bhaisepati Sports Academy` : 'Product — Bhaisepati Sports Academy',
+  title: product.value ? `${product.value.name} | Bhaisepati Sports Academy` : 'Product | Bhaisepati Sports Academy',
   meta: product.value
     ? [{ name: 'description', content: product.value.description }]
     : [],

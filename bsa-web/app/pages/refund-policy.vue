@@ -1,5 +1,5 @@
 <script setup lang="ts">
-useHead({ title: 'Cancellation Policy — Bhaisepati Sports Academy' })
+useHead({ title: 'Cancellation Policy | Bhaisepati Sports Academy' })
 </script>
 
 <template>
@@ -49,7 +49,7 @@ useHead({ title: 'Cancellation Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">4. Damaged or Wrong Items</h2>
         <p>
           If you receive a damaged or incorrect item, contact us within <strong>48 hours</strong> of delivery with
-          photos of the product and packaging. We will arrange a free replacement or full refund — no questions asked.
+          photos of the product and packaging. We will arrange a free replacement or full refund, no questions asked.
         </p>
       </section>
 
@@ -69,7 +69,7 @@ useHead({ title: 'Cancellation Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">6. Cancellations</h2>
         <ul class="list-disc pl-5 space-y-1.5">
           <li>Orders can be cancelled before they are marked as "Packed."</li>
-          <li>Once packed or dispatched, cancellation is not possible — please use the exchange/return process after delivery.</li>
+          <li>Once packed or dispatched, cancellation is not possible. Please use the exchange/return process after delivery.</li>
           <li>For digital payment orders, cancelled before packing will be refunded in full within 5–7 business days.</li>
         </ul>
       </section>
@@ -79,7 +79,7 @@ useHead({ title: 'Cancellation Policy — Bhaisepati Sports Academy' })
         <h2 class="text-heading-md text-ink mb-3">7. Contact</h2>
         <p>
           For return or refund queries, reach us at
-          <a href="mailto:hello@bsa.example.com" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">hello@bsa.example.com</a>
+          <a href="mailto:info@bsa.abinmaharjan.com.np" class="underline underline-offset-2 text-ink hover:text-accent transition-colors">info@bsa.abinmaharjan.com.np</a>
           or message us on WhatsApp.
         </p>
       </section>

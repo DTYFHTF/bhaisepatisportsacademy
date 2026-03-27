@@ -86,7 +86,7 @@ class ServiceResource extends Resource
 
             Section::make('Images')
                 ->icon('heroicon-o-photo')
-                ->description('Add image URLs for this service (3–5 recommended). Paste any direct image URL — Cloudinary upload is not required.')
+                ->description('Add image URLs for this service (3–5 recommended). Paste any direct image URL - Cloudinary upload is not required.')
                 ->collapsible()
                 ->schema([
                     Repeater::make('images')

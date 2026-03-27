@@ -91,7 +91,7 @@ onMounted(async () => {
     }
   }
   catch (e) {
-    // Maps failed silently — fallback to static embed link
+    // Maps failed silently - fallback to static embed link
   }
 })
 </script>

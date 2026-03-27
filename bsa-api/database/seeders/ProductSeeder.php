@@ -27,7 +27,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['skincare', 'bestseller', 'aftercare'],
                 'variants'         => [['100ml', 85000, 30], ['200ml', 150000, 20]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Aloe Vera Soothing Gel — 100ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Aloe Vera Soothing Gel - 100ml'],
                 ],
             ],
             [
@@ -42,7 +42,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['skincare', 'new-arrival'],
                 'variants'         => [['150ml', 95000, 25]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Pre-Wax Cleansing Oil — 150ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Pre-Wax Cleansing Oil - 150ml'],
                 ],
             ],
             [
@@ -57,7 +57,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['skincare', 'bestseller'],
                 'variants'         => [['30ml', 120000, 35]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Ingrown Hair Serum — 30ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Ingrown Hair Serum - 30ml'],
                 ],
             ],
             [
@@ -72,7 +72,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['skincare', 'essential'],
                 'variants'         => [['200ml', 75000, 40], ['400ml', 130000, 15]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Moisturizing Body Lotion — 200ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Moisturizing Body Lotion - 200ml'],
                 ],
             ],
 
@@ -89,7 +89,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['aftercare', 'new-arrival', 'bestseller'],
                 'variants'         => [['100ml', 65000, 50]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Post-Wax Cooling Spray — 100ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Post-Wax Cooling Spray - 100ml'],
                 ],
             ],
             [
@@ -104,7 +104,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['aftercare', 'essential'],
                 'variants'         => [['150g', 110000, 25]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Gentle Exfoliating Scrub — 150g'],
+                    ['url' => 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Gentle Exfoliating Scrub - 150g'],
                 ],
             ],
             [
@@ -119,7 +119,7 @@ class ProductSeeder extends Seeder
                 'tags'             => ['aftercare', 'new-arrival'],
                 'variants'         => [['50g', 95000, 20], ['100g', 165000, 12]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Calming Face Mask — 50g'],
+                    ['url' => 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Calming Face Mask - 50g'],
                 ],
             ],
 

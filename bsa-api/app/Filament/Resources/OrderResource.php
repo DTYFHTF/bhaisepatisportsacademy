@@ -87,7 +87,7 @@ class OrderResource extends Resource
                     ->badge()
                     ->color('info')
                     ->toggleable()
-                    ->placeholder('—'),
+                    ->placeholder('-'),
                 TextColumn::make('created_at')
                     ->dateTime('d M Y, h:i A')
                     ->sortable()
@@ -178,10 +178,10 @@ class OrderResource extends Resource
                         ->icon('heroicon-o-user')
                         ->schema([
                             TextEntry::make('customer_name')->label('Name'),
-                            TextEntry::make('phone')->copyable()->placeholder('—'),
+                            TextEntry::make('phone')->copyable()->placeholder('-'),
                             TextEntry::make('address'),
                             TextEntry::make('city'),
-                            TextEntry::make('delivery_note')->label('Note')->placeholder('—'),
+                            TextEntry::make('delivery_note')->label('Note')->placeholder('-'),
                         ]),
 
                     Section::make('Payment')
@@ -208,7 +208,7 @@ class OrderResource extends Resource
                                         default => 'gray',
                                     }),
                             ]),
-                            TextEntry::make('payment_ref')->label('Ref')->placeholder('—'),
+                            TextEntry::make('payment_ref')->label('Ref')->placeholder('-'),
                             Grid::make(1)->schema([
                                 TextEntry::make('subtotal')
                                     ->label('Subtotal')
@@ -242,12 +242,12 @@ class OrderResource extends Resource
                             TextEntry::make('courier_tracking_id')
                                 ->label('Tracking No.')
                                 ->copyable()
-                                ->placeholder('—'),
+                                ->placeholder('-'),
                             TextEntry::make('courier_tracking_url')
                                 ->label('Courier site')
                                 ->url(fn ($record) => $record->courier_tracking_url)
                                 ->openUrlInNewTab()
-                                ->placeholder('—'),
+                                ->placeholder('-'),
                         ]),
                 ])->columnSpan(1),
 
@@ -277,16 +277,16 @@ class OrderResource extends Resource
                             Grid::make(2)->schema([
                                 TextEntry::make('nearest_landmark')
                                     ->label('Nearest Landmark')
-                                    ->placeholder('—'),
+                                    ->placeholder('-'),
                                 TextEntry::make('latitude')
                                     ->label('GPS Coordinates')
                                     ->formatStateUsing(fn ($state, $record) => $record->latitude
                                         ? "{$record->latitude}, {$record->longitude}"
                                         : null)
-                                    ->placeholder('—'),
+                                    ->placeholder('-'),
                                 TextEntry::make('formatted_address')
                                     ->label('Map Address')
-                                    ->placeholder('—')
+                                    ->placeholder('-')
                                     ->columnSpan(2),
                                 TextEntry::make('view_on_map')
                                     ->label('Open in Maps')
@@ -295,7 +295,7 @@ class OrderResource extends Resource
                                         ? "https://www.google.com/maps?q={$record->latitude},{$record->longitude}"
                                         : null)
                                     ->openUrlInNewTab()
-                                    ->placeholder('—'),
+                                    ->placeholder('-'),
                                 TextEntry::make('route_from_store')
                                     ->label('Route from Store')
                                     ->state(fn ($record) => $record->latitude ? '🚗 Google Maps Directions' : null)
@@ -303,7 +303,7 @@ class OrderResource extends Resource
                                         ? 'https://www.google.com/maps/dir/?api=1&origin=' . urlencode(env('STORE_ADDRESS', 'Kathmandu, Nepal')) . "&destination={$record->latitude},{$record->longitude}&travelmode=driving"
                                         : null)
                                     ->openUrlInNewTab()
-                                    ->placeholder('—'),
+                                    ->placeholder('-'),
                                 TextEntry::make('delivery_rider_link')
                                     ->label('Rider Link')
                                     ->helperText('Copy and send to rider')
@@ -312,7 +312,7 @@ class OrderResource extends Resource
                                         : null)
                                     ->copyable()
                                     ->columnSpan(2)
-                                    ->placeholder('—'),
+                                    ->placeholder('-'),
                             ]),
                         ]),
 
@@ -331,7 +331,7 @@ class OrderResource extends Resource
                                             'PENDING' => 'warning',
                                             default => 'primary',
                                         }),
-                                    TextEntry::make('note')->placeholder('—'),
+                                    TextEntry::make('note')->placeholder('-'),
                                     TextEntry::make('changed_by')->placeholder('System'),
                                     TextEntry::make('changed_at')
                                         ->dateTime('d M Y, h:i A'),

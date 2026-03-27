@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import type { Service } from '~/types/service'
+import type { Program } from '~/types/service'
 
 interface Props {
-  services: Service[]
+  services: Program[]
   columns?: 2 | 3
 }
 

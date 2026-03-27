@@ -1,46 +1,48 @@
 <script setup lang="ts">
-useHead({ title: 'FAQ — Bhaisepati Sports Academy' })
+import { BRAND } from '~/utils/constants'
+
+useHead({ title: 'FAQ | Bhaisepati Sports Academy' })
 
 const faqs = [
   {
-    q: 'How do I book an appointment?',
-    a: 'You can book through our website by visiting the Services page and selecting the services you want. Choose your preferred date and time, and confirm via WhatsApp. We\'ll confirm your slot shortly.',
+    q: 'How do I book a badminton court?',
+    a: 'Visit our Book a Court page, select your preferred date and time slot, fill in your details, and confirm via WhatsApp. We\'ll confirm your booking shortly.',
   },
   {
-    q: 'What wax types do you offer?',
-    a: 'We offer four premium wax types: Rica (gentlest, ideal for sensitive skin), Honey (classic all-rounder), Chocolate (nourishing, great for dry skin), and Sugar (natural, suitable for all skin types).',
+    q: 'What facilities does BSA offer?',
+    a: 'We have professional badminton courts with proper lighting and playing surface, a fully equipped gym for strength and conditioning, and sauna & steam rooms for recovery.',
   },
   {
-    q: 'Is waxing painful?',
-    a: 'Some discomfort is normal, especially for first-timers. We use premium imported waxes that are gentler on the skin. Rica wax is our gentlest option for sensitive areas. With regular sessions, discomfort decreases significantly.',
+    q: 'What training programs are available?',
+    a: 'We offer Foundation Badminton (beginners), Intermediate Training, Competitive Training (tournament prep), Youth Academy (under 16), Gym & Strength, and Full Membership packages.',
   },
   {
-    q: 'How should I prepare for my appointment?',
-    a: 'Hair should be at least 1/4 inch long (about 2 weeks of growth). Exfoliate gently 24 hours before. Avoid sun exposure and hot showers right before your appointment.',
+    q: 'Do I need to bring my own equipment?',
+    a: 'We have badminton rackets available for casual play. For regular training, we recommend bringing your own racket. Shuttlecocks are provided for all court bookings.',
   },
   {
-    q: 'Do you sell aftercare products?',
-    a: 'Yes! We carry skincare and aftercare products specifically for post-wax care. You can order them through our shop with delivery across Kathmandu.',
+    q: 'What are the membership options?',
+    a: 'We offer monthly programs starting from NPR 2,500 for youth to NPR 8,000 for competitive training. Full membership (gym + courts + sauna) is NPR 6,000/month.',
   },
   {
-    q: 'What is the delivery fee for products?',
-    a: 'NPR 100 for Kathmandu Valley, NPR 150 for other cities. Orders above NPR 5,000 get free delivery.',
-  },
-  {
-    q: 'Can I cancel or reschedule my booking?',
-    a: 'Yes. Please give us at least 4 hours notice for cancellations or reschedules. You can contact us via WhatsApp or phone.',
+    q: 'Can I get a trial session?',
+    a: 'Yes! We offer trial sessions for all our programs. Book through the website or call us to arrange a visit.',
   },
   {
     q: 'What are your opening hours?',
-    a: 'We\'re open Saturday through Thursday, 10am to 7pm. Friday is closed.',
+    a: `We're open ${BRAND.openingHours}. ${BRAND.closedDay} is our rest day.`,
   },
   {
-    q: 'Where are you located?',
-    a: 'We\'re at Chakrapath, Kathmandu (near Narayangopal Chowk). Easily accessible by public transport.',
+    q: 'Where is BSA located?',
+    a: `We're at ${BRAND.address}. You can find us on Google Maps for easy navigation.`,
   },
   {
-    q: 'How do I contact you?',
-    a: 'Send us a DM on Instagram @bsa.example.com, WhatsApp us at +977 9821357118, or email hello@bsa.example.com. We typically reply within a few hours.',
+    q: 'How can I contact you?',
+    a: `DM us on Instagram ${BRAND.instagramHandle}, WhatsApp us at +977 ${BRAND.phone}, or email ${BRAND.email}. We typically reply within a few hours.`,
+  },
+  {
+    q: 'Is there parking available?',
+    a: 'Yes, we have parking space for bikes and scooters. Limited car parking is also available.',
   },
 ]
 
@@ -52,29 +54,36 @@ function toggle(index: number) {
 </script>
 
 <template>
-  <div class="mx-auto max-w-3xl px-4 py-16 lg:px-8">
-    <h1 class="text-heading-xl mb-12">Frequently Asked Questions</h1>
+  <div>
+    <section class="border-b border-border">
+      <div class="section-container py-14 sm:py-20">
+        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">Got Questions?</p>
+        <h1 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">FAQ</h1>
+      </div>
+    </section>
 
-    <div class="divide-y divide-border">
-      <div v-for="(faq, i) in faqs" :key="i">
-        <button
-          class="w-full flex items-center justify-between py-5 text-left"
-          :aria-expanded="openIndex === i"
-          @click="toggle(i)"
-        >
-          <span class="text-sm font-medium">{{ faq.q }}</span>
-          <span
-            :class="[
-              'ml-4 flex-shrink-0 transition-transform duration-200',
-              openIndex === i ? 'rotate-45' : '',
-            ]"
-          >+</span>
-        </button>
-        <div
-          v-show="openIndex === i"
-          class="pb-5 text-sm text-ink-muted leading-relaxed"
-        >
-          {{ faq.a }}
+    <div class="mx-auto max-w-3xl px-4 py-12 lg:px-8">
+      <div class="divide-y divide-border">
+        <div v-for="(faq, i) in faqs" :key="i">
+          <button
+            class="w-full flex items-center justify-between py-5 text-left group"
+            :aria-expanded="openIndex === i"
+            @click="toggle(i)"
+          >
+            <span class="text-sm font-medium text-ink group-hover:text-accent transition-colors">{{ faq.q }}</span>
+            <span
+              :class="[
+                'ml-4 flex-shrink-0 text-accent transition-transform duration-200',
+                openIndex === i ? 'rotate-45' : '',
+              ]"
+            >+</span>
+          </button>
+          <div
+            v-show="openIndex === i"
+            class="pb-5 text-sm text-ink-muted leading-relaxed"
+          >
+            {{ faq.a }}
+          </div>
         </div>
       </div>
     </div>

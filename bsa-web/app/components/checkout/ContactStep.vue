@@ -32,7 +32,7 @@ async function handleVerifyOtp(code: string) {
 
 function handleSkip() {
   if (!phone.value || phone.value.length < 10) {
-    phoneError.value = 'Please enter your phone number — we need it for delivery updates.'
+    phoneError.value = 'Please enter your phone number. We need it for delivery updates.'
     return
   }
   checkout.setPhone(phone.value)
@@ -76,7 +76,7 @@ function handleSkip() {
         OTP sent to {{ phone.slice(0, 2) }}XXXXXX{{ phone.slice(-2) }}
       </p>
       <p v-if="devOtp" class="mb-3 text-xs font-mono text-amber-600 bg-amber-50 px-3 py-1.5 rounded">
-        Dev mode — use code: {{ devOtp }}
+        Dev mode, use code: {{ devOtp }}
       </p>
       <UiOTPInput
         :error="otpError ?? undefined"

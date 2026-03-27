@@ -19,7 +19,7 @@ onMounted(() => {
 const isCod = computed(() => paymentMethod.value === 'COD')
 const isPaid = computed(() => paymentMethod.value === 'ESEWA')
 
-useHead({ title: 'Order Confirmed — Bhaisepati Sports Academy' })
+useHead({ title: 'Order Confirmed | Bhaisepati Sports Academy' })
 </script>
 
 <template>
@@ -44,11 +44,11 @@ useHead({ title: 'Order Confirmed — Bhaisepati Sports Academy' })
       <span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-3 py-1 text-sm font-medium text-amber-700">
         💵 Pay on Delivery
       </span>
-      <p class="mt-3 text-ink-muted">Keep the cash ready — our rider is counting on you!</p>
+      <p class="mt-3 text-ink-muted">Keep the cash ready. Our rider is counting on you!</p>
     </div>
 
     <p class="mt-3 text-sm text-ink-muted">Confirmation SMS sent to your phone.</p>
-    <p class="mt-1 text-xs text-ink-faint">Didn't receive it? Don't worry — your order is safe. Use the order ID above to track anytime.</p>
+    <p class="mt-1 text-xs text-ink-faint">Didn't receive it? Don't worry | your order is safe. Use the order ID above to track anytime.</p>
 
     <div class="mt-8 flex flex-col gap-3">
       <NuxtLink :to="orderId ? `/track?order=${orderId}` : '/track'">
