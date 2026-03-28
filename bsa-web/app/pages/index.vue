@@ -5,34 +5,6 @@ import { formatPrice, formatTime } from '~/utils/formatters'
 
 const config = useRuntimeConfig()
 
-// Animated counter composable
-function useCounter(target: number, duration = 2000) {
-  const count = ref(0)
-  const el = ref<HTMLElement | null>(null)
-
-  onMounted(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const start = performance.now()
-          const animate = (now: number) => {
-            const progress = Math.min((now - start) / duration, 1)
-            const eased = 1 - Math.pow(1 - progress, 3) // easeOutCubic
-            count.value = Math.floor(eased * target)
-            if (progress < 1) requestAnimationFrame(animate)
-          }
-          requestAnimationFrame(animate)
-          observer.disconnect()
-        }
-      },
-      { threshold: 0.3 },
-    )
-    if (el.value) observer.observe(el.value)
-  })
-
-  return { count, el }
-}
-
 const { data: rawStats } = await useFetch<{ value_label: string; label: string }[]>(
   `${config.public.apiBase}/stats`,
 )
@@ -56,10 +28,45 @@ const { data: rawSchedule } = await useFetch<{ id: number; day: string; time: st
   { query: { day: today } },
 )
 
+// Animated counter — must be called at setup time, not inside computed
+// Build one counter per stat slot (max 6 expected)
+const MAX_STATS = 6
+const counterCounts = Array.from({ length: MAX_STATS }, () => ref(0))
+const counterEls = Array.from({ length: MAX_STATS }, () => ref<HTMLElement | null>(null))
+
+onMounted(() => {
+  const statList = rawStats.value ?? []
+  statList.forEach((s, i) => {
+    if (i >= MAX_STATS) return
+    const target = parseInt(s.value_label.replace(/\D/g, '')) || 0
+    const el = counterEls[i]
+    const count = counterCounts[i]
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          const start = performance.now()
+          const animate = (now: number) => {
+            const progress = Math.min((now - start) / 2000, 1)
+            const eased = 1 - Math.pow(1 - progress, 3)
+            count.value = Math.floor(eased * target)
+            if (progress < 1) requestAnimationFrame(animate)
+          }
+          requestAnimationFrame(animate)
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.3 },
+    )
+    if (el.value) observer.observe(el.value)
+  })
+})
+
 const stats = computed(() =>
-  (rawStats.value ?? []).map((s) => ({
-    ...s,
-    ...useCounter(parseInt(s.value_label.replace(/\D/g, '')) || 0),
+  (rawStats.value ?? []).map((s, i) => ({
+    label: s.label,
+    value_label: s.value_label,
+    count: counterCounts[i] ?? ref(0),
+    el: counterEls[i] ?? ref(null),
     suffix: s.value_label.replace(/^\d+/, ''),
   })),
 )
@@ -280,7 +287,7 @@ const pillars = [
     <section class="border-y border-border bg-canvas">
       <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="stat in stats" :key="stat.label" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
+          <div v-for="(stat, i) in stats" :key="stat.label" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
             <p class="font-display text-4xl sm:text-5xl text-accent tracking-tight">
               {{ stat.count.value }}<span class="text-accent/60">{{ stat.suffix }}</span>
             </p>
