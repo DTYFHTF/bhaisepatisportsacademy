@@ -55,10 +55,6 @@ export function useSettings() {
       deliveryTagline: (raw.delivery_tagline as string)   ?? defaults.deliveryTagline,
       returnTagline:   (raw.return_tagline as string)     ?? defaults.returnTagline,
     }),
-    getCachedData(key, nuxtApp) {
-      const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
-      return cached ?? undefined
-    },
   })
 
   const settings = computed<SiteSettings>(() => data.value ?? defaults)
