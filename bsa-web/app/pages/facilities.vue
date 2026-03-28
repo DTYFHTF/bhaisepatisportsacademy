@@ -1,11 +1,16 @@
 <script setup lang="ts">
 import { ChevronRight, Dumbbell, Flame, Phone } from 'lucide-vue-next'
-import { FACILITIES, BRAND } from '~/utils/constants'
+import { BRAND } from '~/utils/constants'
 
 useSeoMeta({
   title: 'Facilities | Bhaisepati Sports Academy',
   description: 'Professional badminton courts, fully equipped gym, and sauna & steam recovery at BSA Bhaisepati.',
 })
+
+const config = useRuntimeConfig()
+const { data: facilities } = await useFetch<{
+  id: string; name: string; category: string; description: string; features: string[]
+}[]>(`${config.public.apiBase}/facilities`)
 </script>
 
 <template>
@@ -28,8 +33,8 @@ useSeoMeta({
       <div class="section-container">
         <div class="space-y-20">
           <div
-            v-for="(facility, index) in FACILITIES"
-            :id="facility.category.toLowerCase() === 'badminton' ? 'courts' : facility.category.toLowerCase()"
+            v-for="(facility, index) in (facilities ?? [])"
+            :id="facility.category === 'badminton' ? 'courts' : facility.category"
             :key="facility.id"
             class="scroll-mt-24"
           >
@@ -40,8 +45,8 @@ useSeoMeta({
               <!-- Content -->
               <div :class="index % 2 === 1 ? 'lg:order-2' : ''">
                 <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
-                  <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
-                  <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
+                  <Dumbbell v-if="facility.category === 'gym'" class="h-5 w-5 text-accent" />
+                  <Flame v-else-if="facility.category === 'sauna'" class="h-5 w-5 text-accent" />
                   <svg v-else class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <circle cx="12" cy="5" r="3" />
                     <path d="M12 8L6 20M12 8L18 20" />

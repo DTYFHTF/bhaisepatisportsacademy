@@ -9,245 +9,157 @@ use Illuminate\Database\Seeder;
 class ServiceSeeder extends Seeder
 {
     /**
-     * Curated Unsplash photo IDs matching each service category.
-     * All images are free-to-use and contextually relevant to beauty / waxing services.
-     * Replace any of these with actual Bhaisepati Sports Academy photos by updating the URL or
-     * uploading to Cloudinary and setting cloudinary_id on the product image record.
+     * BSA sports facility image pool (free Unsplash images).
+     * Replace with actual BSA photos (upload to Cloudinary) when available.
      */
-    private array $waxingPool = [
-        'photo-1560066984-138dadb4c035', // spa / beauty treatment
-        'photo-1519415943484-9fa1873496d4', // body waxing / smooth skin
-        'photo-1522337360788-8b13dee7a37e', // beauty salon
-        'photo-1515377905703-c4788e51af15', // hands / arm care
-        'photo-1487412947147-5cebf100ffc2', // skincare / beauty
-        'photo-1571875257727-256c39da42af', // spa body treatment
-        'photo-1540555700478-4be289fbecef', // body spa session
-        'photo-1552693673-1bf795851eba', // skin close-up
+    private array $badmintonPool = [
+        'photo-1613914153966-fd0cf11e0e8b', // badminton court
+        'photo-1606107557195-0e29a4b5b4aa', // shuttlecock
+        'photo-1551698618-1dfe5d97d256', // badminton racket
+        'photo-1547347298-4074fc3086f0', // sports court overhead
     ];
 
-    private array $facialPool = [
-        'photo-1616394584738-fc6e612e71b9', // facial treatment
-        'photo-1512290923902-8a9f81dc236c', // face skincare
-        'photo-1598440947619-2c35fc9a1f41', // facial beauty routine
-        'photo-1570172619644-dfd03ed5d881', // face mask / facial
+    private array $gymPool = [
+        'photo-1534438327276-14e5300c3a48', // gym equipment
+        'photo-1571019613454-1cb2f99b2d8b', // person exercising
+        'photo-1583454110551-21f2fa2afe61', // weights/barbell
+        'photo-1540497077202-7c8a3999166f', // gym interior
     ];
 
-    private array $browPool = [
-        'photo-1552693673-1bf795851eba', // close-up brow area
-        'photo-1487412947147-5cebf100ffc2', // eye / brow beauty
-        'photo-1512290923902-8a9f81dc236c', // face treatment
+    private array $saunaPool = [
+        'photo-1520974048-a3a50c2b0eb0', // sauna interior
+        'photo-1531306728370-e2ebd9d7bb99', // steam room
+        'photo-1587271407850-8d438ca9fdf2', // relaxation spa
+        'photo-1544161515-4ab6ce6db874', // recovery therapy
     ];
 
-    private array $bodyCarePool = [
-        'photo-1540555700478-4be289fbecef', // body spa
-        'photo-1519415943484-9fa1873496d4', // smooth skin
-        'photo-1571875257727-256c39da42af', // body treatment
-        'photo-1560066984-138dadb4c035', // spa session
-    ];
-
-    private function imgs(string $slug, int $count = 4, string $category = 'waxing'): array
+    private function imgs(string $slug, ServiceCategory $cat, int $count = 3): array
     {
-        $pool = match ($category) {
-            'facial'    => $this->facialPool,
-            'brow'      => $this->browPool,
-            'body_care' => $this->bodyCarePool,
-            default     => $this->waxingPool,
+        $pool = match ($cat) {
+            ServiceCategory::GYM   => $this->gymPool,
+            ServiceCategory::SAUNA => $this->saunaPool,
+            default                => $this->badmintonPool,
         };
-
-        // Deterministic starting offset per slug so each service gets a unique lead image.
         $start = abs(crc32($slug)) % count($pool);
         $urls  = [];
         for ($i = 0; $i < $count; $i++) {
             $id     = $pool[($start + $i) % count($pool)];
-            $urls[] = "https://images.unsplash.com/{$id}?auto=format&fit=crop&w=800&h=1000&q=80";
+            $urls[] = "https://images.unsplash.com/{$id}?auto=format&fit=crop&w=800&h=600&q=80";
         }
         return $urls;
     }
 
     public function run(): void
     {
+        Service::truncate();
+
         $services = [
-            // ── WAXING ──────────────────────────────────────────────────────
+            // ── BADMINTON ──────────────────────────────────────────────────
             [
-                'slug'        => 'full-arms-wax',
-                'name'        => 'Full Arms Wax',
-                'description' => 'Complete waxing for both arms from shoulder to wrist. Smooth, clean results every time.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 30,
-                'price'       => 80000,
-                'wax_types'   => ['Rica', 'Honey', 'Chocolate'],
+                'slug'        => 'court-booking-1hr',
+                'name'        => 'Court Booking (1 Hour)',
+                'description' => 'Book a professional badminton court for 1 hour. Suitable for casual play or personal practice.',
+                'category'    => ServiceCategory::BADMINTON,
+                'duration'    => 60,
+                'price'       => 50000,
+                'wax_types'   => [],
                 'is_popular'  => true,
                 'sort_order'  => 1,
-                'images'      => $this->imgs('full-arms-wax'),
+                'images'      => $this->imgs('court-1hr', ServiceCategory::BADMINTON),
             ],
             [
-                'slug'        => 'full-legs-wax',
-                'name'        => 'Full Legs Wax',
-                'description' => 'Both legs from hip to ankle. Our most popular service for consistently smooth skin.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 45,
-                'price'       => 120000,
-                'wax_types'   => ['Rica', 'Honey', 'Chocolate'],
+                'slug'        => 'court-booking-2hrs',
+                'name'        => 'Court Booking (2 Hours)',
+                'description' => 'Extended 2-hour court booking. Perfect for doubles matches or group practice sessions.',
+                'category'    => ServiceCategory::BADMINTON,
+                'duration'    => 120,
+                'price'       => 90000,
+                'wax_types'   => [],
                 'is_popular'  => true,
                 'sort_order'  => 2,
-                'images'      => $this->imgs('full-legs-wax'),
+                'images'      => $this->imgs('court-2hrs', ServiceCategory::BADMINTON),
             ],
             [
-                'slug'        => 'half-legs-wax',
-                'name'        => 'Half Legs Wax',
-                'description' => 'Lower legs from knee to ankle. Quick and effective for regular maintenance.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 25,
-                'price'       => 60000,
-                'wax_types'   => ['Rica', 'Honey'],
-                'is_popular'  => false,
-                'sort_order'  => 3,
-                'images'      => $this->imgs('half-legs-wax'),
-            ],
-            [
-                'slug'        => 'underarm-wax',
-                'name'        => 'Underarm Wax',
-                'description' => 'Clean, precise underarm waxing. Fast and virtually pain-free with our premium wax.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 15,
-                'price'       => 30000,
-                'wax_types'   => ['Rica', 'Honey', 'Chocolate', 'Sugar'],
+                'slug'        => 'personal-training-session',
+                'name'        => 'Personal Training Session',
+                'description' => 'One-on-one badminton coaching with an expert BSA coach. Tailored for your specific improvement goals.',
+                'category'    => ServiceCategory::BADMINTON,
+                'duration'    => 60,
+                'price'       => 150000,
+                'wax_types'   => [],
                 'is_popular'  => true,
-                'sort_order'  => 4,
-                'images'      => $this->imgs('underarm-wax'),
+                'sort_order'  => 3,
+                'images'      => $this->imgs('personal-training', ServiceCategory::BADMINTON),
             ],
             [
-                'slug'        => 'full-body-wax',
-                'name'        => 'Full Body Wax',
-                'description' => 'Complete body waxing - arms, legs, underarms, and stomach. Our signature treatment.',
-                'category'    => ServiceCategory::WAXING,
+                'slug'        => 'group-session',
+                'name'        => 'Group Session',
+                'description' => 'Join a structured group training session on the court. Mix drills, rallies, and match play with other members.',
+                'category'    => ServiceCategory::BADMINTON,
                 'duration'    => 90,
-                'price'       => 250000,
-                'wax_types'   => ['Rica', 'Chocolate'],
+                'price'       => 80000,
+                'wax_types'   => [],
+                'is_popular'  => false,
+                'sort_order'  => 4,
+                'images'      => $this->imgs('group-session', ServiceCategory::BADMINTON),
+            ],
+
+            // ── GYM ────────────────────────────────────────────────────────
+            [
+                'slug'        => 'gym-day-pass',
+                'name'        => 'Gym Day Pass',
+                'description' => 'Full day access to BSA\'s strength and conditioning gym. Use all equipment without a monthly commitment.',
+                'category'    => ServiceCategory::GYM,
+                'duration'    => 120,
+                'price'       => 30000,
+                'wax_types'   => [],
                 'is_popular'  => true,
                 'sort_order'  => 5,
-                'images'      => $this->imgs('full-body-wax', 5),
+                'images'      => $this->imgs('gym-day-pass', ServiceCategory::GYM),
             ],
             [
-                'slug'        => 'stomach-wax',
-                'name'        => 'Stomach Wax',
-                'description' => 'Gentle waxing for the stomach area. Great as an add-on to any body wax service.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 20,
-                'price'       => 40000,
-                'wax_types'   => ['Rica', 'Honey'],
+                'slug'        => 'strength-conditioning-session',
+                'name'        => 'Strength & Conditioning Session',
+                'description' => 'Guided 1-hour strength training session with a certified trainer. Build power and improve athletic performance.',
+                'category'    => ServiceCategory::GYM,
+                'duration'    => 60,
+                'price'       => 120000,
+                'wax_types'   => [],
                 'is_popular'  => false,
                 'sort_order'  => 6,
-                'images'      => $this->imgs('stomach-wax', 3),
-            ],
-            [
-                'slug'        => 'back-wax',
-                'name'        => 'Back Wax',
-                'description' => 'Full back waxing from shoulders to waist. Clean, thorough coverage.',
-                'category'    => ServiceCategory::WAXING,
-                'duration'    => 30,
-                'price'       => 80000,
-                'wax_types'   => ['Rica', 'Honey'],
-                'is_popular'  => false,
-                'sort_order'  => 7,
-                'images'      => $this->imgs('back-wax', 3),
+                'images'      => $this->imgs('strength-session', ServiceCategory::GYM),
             ],
 
-            // ── FACIAL ──────────────────────────────────────────────────────
+            // ── SAUNA ──────────────────────────────────────────────────────
             [
-                'slug'        => 'upper-lip-wax',
-                'name'        => 'Upper Lip Wax',
-                'description' => 'Precise upper lip hair removal. Quick, clean, and gentle on sensitive facial skin.',
-                'category'    => ServiceCategory::FACIAL,
-                'duration'    => 10,
-                'price'       => 15000,
-                'wax_types'   => ['Rica', 'Sugar'],
+                'slug'        => 'sauna-session',
+                'name'        => 'Sauna Session (30 min)',
+                'description' => 'Relax and recover in our sauna. Helps with muscle recovery, circulation, and post-workout soreness.',
+                'category'    => ServiceCategory::SAUNA,
+                'duration'    => 30,
+                'price'       => 40000,
+                'wax_types'   => [],
+                'is_popular'  => true,
+                'sort_order'  => 7,
+                'images'      => $this->imgs('sauna', ServiceCategory::SAUNA),
+            ],
+            [
+                'slug'        => 'sauna-gym-combo',
+                'name'        => 'Gym + Sauna Combo',
+                'description' => 'Gym day pass bundled with a sauna session. Train hard, recover right — best value combo.',
+                'category'    => ServiceCategory::SAUNA,
+                'duration'    => 150,
+                'price'       => 60000,
+                'wax_types'   => [],
                 'is_popular'  => true,
                 'sort_order'  => 8,
-                'images'      => $this->imgs('upper-lip-wax', 3, 'facial'),
-            ],
-            [
-                'slug'        => 'chin-wax',
-                'name'        => 'Chin Wax',
-                'description' => 'Targeted chin hair removal with our gentlest wax formulas.',
-                'category'    => ServiceCategory::FACIAL,
-                'duration'    => 10,
-                'price'       => 15000,
-                'wax_types'   => ['Rica', 'Sugar'],
-                'is_popular'  => false,
-                'sort_order'  => 9,
-                'images'      => $this->imgs('chin-wax', 3, 'facial'),
-            ],
-            [
-                'slug'        => 'full-face-wax',
-                'name'        => 'Full Face Wax',
-                'description' => 'Complete facial waxing - forehead, cheeks, upper lip, chin, and sideburns.',
-                'category'    => ServiceCategory::FACIAL,
-                'duration'    => 25,
-                'price'       => 50000,
-                'wax_types'   => ['Rica', 'Sugar'],
-                'is_popular'  => true,
-                'sort_order'  => 10,
-                'images'      => $this->imgs('full-face-wax', 4, 'facial'),
-            ],
-
-            // ── BROW ────────────────────────────────────────────────────────
-            [
-                'slug'        => 'eyebrow-threading',
-                'name'        => 'Eyebrow Threading',
-                'description' => 'Precise eyebrow shaping using the threading technique. Clean lines, natural shape.',
-                'category'    => ServiceCategory::BROW,
-                'duration'    => 15,
-                'price'       => 20000,
-                'wax_types'   => [],
-                'is_popular'  => true,
-                'sort_order'  => 11,
-                'images'      => $this->imgs('eyebrow-threading', 4, 'brow'),
-            ],
-            [
-                'slug'        => 'eyebrow-wax',
-                'name'        => 'Eyebrow Wax',
-                'description' => 'Clean eyebrow shaping using premium wax. Smooth finish with longer-lasting results.',
-                'category'    => ServiceCategory::BROW,
-                'duration'    => 15,
-                'price'       => 25000,
-                'wax_types'   => ['Rica'],
-                'is_popular'  => false,
-                'sort_order'  => 12,
-                'images'      => $this->imgs('eyebrow-wax', 3, 'brow'),
-            ],
-
-            // ── BODY CARE ───────────────────────────────────────────────────
-            [
-                'slug'        => 'body-scrub-treatment',
-                'name'        => 'Body Scrub Treatment',
-                'description' => 'Full body exfoliation with natural scrub. Removes dead skin, prep for waxing or standalone glow treatment.',
-                'category'    => ServiceCategory::BODY_CARE,
-                'duration'    => 40,
-                'price'       => 100000,
-                'wax_types'   => [],
-                'is_popular'  => false,
-                'sort_order'  => 13,
-                'images'      => $this->imgs('body-scrub', 4, 'body_care'),
-            ],
-            [
-                'slug'        => 'moisturizing-treatment',
-                'name'        => 'Moisturizing Treatment',
-                'description' => 'Deep hydration treatment for dry skin. Applied post-wax or as a standalone service.',
-                'category'    => ServiceCategory::BODY_CARE,
-                'duration'    => 30,
-                'price'       => 80000,
-                'wax_types'   => [],
-                'is_popular'  => false,
-                'sort_order'  => 14,
-                'images'      => $this->imgs('moisturizing-treatment', 4, 'body_care'),
+                'images'      => $this->imgs('sauna-gym-combo', ServiceCategory::SAUNA),
             ],
         ];
-
-        Service::truncate();
 
         foreach ($services as $data) {
             Service::create($data);
         }
     }
 }
+

@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame } from 'lucide-vue-next'
-import { BRAND, PROGRAMS, FACILITIES, STATS, TESTIMONIALS, WEEKLY_SCHEDULE } from '~/utils/constants'
+import { BRAND } from '~/utils/constants'
 import { formatPrice, formatTime } from '~/utils/formatters'
+
+const config = useRuntimeConfig()
 
 // Animated counter composable
 function useCounter(target: number, duration = 2000) {
@@ -31,22 +33,48 @@ function useCounter(target: number, duration = 2000) {
   return { count, el }
 }
 
-const stats = STATS.map((s) => ({
-  ...s,
-  ...useCounter(s.value),
-}))
+const { data: rawStats } = await useFetch<{ value_label: string; label: string }[]>(
+  `${config.public.apiBase}/stats`,
+)
 
-const popularPrograms = PROGRAMS.filter((p) => p.isPopular).slice(0, 3)
+const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string }[]>(
+  `${config.public.apiBase}/facilities`,
+)
+
+const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; is_popular: boolean; sessions_per_week: number; duration: string; level: string }[]>(
+  `${config.public.apiBase}/programs`,
+)
+
+const { data: testimonials } = await useFetch<{ id: number; name: string; role: string; quote: string }[]>(
+  `${config.public.apiBase}/testimonials`,
+)
+
+// Today's schedule
+const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
+const { data: rawSchedule } = await useFetch<{ id: number; day: string; time: string; program_name: string; coach: string; level: string }[]>(
+  `${config.public.apiBase}/schedule`,
+  { query: { day: today } },
+)
+
+const stats = computed(() =>
+  (rawStats.value ?? []).map((s) => ({
+    ...s,
+    ...useCounter(parseInt(s.value_label.replace(/\D/g, '')) || 0),
+    suffix: s.value_label.replace(/^\d+/, ''),
+  })),
+)
+
+const popularPrograms = computed(() =>
+  (allPrograms.value ?? []).filter((p) => p.is_popular).slice(0, 3),
+)
+
+const todaySchedule = computed(() => (rawSchedule.value ?? []).slice(0, 5))
 
 const pillars = [
   { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting' },
   { icon: Zap, title: 'Elite Coaching', desc: 'Trained coaches for every skill level, from beginner to competitive' },
   { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together' },
 ]
-
-// Today's schedule
-const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
-const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
 </script>
 
 <template>
@@ -152,7 +180,7 @@ const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
-            v-for="facility in FACILITIES"
+            v-for="facility in (facilities ?? [])"
             :key="facility.id"
             class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-6 hover:border-accent/30 transition-all duration-300"
           >
@@ -161,8 +189,8 @@ const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
 
             <div class="relative z-10">
               <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
-                <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
-                <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
+                <Dumbbell v-if="facility.category === 'gym'" class="h-5 w-5 text-accent" />
+                <Flame v-else-if="facility.category === 'sauna'" class="h-5 w-5 text-accent" />
                 <svg v-else class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="5" r="3" />
                   <path d="M12 8L6 20M12 8L18 20" />
@@ -234,7 +262,7 @@ const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
               <!-- Price + CTA -->
               <div class="flex items-end justify-between pt-4 border-t border-border">
                 <div>
-                  <p class="text-2xl font-bold text-ink">{{ formatPrice(program.priceMonthly) }}</p>
+              <p class="text-2xl font-bold text-ink">{{ formatPrice(program.price) }}</p>
                   <p class="text-xs text-ink-muted">per month</p>
                 </div>
                 <NuxtLink to="/programs" class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline underline-offset-4">
@@ -280,8 +308,8 @@ const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
               <div class="flex items-center gap-4">
                 <span class="font-display text-lg text-accent">{{ formatTime(slot.time) }}</span>
                 <div>
-                  <p class="font-medium text-ink">{{ slot.program }}</p>
-                  <p class="text-xs text-ink-muted">{{ slot.coach }} · {{ slot.duration }} min</p>
+                  <p class="font-medium text-ink">{{ slot.program_name }}</p>
+                  <p class="text-xs text-ink-muted">{{ slot.coach }}</p>
                 </div>
               </div>
               <span class="rounded-full bg-accent/10 px-3 py-1 text-xs font-medium text-accent">
@@ -303,22 +331,22 @@ const todaySchedule = WEEKLY_SCHEDULE.filter((s) => s.day === today).slice(0, 5)
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
-            v-for="testimonial in TESTIMONIALS"
+            v-for="testimonial in (testimonials ?? [])"
             :key="testimonial.name"
             class="rounded-2xl border border-border bg-surface p-6"
           >
             <!-- Stars -->
             <div class="flex gap-0.5 mb-4">
-              <Star v-for="i in testimonial.rating" :key="i" class="h-4 w-4 fill-accent text-accent" />
+              <Star v-for="i in 5" :key="i" class="h-4 w-4 fill-accent text-accent" />
             </div>
-            <p class="text-sm text-ink-muted leading-relaxed italic">"{{ testimonial.text }}"</p>
+            <p class="text-sm text-ink-muted leading-relaxed italic">"{{ testimonial.quote }}"</p>
             <div class="mt-4 flex items-center gap-3">
               <div class="h-8 w-8 rounded-full bg-accent/20 flex items-center justify-center">
                 <span class="text-xs font-bold text-accent">{{ testimonial.name[0] }}</span>
               </div>
               <div>
                 <p class="text-sm font-medium text-ink">{{ testimonial.name }}</p>
-                <p class="text-xs text-ink-muted">{{ testimonial.program }}</p>
+                <p class="text-xs text-ink-muted">{{ testimonial.role }}</p>
               </div>
             </div>
           </div>

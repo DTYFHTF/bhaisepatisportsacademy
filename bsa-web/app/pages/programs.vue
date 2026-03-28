@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight, Clock, Users, Zap } from 'lucide-vue-next'
-import { PROGRAMS, PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS } from '~/utils/constants'
+import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS } from '~/utils/constants'
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
 
@@ -9,11 +9,18 @@ useSeoMeta({
   description: 'Professional badminton training, gym memberships, and fitness programs at BSA. From beginners to competitive players.',
 })
 
+const config = useRuntimeConfig()
+
+const { data: programs } = await useFetch<{
+  id: string; name: string; description: string; category: string; level: string; duration: string;
+  sessions_per_week: number; price: number; is_popular: boolean; features: string[]
+}[]>(`${config.public.apiBase}/programs`)
+
 const activeCategory = ref<ProgramCategory | null>(null)
 
 const filteredPrograms = computed(() => {
-  if (!activeCategory.value) return PROGRAMS
-  return PROGRAMS.filter((p) => p.category === activeCategory.value)
+  if (!activeCategory.value) return programs.value ?? []
+  return (programs.value ?? []).filter((p) => p.category === activeCategory.value)
 })
 </script>
 
@@ -74,7 +81,7 @@ const filteredPrograms = computed(() => {
                 <span class="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent">
                   {{ program.category }}
                 </span>
-                <span v-if="program.isPopular" class="inline-block rounded-full bg-energy/10 px-3 py-1 text-xs font-medium text-energy">
+                <span v-if="program.is_popular" class="inline-block rounded-full bg-energy/10 px-3 py-1 text-xs font-medium text-energy">
                   Popular
                 </span>
               </div>
@@ -90,7 +97,7 @@ const filteredPrograms = computed(() => {
                 </span>
                 <span class="flex items-center gap-1">
                   <Zap class="h-3.5 w-3.5 text-accent" />
-                  {{ program.sessionsPerWeek }}x/week
+                  {{ program.sessions_per_week }}x/week
                 </span>
               </div>
 
@@ -106,7 +113,7 @@ const filteredPrograms = computed(() => {
               <div class="pt-4 border-t border-border">
                 <div class="flex items-end justify-between">
                   <div>
-                    <p class="text-2xl font-bold text-ink">{{ formatPrice(program.priceMonthly) }}</p>
+                  <p class="text-2xl font-bold text-ink">{{ formatPrice(program.price) }}</p>
                     <p class="text-xs text-ink-muted">per month</p>
                   </div>
                   <NuxtLink

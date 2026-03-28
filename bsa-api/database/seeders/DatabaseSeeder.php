@@ -15,24 +15,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Admin users for Filament panel
-        User::factory()->create([
-            'name'  => 'BSA Admin',
-            'email' => 'admin@bsa.example.com',
-        ]);
-
-        // Test user
-        User::factory()->create([
-            'name'  => 'Test User',
-            'email' => 'test@example.com',
-        ]);
+        // Admin user for Filament panel
+        User::updateOrCreate(
+            ['email' => 'admin@bsa.com'],
+            ['name' => 'BSA Admin', 'password' => bcrypt('TermsofService1!2@')]
+        );
 
         $this->call([
             SettingsSeeder::class,
             CategorySeeder::class,
             ServiceSeeder::class,
-            ProductSeeder::class,
-            OrderSeeder::class,
+            ProgramSeeder::class,
+            FacilitySeeder::class,
+            ScheduleSeeder::class,
+            TestimonialSeeder::class,
+            KitchenSeeder::class,
+            StatSeeder::class,
         ]);
     }
 }

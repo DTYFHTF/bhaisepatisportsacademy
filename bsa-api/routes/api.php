@@ -2,14 +2,41 @@
 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OtpController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\RestockController;
+use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StatController;
+use App\Http\Controllers\TestimonialController;
 use App\Http\Middleware\TrackingTokenAuth;
 use Illuminate\Support\Facades\Route;
+
+// Programs
+Route::get('/programs', [ProgramController::class, 'index']);
+Route::get('/programs/{slug}', [ProgramController::class, 'show']);
+
+// Facilities
+Route::get('/facilities', [FacilityController::class, 'index']);
+Route::get('/facilities/{slug}', [FacilityController::class, 'show']);
+
+// Schedule
+Route::get('/schedule', [ScheduleController::class, 'index']);
+
+// Testimonials
+Route::get('/testimonials', [TestimonialController::class, 'index']);
+
+// Kitchen
+Route::get('/kitchen', [KitchenController::class, 'index']);
+Route::get('/kitchen/{slug}', [KitchenController::class, 'show']);
+
+// Site stats
+Route::get('/stats', [StatController::class, 'index']);
 
 // Services
 Route::get('/services', [ServiceController::class, 'index']);
