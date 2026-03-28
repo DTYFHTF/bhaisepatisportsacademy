@@ -1,31 +1,31 @@
 <script setup lang="ts">
 import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame } from 'lucide-vue-next'
 import { BRAND } from '~/utils/constants'
-import { formatPrice, formatTime } from '~/utils/formatters'
+import { formatPrice } from '~/utils/formatters'
 
 const config = useRuntimeConfig()
 
 const { data: rawStats } = await useFetch<{ value_label: string; label: string }[]>(
-  `${config.public.apiBase}/stats`,
+  `${config.public.apiBase}/stats`, { server: false },
 )
 
 const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string }[]>(
-  `${config.public.apiBase}/facilities`,
+  `${config.public.apiBase}/facilities`, { server: false },
 )
 
 const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; is_popular: boolean; sessions_per_week: number; duration: string; level: string }[]>(
-  `${config.public.apiBase}/programs`,
+  `${config.public.apiBase}/programs`, { server: false },
 )
 
 const { data: testimonials } = await useFetch<{ id: number; name: string; role: string; quote: string }[]>(
-  `${config.public.apiBase}/testimonials`,
+  `${config.public.apiBase}/testimonials`, { server: false },
 )
 
 // Today's schedule
 const today = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'][new Date().getDay()]
 const { data: rawSchedule } = await useFetch<{ id: number; day: string; time: string; program_name: string; coach: string; level: string }[]>(
   `${config.public.apiBase}/schedule`,
-  { query: { day: today } },
+  { server: false, query: { day: today } },
 )
 
 // Animated counter — must be called at setup time, not inside computed
@@ -67,7 +67,7 @@ const stats = computed(() =>
     value_label: s.value_label,
     count: counterCounts[i] ?? ref(0),
     el: counterEls[i] ?? ref(null),
-    suffix: s.value_label.replace(/^\d+/, ''),
+    suffix: (s.value_label ?? '').replace(/^\d+/, ''),
   })),
 )
 
@@ -196,8 +196,8 @@ const pillars = [
 
             <div class="relative z-10">
               <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
-                <Dumbbell v-if="facility.category === 'gym'" class="h-5 w-5 text-accent" />
-                <Flame v-else-if="facility.category === 'sauna'" class="h-5 w-5 text-accent" />
+                <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
+                <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
                 <svg v-else class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <circle cx="12" cy="5" r="3" />
                   <path d="M12 8L6 20M12 8L18 20" />
@@ -313,7 +313,7 @@ const pillars = [
               class="flex items-center justify-between rounded-xl border border-border bg-canvas px-5 py-4 hover:border-accent/30 transition-colors"
             >
               <div class="flex items-center gap-4">
-                <span class="font-display text-lg text-accent">{{ formatTime(slot.time) }}</span>
+                <span class="font-display text-lg text-accent">{{ slot.time }}</span>
                 <div>
                   <p class="font-medium text-ink">{{ slot.program_name }}</p>
                   <p class="text-xs text-ink-muted">{{ slot.coach }}</p>

@@ -25,7 +25,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 300000,
                 'is_popular'        => true,
                 'sort_order'        => 1,
-                'features'          => json_encode(['Basic stroke techniques', 'Court movement & footwork', 'Rules & scoring', 'Equipment guidance']),
+                'features'          => ['Basic stroke techniques', 'Court movement & footwork', 'Rules & scoring', 'Equipment guidance'],
             ],
             [
                 'slug'              => 'badminton-intermediate',
@@ -39,7 +39,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 500000,
                 'is_popular'        => true,
                 'sort_order'        => 2,
-                'features'          => json_encode(['Advanced stroke techniques', 'Rally strategy', 'Match play & doubles', 'Video analysis']),
+                'features'          => ['Advanced stroke techniques', 'Rally strategy', 'Match play & doubles', 'Video analysis'],
             ],
             [
                 'slug'              => 'badminton-competitive',
@@ -53,7 +53,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 800000,
                 'is_popular'        => false,
                 'sort_order'        => 3,
-                'features'          => json_encode(['Tournament preparation', 'Speed & agility drills', 'Match simulation', 'Fitness integration']),
+                'features'          => ['Tournament preparation', 'Speed & agility drills', 'Match simulation', 'Fitness integration'],
             ],
             [
                 'slug'              => 'youth-academy',
@@ -67,7 +67,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 250000,
                 'is_popular'        => true,
                 'sort_order'        => 4,
-                'features'          => json_encode(['Fun-first approach', 'Age-appropriate drills', 'Mini tournaments', 'Physical literacy']),
+                'features'          => ['Fun-first approach', 'Age-appropriate drills', 'Mini tournaments', 'Physical literacy'],
             ],
             [
                 'slug'              => 'gym-membership',
@@ -81,7 +81,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 400000,
                 'is_popular'        => true,
                 'sort_order'        => 5,
-                'features'          => json_encode(['Full gym access', 'Strength equipment', 'Cardio machines', 'Flexible schedule']),
+                'features'          => ['Full gym access', 'Strength equipment', 'Cardio machines', 'Flexible schedule'],
             ],
             [
                 'slug'              => 'full-membership',
@@ -95,7 +95,7 @@ class ProgramSeeder extends Seeder
                 'price'             => 600000,
                 'is_popular'        => true,
                 'sort_order'        => 6,
-                'features'          => json_encode(['Unlimited court booking', 'Full gym access', 'Sauna & steam access', 'Priority scheduling']),
+                'features'          => ['Unlimited court booking', 'Full gym access', 'Sauna & steam access', 'Priority scheduling'],
             ],
         ];
 

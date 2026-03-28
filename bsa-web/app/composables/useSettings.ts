@@ -38,6 +38,23 @@ export function useSettings() {
 
   const { data } = useFetch<SiteSettings>(`${apiBase}/settings`, {
     default: () => defaults,
+    server: false,
+    transform: (raw: Record<string, unknown>): SiteSettings => ({
+      storeName:       (raw.store_name as string)        ?? defaults.storeName,
+      storeTagline:    (raw.store_tagline as string)      ?? defaults.storeTagline,
+      logoUrl:         (raw.logo_url as string | null)    ?? defaults.logoUrl,
+      iconUrl:         (raw.icon_url as string | null)    ?? defaults.iconUrl,
+      contactEmail:    (raw.contact_email as string)      ?? defaults.contactEmail,
+      contactPhone:    (raw.contact_phone as string)      ?? defaults.contactPhone,
+      contactAddress:  (raw.contact_address as string)    ?? defaults.contactAddress,
+      storeLat:        (raw.store_lat as number)          ?? defaults.storeLat,
+      storeLng:        (raw.store_lng as number)          ?? defaults.storeLng,
+      instagramUrl:    (raw.instagram_url as string|null) ?? defaults.instagramUrl,
+      facebookUrl:     (raw.facebook_url as string|null)  ?? defaults.facebookUrl,
+      whatsappNumber:  (raw.whatsapp_number as string|null) ?? defaults.whatsappNumber,
+      deliveryTagline: (raw.delivery_tagline as string)   ?? defaults.deliveryTagline,
+      returnTagline:   (raw.return_tagline as string)     ?? defaults.returnTagline,
+    }),
     getCachedData(key, nuxtApp) {
       const cached = nuxtApp.payload.data[key] ?? nuxtApp.static.data[key]
       return cached ?? undefined

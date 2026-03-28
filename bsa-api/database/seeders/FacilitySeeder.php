@@ -20,7 +20,7 @@ class FacilitySeeder extends Seeder
                 'category'    => 'BADMINTON',
                 'icon'        => '🏸',
                 'sort_order'  => 1,
-                'features'    => json_encode(['Professional playing surface', 'Proper court lighting', 'Regulation markings', 'Equipment available', 'Court booking system']),
+                'features'    => ['Professional playing surface', 'Proper court lighting', 'Regulation markings', 'Equipment available', 'Court booking system'],
             ],
             [
                 'slug'        => 'gym-strength',
@@ -29,7 +29,7 @@ class FacilitySeeder extends Seeder
                 'category'    => 'GYM',
                 'icon'        => '💪',
                 'sort_order'  => 2,
-                'features'    => json_encode(['Modern equipment', 'Free weights & machines', 'Cardio zone', 'Mirrors & ventilation', 'Personal training available']),
+                'features'    => ['Modern equipment', 'Free weights & machines', 'Cardio zone', 'Mirrors & ventilation', 'Personal training available'],
             ],
             [
                 'slug'        => 'sauna-steam',
@@ -38,7 +38,7 @@ class FacilitySeeder extends Seeder
                 'category'    => 'SAUNA',
                 'icon'        => '♨️',
                 'sort_order'  => 3,
-                'features'    => json_encode(['Sauna therapy', 'Steam room', 'Muscle recovery', 'Post-workout relaxation', 'Clean & hygienic']),
+                'features'    => ['Sauna therapy', 'Steam room', 'Muscle recovery', 'Post-workout relaxation', 'Clean & hygienic'],
             ],
         ];
 

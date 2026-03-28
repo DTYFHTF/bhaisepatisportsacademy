@@ -14,7 +14,7 @@ const config = useRuntimeConfig()
 const { data: programs } = await useFetch<{
   id: string; name: string; description: string; category: string; level: string; duration: string;
   sessions_per_week: number; price: number; is_popular: boolean; features: string[]
-}[]>(`${config.public.apiBase}/programs`)
+}[]>(`${config.public.apiBase}/programs`, { server: false })
 
 const activeCategory = ref<ProgramCategory | null>(null)
 
@@ -93,11 +93,11 @@ const filteredPrograms = computed(() => {
               <div class="flex items-center gap-4 text-xs text-ink-muted mb-4">
                 <span class="flex items-center gap-1">
                   <Clock class="h-3.5 w-3.5 text-accent" />
-                  {{ program.duration }} min/session
+                  {{ program.duration }}
                 </span>
                 <span class="flex items-center gap-1">
                   <Zap class="h-3.5 w-3.5 text-accent" />
-                  {{ program.sessions_per_week }}x/week
+                  {{ program.sessions_per_week }}x per week
                 </span>
               </div>
 

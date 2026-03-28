@@ -12,7 +12,7 @@ const config = useRuntimeConfig()
 const { data: menu } = await useFetch<{
   id: string; slug: string; name: string; description: string; price: number;
   category: string; is_popular: boolean
-}[]>(`${config.public.apiBase}/kitchen`)
+}[]>(`${config.public.apiBase}/kitchen`, { server: false })
 
 const KITCHEN_CATEGORIES: Record<string, string> = {
   'pre-workout': 'Pre-Workout',
