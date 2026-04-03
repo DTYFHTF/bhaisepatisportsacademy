@@ -21,40 +21,40 @@ export default <Config>{
     extend: {
       colors: {
         // --- BSA Sports Academy Palette ---
-        // Dark athletic base
-        canvas: '#0A0A0F',        // Near-black background
-        surface: '#12121A',       // Card/section surface
-        'surface-2': '#1A1A26',   // Elevated surface
-        'surface-3': '#22222E',   // Hover surface
-        border: '#2A2A3A',        // Subtle borders
-        'border-light': '#3A3A4A',
+        // White energetic base
+        canvas: '#FFFFFF',        // Pure white background
+        surface: '#F7F7F9',       // Card/section surface
+        'surface-2': '#EFEFF3',   // Elevated surface
+        'surface-3': '#E7E7EE',   // Hover surface
+        border: '#DCDCE6',        // Subtle borders
+        'border-light': '#EAEAF0',
 
         // Text
         ink: {
-          DEFAULT: '#F5F5F7',     // Primary text (white-ish)
-          muted: '#9A9AB0',       // Secondary text
-          faint: '#5A5A70',       // Tertiary text
+          DEFAULT: '#0A0A0F',     // Primary text (near-black)
+          muted: '#4A4A65',       // Secondary text
+          faint: '#8A8AA5',       // Tertiary text
         },
 
-        // BSA Yellow — from the logo
+        // BSA Red — energetic primary brand color
         accent: {
-          DEFAULT: '#FFB800',     // Golden yellow
-          hover: '#E5A600',
-          light: '#FFD54F',
-          dark: '#CC9200',
-          50: '#FFF8E1',
-          100: '#FFECB3',
-          200: '#FFE082',
-          300: '#FFD54F',
-          400: '#FFC107',
-          500: '#FFB800',
-          600: '#E5A600',
-          700: '#CC9200',
-          800: '#997000',
-          900: '#664A00',
+          DEFAULT: '#E8001E',     // Crimson red
+          hover: '#CC0019',
+          light: '#FF4D5E',
+          dark: '#A80016',
+          50: '#FFF0F2',
+          100: '#FFD6DC',
+          200: '#FFB3BC',
+          300: '#FF8090',
+          400: '#FF4D5E',
+          500: '#E8001E',
+          600: '#CC0019',
+          700: '#A80016',
+          800: '#840012',
+          900: '#60000D',
         },
 
-        // Energetic red for CTAs and emphasis
+        // Secondary red — warmer tone for variation
         energy: {
           DEFAULT: '#FF3B3B',
           hover: '#E52E2E',
@@ -126,7 +126,7 @@ export default <Config>{
       },
       backgroundImage: {
         'gradient-radial': 'radial-gradient(var(--tw-gradient-stops))',
-        'grid-pattern': 'linear-gradient(rgba(255,184,0,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,184,0,0.03) 1px, transparent 1px)',
+        'grid-pattern': 'linear-gradient(rgba(232,0,30,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(232,0,30,0.04) 1px, transparent 1px)',
       },
       backgroundSize: {
         'grid': '40px 40px',
@@ -138,8 +138,8 @@ export default <Config>{
           '100%': { transform: 'translateX(100vw) translateY(-100%) rotate(-30deg)', opacity: '0' },
         },
         'pulse-glow': {
-          '0%, 100%': { boxShadow: '0 0 20px rgba(255, 184, 0, 0.15)' },
-          '50%': { boxShadow: '0 0 40px rgba(255, 184, 0, 0.3)' },
+          '0%, 100%': { boxShadow: '0 0 20px rgba(232, 0, 30, 0.15)' },
+          '50%': { boxShadow: '0 0 40px rgba(232, 0, 30, 0.3)' },
         },
         'float': {
           '0%, 100%': { transform: 'translateY(0px)' },
@@ -153,6 +153,18 @@ export default <Config>{
           '0%': { transform: 'translateY(100%)' },
           '100%': { transform: 'translateY(0)' },
         },
+        'scroll-x': {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-50%)' },
+        },
+        'fade-in': {
+          '0%': { opacity: '0' },
+          '100%': { opacity: '1' },
+        },
+        'fade-in-up': {
+          '0%': { opacity: '0', transform: 'translateY(30px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
       },
       animation: {
         'shuttle-fly': 'shuttle-fly 3s ease-in-out infinite',
@@ -160,6 +172,7 @@ export default <Config>{
         'float': 'float 3s ease-in-out infinite',
         'slide-up': 'slide-up 0.5s ease-out',
         'count-up': 'count-up 0.8s ease-out',
+        'scroll-x': 'scroll-x 30s linear infinite',
       },
     },
   },

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
-import { BRAND } from '~/utils/constants'
+import { BRAND, IMAGES, KITCHEN_IMAGES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
 useSeoMeta({
@@ -42,24 +42,26 @@ const whatsappOrder = (item: { name: string; price: number }) => {
 <template>
   <div>
     <!-- Header -->
-    <section class="relative overflow-hidden border-b border-border">
-      <div class="absolute inset-0 bg-gradient-to-br from-canvas via-surface to-canvas" />
-      <div class="absolute top-0 right-0 h-48 w-48 bg-energy/5 rounded-bl-[100px] blur-2xl" />
-      <div class="section-container relative z-10 py-14 sm:py-20">
-        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">Fuel Your Training</p>
-        <h1 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">BSA Kitchen</h1>
-        <p class="mt-4 text-ink-muted max-w-lg leading-relaxed">
+    <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
+      <div class="absolute inset-0">
+        <img :src="IMAGES.food" alt="BSA Kitchen" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+      </div>
+      <div class="section-container relative z-10 pb-10 pt-20">
+        <p v-scroll="'fade-up'" class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">Fuel Your Training</p>
+        <h1 v-scroll:100="'fade-up'" class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">BSA Kitchen</h1>
+        <p v-scroll:200="'fade-up'" class="mt-4 text-white/70 max-w-lg leading-relaxed">
           Clean, energizing food made for athletes. Pre-workout boosts, recovery meals, and refreshing drinks, all freshly prepared on site.
         </p>
-        <div class="mt-6 flex items-center gap-3">
+        <div v-scroll:300="'fade-up'" class="mt-6 flex items-center gap-3">
           <a
             :href="`https://wa.me/977${BRAND.whatsapp}?text=${encodeURIComponent('Hi BSA Kitchen! I\'d like to place an order.')}`"
             target="_blank"
             rel="noopener"
             class="inline-flex items-center gap-2 rounded-lg bg-[#25D366] px-5 py-2.5 text-sm font-bold uppercase tracking-wider text-white hover:bg-[#22c55e] transition-colors"
           >
+            <Icon name="simple-icons:whatsapp" size="18" aria-hidden="true" />
             Order on WhatsApp
-            <ChevronRight class="h-4 w-4" />
           </a>
         </div>
       </div>
@@ -98,24 +100,30 @@ const whatsappOrder = (item: { name: string; price: number }) => {
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
-            v-for="item in filteredMenu"
+            v-for="(item, iIdx) in filteredMenu"
             :key="item.id"
-            class="group rounded-2xl border border-border bg-surface overflow-hidden hover:border-accent/30 transition-all duration-300"
+            v-scroll:[iIdx%3*100]="'fade-up'"
+            class="group rounded-2xl border border-border bg-surface overflow-hidden hover:border-accent/30 hover:shadow-xl hover:shadow-accent/5 transition-all duration-500"
           >
-            <div class="h-1 bg-gradient-to-r from-energy via-energy to-energy/50" />
+            <!-- Item Image -->
+            <div class="relative h-36 overflow-hidden">
+              <img
+                :src="KITCHEN_IMAGES[item.category] || IMAGES.food"
+                :alt="item.name"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div class="absolute top-3 left-3 flex gap-2">
+                <span class="rounded-full bg-energy px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-white shadow-md">
+                  {{ KITCHEN_CATEGORIES[item.category] ?? item.category }}
+                </span>
+                <span v-if="item.is_popular" class="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-white shadow-md">
+                  Popular
+                </span>
+              </div>
+            </div>
 
             <div class="p-5">
-              <div class="flex items-start justify-between gap-2 mb-2">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="inline-block rounded-full bg-accent/10 px-2.5 py-0.5 text-xs font-medium uppercase tracking-wider text-accent">
-                    {{ KITCHEN_CATEGORIES[item.category] ?? item.category }}
-                  </span>
-                  <span v-if="item.is_popular" class="inline-block rounded-full bg-energy/10 px-2.5 py-0.5 text-xs font-medium text-energy">
-                    Popular
-                  </span>
-                </div>
-              </div>
-
               <h3 class="font-display text-lg uppercase tracking-wide text-ink mb-1">{{ item.name }}</h3>
               <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ item.description }}</p>
 

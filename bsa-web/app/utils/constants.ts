@@ -8,7 +8,7 @@ export const BRAND = {
   tagline: 'Train Harder. Move Faster. Grow Stronger.',
   origin: 'Bhaisepati, Kathmandu, Nepal',
   phone: '9821357118',
-  whatsapp: '9779821357118',
+  whatsapp: '9821357118',
   email: 'info@bsa.abinmaharjan.com.np',
   address: 'Bhaisepati, Lalitpur, Nepal',
   instagram: 'https://www.instagram.com/bhaisepatisportsacademy/',
@@ -17,6 +17,38 @@ export const BRAND = {
   openingHours: 'Sunday–Friday, 6:00 AM – 9:00 PM',
   closedDay: 'Saturday',
 } as const
+
+// ─── Images (placeholder Unsplash) ────────────────────
+
+export const IMAGES = {
+  hero: 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=1920&q=80',
+  heroAlt: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1920&q=80',
+  badmintonCourt: 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=1200&q=80',
+  badmintonPlayer: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=800&q=80',
+  gym: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
+  gymTraining: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
+  sauna: 'https://images.unsplash.com/photo-1520974048-a3a50c2b0eb0?auto=format&fit=crop&w=1200&q=80',
+  recovery: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80',
+  food: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80',
+  smoothie: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800&q=80',
+  teamSport: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
+  aboutFacility: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80',
+} as const
+
+// Category-to-image mapping for program cards
+export const PROGRAM_IMAGES: Record<string, string> = {
+  BADMINTON: IMAGES.badmintonPlayer,
+  FITNESS: IMAGES.gymTraining,
+  RECOVERY: IMAGES.recovery,
+}
+
+// Category-to-image mapping for kitchen items
+export const KITCHEN_IMAGES: Record<string, string> = {
+  'pre-workout': IMAGES.food,
+  'post-workout': IMAGES.food,
+  'snacks': IMAGES.food,
+  'drinks': IMAGES.smoothie,
+}
 
 // ─── Facility Categories ──────────────────────────────
 
@@ -224,6 +256,12 @@ export const COURT_BOOKING = {
   closeTime: '21:00',
   pricePerHour: 50000, // NPR 500 in paisa
   discountPercentage: 15, // 15% discount on booking
+  totalCourts: 3,
+  timeSlots: [
+    '06:00', '07:00', '08:00', '09:00', '10:00', '11:00',
+    '12:00', '13:00', '14:00', '15:00', '16:00', '17:00',
+    '18:00', '19:00',
+  ],
 } as const
 
 // ─── OTP ──────────────────────────────────────────────
@@ -263,26 +301,26 @@ export const WEEKLY_SCHEDULE: ScheduleSlot[] = [
 ]
 
 // Product categories (shop)
-export type ProductCategory = 'SKINCARE' | 'AFTERCARE' | 'WAX_KIT'
+export type ProductCategory = 'EQUIPMENT' | 'APPAREL' | 'NUTRITION'
 
 export const PRODUCT_CATEGORY_LABELS: Record<ProductCategory, string> = {
-  SKINCARE: 'Skincare',
-  AFTERCARE: 'Aftercare',
-  WAX_KIT: 'Wax Kits',
+  EQUIPMENT: 'Equipment',
+  APPAREL: 'Apparel',
+  NUTRITION: 'Nutrition',
 }
 
 export const CATEGORY_LABELS = PRODUCT_CATEGORY_LABELS
 
 export const CATEGORY_SLUGS: Record<string, string> = {
-  skincare: 'SKINCARE',
-  aftercare: 'AFTERCARE',
-  'wax-kits': 'WAX_KIT',
+  equipment: 'EQUIPMENT',
+  apparel: 'APPAREL',
+  nutrition: 'NUTRITION',
 }
 
 export const CATEGORY_SLUG_BY_KEY: Record<string, string> = {
-  SKINCARE: 'skincare',
-  AFTERCARE: 'aftercare',
-  WAX_KIT: 'wax-kits',
+  EQUIPMENT: 'equipment',
+  APPAREL: 'apparel',
+  NUTRITION: 'nutrition',
 }
 
 // Payment

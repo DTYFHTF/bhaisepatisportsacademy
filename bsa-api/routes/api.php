@@ -30,6 +30,7 @@ Route::get('/schedule', [ScheduleController::class, 'index']);
 
 // Testimonials
 Route::get('/testimonials', [TestimonialController::class, 'index']);
+Route::middleware('throttle:6,1')->post('/testimonials', [TestimonialController::class, 'store']);
 
 // Kitchen
 Route::get('/kitchen', [KitchenController::class, 'index']);

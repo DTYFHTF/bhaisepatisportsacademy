@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight, Clock, Users, Zap } from 'lucide-vue-next'
-import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS } from '~/utils/constants'
+import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
 
@@ -27,13 +27,15 @@ const filteredPrograms = computed(() => {
 <template>
   <div>
     <!-- Header -->
-    <section class="relative overflow-hidden border-b border-border">
-      <div class="absolute inset-0 bg-gradient-to-br from-canvas via-surface to-canvas" />
-      <div class="absolute top-0 right-0 h-40 w-40 bg-accent/5 rounded-bl-[100px] blur-2xl" />
-      <div class="section-container relative z-10 py-14 sm:py-20">
-        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">Train With Purpose</p>
-        <h1 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">Our Programs</h1>
-        <p class="mt-4 text-ink-muted max-w-lg leading-relaxed">
+    <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
+      <div class="absolute inset-0">
+        <img :src="IMAGES.gymTraining" alt="BSA Programs" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+      </div>
+      <div class="section-container relative z-10 pb-10 pt-20">
+        <p v-scroll="'fade-up'" class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">Train With Purpose</p>
+        <h1 v-scroll:100="'fade-up'" class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">Our Programs</h1>
+        <p v-scroll:200="'fade-up'" class="mt-4 text-white/70 max-w-lg leading-relaxed">
           From foundation-level badminton to competitive training and full gym memberships. Find the program that matches your goals.
         </p>
       </div>
@@ -68,24 +70,35 @@ const filteredPrograms = computed(() => {
       <div class="section-container">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
-            v-for="program in filteredPrograms"
+            v-for="(program, pIdx) in filteredPrograms"
             :key="program.id"
-            class="group rounded-2xl border border-border bg-surface overflow-hidden hover:border-accent/30 transition-all duration-300"
+            v-scroll:[pIdx%3*150]="'fade-up'"
+            class="group rounded-2xl border border-border bg-surface overflow-hidden hover:border-accent/30 hover:shadow-xl hover:shadow-accent/5 transition-all duration-500"
           >
-            <!-- Accent top stripe -->
-            <div class="h-1 bg-gradient-to-r from-accent via-accent to-accent/50" />
-
-            <div class="p-6">
-              <!-- Category + Popular badge -->
-              <div class="flex items-center gap-2 mb-3">
-                <span class="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent">
+            <!-- Program Image -->
+            <div class="relative h-44 overflow-hidden">
+              <img
+                :src="PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
+                :alt="program.name"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <!-- Badges on image -->
+              <div class="absolute top-3 left-3 flex gap-2">
+                <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                   {{ program.category }}
                 </span>
-                <span v-if="program.is_popular" class="inline-block rounded-full bg-energy/10 px-3 py-1 text-xs font-medium text-energy">
+                <span v-if="program.is_popular" class="rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
                   Popular
                 </span>
               </div>
+              <!-- Level badge -->
+              <span class="absolute bottom-3 right-3 rounded-full bg-white/20 backdrop-blur-sm px-3 py-1 text-xs font-medium text-white">
+                {{ program.level }}
+              </span>
+            </div>
 
+            <div class="p-6">
               <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ program.name }}</h3>
               <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ program.description }}</p>
 
@@ -116,13 +129,15 @@ const filteredPrograms = computed(() => {
                   <p class="text-2xl font-bold text-ink">{{ formatPrice(program.price) }}</p>
                     <p class="text-xs text-ink-muted">per month</p>
                   </div>
-                  <NuxtLink
-                    to="/book"
-                    class="inline-flex items-center gap-1 rounded-lg bg-accent px-4 py-2 text-sm font-bold uppercase tracking-wider text-canvas hover:bg-accent-hover transition-colors"
+                  <a
+                    :href="`https://wa.me/977${BRAND.whatsapp}?text=${encodeURIComponent('Hi BSA! I\'d like to enroll in the ' + program.name + ' program. Please guide me on the next steps.')}`"
+                    target="_blank"
+                    rel="noopener"
+                    class="inline-flex items-center gap-1 rounded-lg bg-accent px-4 py-2 text-sm font-bold uppercase tracking-wider text-white hover:bg-accent-hover transition-colors"
                   >
                     Enroll
                     <ChevronRight class="h-4 w-4" />
-                  </NuxtLink>
+                  </a>
                 </div>
               </div>
             </div>
@@ -136,10 +151,14 @@ const filteredPrograms = computed(() => {
     </section>
 
     <!-- CTA -->
-    <section class="border-t border-border bg-surface">
-      <div class="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h2 class="font-display text-3xl uppercase tracking-tight text-ink">Not sure which program?</h2>
-        <p class="mt-3 text-ink-muted">
+    <section class="relative border-t border-border overflow-hidden">
+      <div class="absolute inset-0">
+        <img :src="IMAGES.badmintonCourt" alt="" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/80" />
+      </div>
+      <div v-scroll="'fade-up'" class="relative z-10 mx-auto max-w-3xl px-4 py-16 text-center">
+        <h2 class="font-display text-3xl uppercase tracking-tight text-white">Not sure which program?</h2>
+        <p class="mt-3 text-white/70">
           Drop by for a trial session or call us to discuss your training goals.
         </p>
         <div class="mt-6">

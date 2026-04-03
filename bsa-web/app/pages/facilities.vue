@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight, Dumbbell, Flame, Phone } from 'lucide-vue-next'
-import { BRAND } from '~/utils/constants'
+import { BRAND, IMAGES } from '~/utils/constants'
 
 useSeoMeta({
   title: 'Facilities | Bhaisepati Sports Academy',
@@ -9,20 +9,29 @@ useSeoMeta({
 
 const config = useRuntimeConfig()
 const { data: facilities } = await useFetch<{
-  id: string; name: string; category: string; description: string; features: string[]
+  id: string; name: string; category: string; description: string; features: string[]; image_url: string | null
 }[]>(`${config.public.apiBase}/facilities`, { server: false })
+
+// Fallback images per category
+const categoryImage = (cat: string, imgUrl: string | null) => {
+  if (imgUrl) return imgUrl
+  const map: Record<string, string> = { BADMINTON: IMAGES.badmintonCourt, GYM: IMAGES.gym, SAUNA: IMAGES.sauna }
+  return map[cat] || IMAGES.badmintonCourt
+}
 </script>
 
 <template>
   <div>
     <!-- Header -->
-    <section class="relative overflow-hidden border-b border-border">
-      <div class="absolute inset-0 bg-gradient-to-br from-canvas via-surface to-canvas" />
-      <div class="absolute bottom-0 left-0 h-40 w-40 bg-court/5 rounded-tr-[100px] blur-2xl" />
-      <div class="section-container relative z-10 py-14 sm:py-20">
-        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">World-Class Amenities</p>
-        <h1 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">Our Facilities</h1>
-        <p class="mt-4 text-ink-muted max-w-lg leading-relaxed">
+    <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
+      <div class="absolute inset-0">
+        <img :src="IMAGES.badmintonCourt" alt="BSA Facilities" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
+      </div>
+      <div class="section-container relative z-10 pb-10 pt-20">
+        <p v-scroll="'fade-up'" class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-3">World-Class Amenities</p>
+        <h1 v-scroll:100="'fade-up'" class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">Our Facilities</h1>
+        <p v-scroll:200="'fade-up'" class="mt-4 text-white/70 max-w-lg leading-relaxed">
           Everything you need to train, compete, and recover, all under one roof in Bhaisepati, Lalitpur.
         </p>
       </div>
@@ -43,7 +52,7 @@ const { data: facilities } = await useFetch<{
               :class="index % 2 === 1 ? 'lg:flex-row-reverse' : ''"
             >
               <!-- Content -->
-              <div :class="index % 2 === 1 ? 'lg:order-2' : ''">
+              <div v-scroll="index % 2 === 0 ? 'fade-left' : 'fade-right'" :class="index % 2 === 1 ? 'lg:order-2' : ''">
                 <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
                   <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
                   <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
@@ -79,26 +88,27 @@ const { data: facilities } = await useFetch<{
                 </div>
               </div>
 
-              <!-- Visual placeholder -->
+              <!-- Facility Image -->
               <div
+                v-scroll="index % 2 === 0 ? 'fade-right' : 'fade-left'"
                 :class="index % 2 === 1 ? 'lg:order-1' : ''"
-                class="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border bg-surface"
+                class="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border group"
               >
-                <div class="absolute inset-0 flex items-center justify-center">
-                  <div class="text-center">
-                    <div class="inline-flex items-center justify-center h-20 w-20 rounded-2xl bg-accent/10 mb-3">
-                      <Dumbbell v-if="facility.category === 'GYM'" class="h-8 w-8 text-accent" />
-                      <Flame v-else-if="facility.category === 'SAUNA'" class="h-8 w-8 text-accent" />
-                      <svg v-else class="h-8 w-8 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="5" r="3" />
-                        <path d="M12 8L6 20M12 8L18 20" />
-                      </svg>
-                    </div>
-                    <p class="text-sm text-ink-muted">{{ facility.name }}</p>
-                  </div>
+                <img
+                  :src="categoryImage(facility.category, facility.image_url)"
+                  :alt="facility.name"
+                  class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
+                <!-- Category icon badge -->
+                <div class="absolute bottom-4 right-4 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent shadow-lg">
+                  <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-white" />
+                  <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-white" />
+                  <svg v-else class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="5" r="3" />
+                    <path d="M12 8L6 20M12 8L18 20" />
+                  </svg>
                 </div>
-                <!-- Decorative gradient -->
-                <div class="absolute inset-0 bg-gradient-to-br from-accent/5 to-transparent" />
               </div>
             </div>
           </div>
@@ -107,10 +117,14 @@ const { data: facilities } = await useFetch<{
     </section>
 
     <!-- CTA -->
-    <section class="border-t border-border bg-surface">
-      <div class="mx-auto max-w-3xl px-4 py-16 text-center">
-        <h2 class="font-display text-3xl uppercase tracking-tight text-ink">Want a Tour?</h2>
-        <p class="mt-3 text-ink-muted">
+    <section class="relative border-t border-border overflow-hidden">
+      <div class="absolute inset-0">
+        <img :src="IMAGES.gym" alt="" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/80" />
+      </div>
+      <div v-scroll="'fade-up'" class="relative z-10 mx-auto max-w-3xl px-4 py-16 text-center">
+        <h2 class="font-display text-3xl uppercase tracking-tight text-white">Want a Tour?</h2>
+        <p class="mt-3 text-white/70">
           Visit us at Bhaisepati or call for a guided tour of all our facilities.
         </p>
         <div class="mt-6 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -120,10 +134,10 @@ const { data: facilities } = await useFetch<{
             </UiAppButton>
           </NuxtLink>
           <a :href="`tel:+977${BRAND.phone}`">
-            <UiAppButton variant="ghost" size="lg">
-              <Phone class="h-4 w-4 mr-2" />
+            <button class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all">
+              <Phone class="h-4 w-4" />
               Call Us
-            </UiAppButton>
+            </button>
           </a>
         </div>
       </div>

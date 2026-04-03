@@ -8,6 +8,7 @@ export interface SiteSettings {
   contactAddress: string
   storeLat: number
   storeLng: number
+  googleMapsUrl: string | null
   instagramUrl: string | null
   facebookUrl: string | null
   whatsappNumber: string | null
@@ -25,6 +26,7 @@ const defaults: SiteSettings = {
   contactAddress: 'Bhaisepati, Lalitpur, Nepal',
   storeLat: 27.6588,
   storeLng: 85.3134,
+  googleMapsUrl: 'https://maps.app.goo.gl/ZzmXJ5rDDKihfaeu7',
   instagramUrl: 'https://www.instagram.com/bhaisepatisportsacademy/',
   facebookUrl: null,
   whatsappNumber: '9821357118',
@@ -49,6 +51,7 @@ export function useSettings() {
       contactAddress:  (raw.contact_address as string)    ?? defaults.contactAddress,
       storeLat:        (raw.store_lat as number)          ?? defaults.storeLat,
       storeLng:        (raw.store_lng as number)          ?? defaults.storeLng,
+      googleMapsUrl:   (raw.google_maps_url as string|null) ?? defaults.googleMapsUrl,
       instagramUrl:    (raw.instagram_url as string|null) ?? defaults.instagramUrl,
       facebookUrl:     (raw.facebook_url as string|null)  ?? defaults.facebookUrl,
       whatsappNumber:  (raw.whatsapp_number as string|null) ?? defaults.whatsappNumber,

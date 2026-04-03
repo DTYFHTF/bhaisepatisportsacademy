@@ -4,8 +4,8 @@ namespace App\Enums;
 
 enum WaxType: string
 {
-    case RICA      = 'Rica';
-    case HONEY     = 'Honey';
-    case CHOCOLATE = 'Chocolate';
-    case SUGAR     = 'Sugar';
+    case YONEX    = 'Yonex';
+    case LI_NING  = 'Li-Ning';
+    case VICTOR   = 'Victor';
+    case CARLTON  = 'Carlton';
 }

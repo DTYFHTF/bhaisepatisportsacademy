@@ -39,19 +39,19 @@ class OrderSeeder extends Seeder
 
     public function run(): void
     {
-        $aloeGel = Product::where('slug', 'aloe-vera-soothing-gel')->firstOrFail();
-        $preWax  = Product::where('slug', 'pre-wax-cleansing-oil')->firstOrFail();
-        $ingrown = Product::where('slug', 'ingrown-hair-serum')->firstOrFail();
-        $lotion  = Product::where('slug', 'moisturizing-body-lotion')->firstOrFail();
-        $cooling = Product::where('slug', 'post-wax-cooling-spray')->firstOrFail();
-        $ricaKit = Product::where('slug', 'at-home-wax-kit-rica')->firstOrFail();
+        $racket     = Product::where('slug', 'yonex-nanoflare-racket')->firstOrFail();
+        $shuttles   = Product::where('slug', 'feather-shuttlecocks-12pk')->firstOrFail();
+        $shoes      = Product::where('slug', 'court-shoes-grip-pro')->firstOrFail();
+        $tee        = Product::where('slug', 'bsa-training-tee')->firstOrFail();
+        $shorts     = Product::where('slug', 'bsa-shorts-pro')->firstOrFail();
+        $protein    = Product::where('slug', 'whey-protein-1kg')->firstOrFail();
 
         $fee = 10000; // NPR 100 in paisa
 
         // ── Order 1: DELIVERED (COD) ──────────────────────────────────────
-        $subtotal1 = $aloeGel->price + $cooling->price;
+        $subtotal1 = $racket->price + $shuttles->price;
         $order1 = Order::create([
-            'order_id'       => 'PP-2603-0001',
+            'order_id'       => 'BSA-2603-0001',
             'phone_hash'     => $this->phoneHash('9841234567'),
             'customer_name'  => 'Aarav Sharma',
             'address'        => 'Lazimpat, Kathmandu',
@@ -64,8 +64,8 @@ class OrderSeeder extends Seeder
             'status'         => OrderStatus::DELIVERED,
         ]);
         $order1->items()->createMany([
-            ['product_id' => $aloeGel->id, 'variant_id' => $this->variant($aloeGel, '100ml')->id, 'quantity' => 1, 'unit_price' => $aloeGel->price],
-            ['product_id' => $cooling->id, 'variant_id' => $this->variant($cooling, '100ml')->id, 'quantity' => 1, 'unit_price' => $cooling->price],
+            ['product_id' => $racket->id,   'variant_id' => $this->variant($racket, '4U-G5')->id,   'quantity' => 1, 'unit_price' => $racket->price],
+            ['product_id' => $shuttles->id, 'variant_id' => $this->variant($shuttles, 'Speed 77')->id, 'quantity' => 1, 'unit_price' => $shuttles->price],
         ]);
         $this->addHistory($order1, [
             [OrderStatus::PENDING,    'Order placed (COD).'],
@@ -81,9 +81,9 @@ class OrderSeeder extends Seeder
         ]);
 
         // ── Order 2: DISPATCHED (Khalti) ──────────────────────────────────
-        $subtotal2 = $ricaKit->price;
+        $subtotal2 = $shoes->price;
         $order2 = Order::create([
-            'order_id'       => 'PP-2603-0002',
+            'order_id'       => 'BSA-2603-0002',
             'phone_hash'     => $this->phoneHash('9852345678'),
             'customer_name'  => 'Priya Thapa',
             'address'        => 'Patan Dhoka, Lalitpur',
@@ -96,10 +96,10 @@ class OrderSeeder extends Seeder
             'status'         => OrderStatus::DISPATCHED,
         ]);
         $order2->items()->create([
-            'product_id' => $ricaKit->id,
-            'variant_id' => $this->variant($ricaKit, 'Standard')->id,
+            'product_id' => $shoes->id,
+            'variant_id' => $this->variant($shoes, 'EU 42')->id,
             'quantity'   => 1,
-            'unit_price' => $ricaKit->price,
+            'unit_price' => $shoes->price,
         ]);
         $this->addHistory($order2, [
             [OrderStatus::PENDING,    'Awaiting Khalti payment.'],
@@ -114,9 +114,9 @@ class OrderSeeder extends Seeder
         ]);
 
         // ── Order 3: CONFIRMED (COD) ──────────────────────────────────────
-        $subtotal3 = $ingrown->price + $preWax->price;
+        $subtotal3 = $tee->price + $shorts->price;
         $order3 = Order::create([
-            'order_id'       => 'PP-2603-0003',
+            'order_id'       => 'BSA-2603-0003',
             'phone_hash'     => $this->phoneHash('9863456789'),
             'customer_name'  => 'Rohan Maharjan',
             'address'        => 'New Baneshwor, Kathmandu',
@@ -128,8 +128,8 @@ class OrderSeeder extends Seeder
             'status'         => OrderStatus::CONFIRMED,
         ]);
         $order3->items()->createMany([
-            ['product_id' => $ingrown->id, 'variant_id' => $this->variant($ingrown, '30ml')->id, 'quantity' => 1, 'unit_price' => $ingrown->price],
-            ['product_id' => $preWax->id,  'variant_id' => $this->variant($preWax, '150ml')->id, 'quantity' => 1, 'unit_price' => $preWax->price],
+            ['product_id' => $tee->id,    'variant_id' => $this->variant($tee, 'L')->id,  'quantity' => 1, 'unit_price' => $tee->price],
+            ['product_id' => $shorts->id, 'variant_id' => $this->variant($shorts, 'L')->id, 'quantity' => 1, 'unit_price' => $shorts->price],
         ]);
         $this->addHistory($order3, [
             [OrderStatus::PENDING,   'Order placed (COD).'],
@@ -142,9 +142,9 @@ class OrderSeeder extends Seeder
         ]);
 
         // ── Order 4: PACKED (COD, multiple items) ─────────────────────────
-        $subtotal4 = $lotion->price * 2 + $aloeGel->price;
+        $subtotal4 = $protein->price + $tee->price;
         $order4 = Order::create([
-            'order_id'       => 'PP-2603-0004',
+            'order_id'       => 'BSA-2603-0004',
             'phone_hash'     => $this->phoneHash('9874567890'),
             'customer_name'  => 'Sita Poudel',
             'address'        => 'Boudha, Kathmandu',
@@ -156,8 +156,8 @@ class OrderSeeder extends Seeder
             'status'         => OrderStatus::PACKED,
         ]);
         $order4->items()->createMany([
-            ['product_id' => $lotion->id,  'variant_id' => $this->variant($lotion, '200ml')->id,  'quantity' => 2, 'unit_price' => $lotion->price],
-            ['product_id' => $aloeGel->id, 'variant_id' => $this->variant($aloeGel, '200ml')->id, 'quantity' => 1, 'unit_price' => 150000],
+            ['product_id' => $protein->id, 'variant_id' => $this->variant($protein, 'Chocolate')->id, 'quantity' => 1, 'unit_price' => $protein->price],
+            ['product_id' => $tee->id,     'variant_id' => $this->variant($tee, 'M')->id,             'quantity' => 1, 'unit_price' => $tee->price],
         ]);
         $this->addHistory($order4, [
             [OrderStatus::PENDING,   'Order placed (COD).'],
@@ -171,9 +171,9 @@ class OrderSeeder extends Seeder
         ]);
 
         // ── Order 5: CANCELLED ────────────────────────────────────────────
-        $subtotal5 = $ricaKit->price;
+        $subtotal5 = $racket->price;
         $order5 = Order::create([
-            'order_id'       => 'PP-2603-0005',
+            'order_id'       => 'BSA-2603-0005',
             'phone_hash'     => $this->phoneHash('9896789012'),
             'customer_name'  => 'Anita Rai',
             'address'        => 'Chabahil, Kathmandu',
@@ -185,10 +185,10 @@ class OrderSeeder extends Seeder
             'status'         => OrderStatus::CANCELLED,
         ]);
         $order5->items()->create([
-            'product_id' => $ricaKit->id,
-            'variant_id' => $this->variant($ricaKit, 'Standard')->id,
+            'product_id' => $racket->id,
+            'variant_id' => $this->variant($racket, '3U-G5')->id,
             'quantity'   => 1,
-            'unit_price' => $ricaKit->price,
+            'unit_price' => $racket->price,
         ]);
         $this->addHistory($order5, [
             [OrderStatus::PENDING,   'Order placed (COD).'],

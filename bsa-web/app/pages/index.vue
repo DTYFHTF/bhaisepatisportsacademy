@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame } from 'lucide-vue-next'
-import { BRAND } from '~/utils/constants'
+import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame, Send } from 'lucide-vue-next'
+import { BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
 const config = useRuntimeConfig()
@@ -9,7 +9,7 @@ const { data: rawStats } = await useFetch<{ value_label: string; label: string }
   `${config.public.apiBase}/stats`, { server: false },
 )
 
-const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string }[]>(
+const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string; image_url: string | null }[]>(
   `${config.public.apiBase}/facilities`, { server: false },
 )
 
@@ -28,36 +28,50 @@ const { data: rawSchedule } = await useFetch<{ id: number; day: string; time: st
   { server: false, query: { day: today } },
 )
 
-// Animated counter — must be called at setup time, not inside computed
-// Build one counter per stat slot (max 6 expected)
+// Animated counter — wait for data before attaching IntersectionObservers
 const MAX_STATS = 6
 const counterCounts = Array.from({ length: MAX_STATS }, () => ref(0))
 const counterEls = Array.from({ length: MAX_STATS }, () => ref<HTMLElement | null>(null))
 
-onMounted(() => {
-  const statList = rawStats.value ?? []
-  statList.forEach((s, i) => {
-    if (i >= MAX_STATS) return
-    const target = parseInt((s.value_label ?? '').replace(/\D/g, '')) || 0
-    const el = counterEls[i]
-    const count = counterCounts[i]
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          const start = performance.now()
-          const animate = (now: number) => {
-            const progress = Math.min((now - start) / 2000, 1)
-            const eased = 1 - Math.pow(1 - progress, 3)
-            count.value = Math.floor(eased * target)
-            if (progress < 1) requestAnimationFrame(animate)
-          }
-          requestAnimationFrame(animate)
-          observer.disconnect()
+watch(rawStats, (statList) => {
+  if (!statList?.length) return
+  nextTick(() => {
+    statList.forEach((s, i) => {
+      if (i >= MAX_STATS) return
+      const target = parseInt((s.value_label ?? '').replace(/\D/g, '')) || 0
+      const el = counterEls[i]
+      const count = counterCounts[i]
+      if (!el.value) return
+
+      const runCounter = () => {
+        const start = performance.now()
+        const animate = (now: number) => {
+          const progress = Math.min((now - start) / 2000, 1)
+          const eased = 1 - Math.pow(1 - progress, 3)
+          count.value = Math.floor(eased * target)
+          if (progress < 1) requestAnimationFrame(animate)
         }
-      },
-      { threshold: 0.3 },
-    )
-    if (el.value) observer.observe(el.value)
+        requestAnimationFrame(animate)
+      }
+
+      // If already in viewport, run immediately
+      const rect = el.value.getBoundingClientRect()
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        runCounter()
+        return
+      }
+
+      const observer = new IntersectionObserver(
+        ([entry]) => {
+          if (entry.isIntersecting) {
+            runCounter()
+            observer.disconnect()
+          }
+        },
+        { threshold: 0 },
+      )
+      observer.observe(el.value)
+    })
   })
 })
 
@@ -77,54 +91,100 @@ const popularPrograms = computed(() =>
 
 const todaySchedule = computed(() => (rawSchedule.value ?? []).slice(0, 5))
 
+const { settings } = useSettings()
+
+// Testimonial submission form
+const tName = ref('')
+const tRole = ref('')
+const tQuote = ref('')
+const tSubmitting = ref(false)
+const tSubmitted = ref(false)
+const tError = ref('')
+
+async function submitTestimonial() {
+  if (!tName.value.trim() || tQuote.value.trim().length < 20) return
+  tSubmitting.value = true
+  tError.value = ''
+  try {
+    await $fetch(`${config.public.apiBase}/testimonials`, {
+      method: 'POST',
+      body: { name: tName.value, role: tRole.value || undefined, quote: tQuote.value },
+    })
+    tSubmitted.value = true
+  }
+  catch {
+    tError.value = 'Something went wrong. Please try again.'
+  }
+  finally {
+    tSubmitting.value = false
+  }
+}
+
 const pillars = [
-  { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting' },
-  { icon: Zap, title: 'Elite Coaching', desc: 'Trained coaches for every skill level, from beginner to competitive' },
-  { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together' },
+  { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting', iconSize: 'h-6 w-6' },
+  { icon: Zap, title: 'Elite Coaching', desc: 'Trained coaches for every skill level, from beginner to competitive', iconSize: 'h-8 w-8' },
+  { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together', iconSize: 'h-6 w-6' },
 ]
+
+// Hero parallax
+const heroImgRef = ref<HTMLElement | null>(null)
+onMounted(() => {
+  const handleScroll = () => {
+    if (heroImgRef.value) {
+      const y = window.scrollY
+      heroImgRef.value.style.transform = `translateY(${y * 0.35}px) scale(1.15)`
+    }
+  }
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  onUnmounted(() => window.removeEventListener('scroll', handleScroll))
+})
 </script>
 
 <template>
   <div>
     <!-- ═══ HERO ═══ -->
-    <section class="relative min-h-[90vh] flex items-center justify-center overflow-hidden">
-      <!-- Animated background -->
-      <div class="absolute inset-0 bg-gradient-to-br from-canvas via-surface to-canvas">
-        <!-- Diagonal accent lines -->
-        <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(45deg, #FFB800 0, #FFB800 1px, transparent 0, transparent 50%); background-size: 60px 60px;" />
-        <!-- Glow orb -->
-        <div class="absolute top-1/4 -right-32 h-96 w-96 rounded-full bg-accent/5 blur-3xl" />
-        <div class="absolute bottom-1/4 -left-32 h-72 w-72 rounded-full bg-court/5 blur-3xl" />
+    <section class="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
+      <!-- Video background (free stock, no brand). Falls back to poster image if video unavailable. -->
+      <div ref="heroImgRef" class="absolute inset-0 hero-parallax-img" style="transform: scale(1.15)">
+        <video
+          autoplay
+          muted
+          loop
+          playsinline
+          :poster="IMAGES.hero"
+          class="absolute inset-0 w-full h-full object-cover"
+        >
+          <!-- Badminton & sports training – Mixkit free stock -->
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-sport-badminton-player-training-21143-large.mp4" type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-two-people-playing-badminton-outdoors-34802-large.mp4" type="video/mp4" />
+          <source src="https://assets.mixkit.co/videos/preview/mixkit-people-working-out-in-the-gym-34752-large.mp4" type="video/mp4" />
+        </video>
       </div>
-
-      <!-- Shuttlecock SVG decoration -->
-      <div class="absolute top-20 right-10 sm:right-20 opacity-10 animate-float">
-        <svg width="80" height="80" viewBox="0 0 100 100" fill="none" class="text-accent">
-          <circle cx="50" cy="75" r="12" fill="currentColor" />
-          <path d="M50 63 L35 15 Q50 25 50 25" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
-          <path d="M50 63 L50 10 Q50 20 50 20" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
-          <path d="M50 63 L65 15 Q50 25 50 25" stroke="currentColor" stroke-width="2" fill="currentColor" opacity="0.6" />
-        </svg>
-      </div>
+      <!-- Dark gradient overlay -->
+      <div class="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/70" />
+      <!-- Bottom fade to white canvas -->
+      <div class="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-canvas to-transparent" />
+      <!-- Subtle diagonal lines -->
+      <div class="absolute inset-0 opacity-[0.04]" style="background-image: repeating-linear-gradient(45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 60px 60px;" />
 
       <div class="relative z-10 text-center px-4 py-20 max-w-4xl mx-auto">
-        <!-- Badge -->
-        <div class="inline-flex items-center gap-2 rounded-full border border-accent/30 bg-accent/10 px-4 py-1.5 mb-6">
+        <!-- Badge — no v-scroll, always visible above fold -->
+        <div class="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 backdrop-blur-sm px-4 py-1.5 mb-6 animate-[fade-in_0.6s_ease-out_both]">
           <span class="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-          <span class="text-xs font-medium uppercase tracking-wider text-accent">Now Open | Bhaisepati, Lalitpur</span>
+          <span class="text-xs font-medium uppercase tracking-wider text-white/90">Now Open | Bhaisepati, Lalitpur</span>
         </div>
 
-        <h1 class="font-display text-5xl sm:text-6xl lg:text-7xl uppercase leading-none tracking-tight">
-          <span class="text-ink">Train Harder.</span><br />
-          <span class="text-accent">Move Faster.</span><br />
-          <span class="text-ink">Grow Stronger.</span>
+        <h1 class="font-display text-5xl sm:text-6xl lg:text-8xl uppercase leading-none tracking-tight animate-[fade-in-up_0.7s_ease-out_0.1s_both]">
+          <span class="text-white">Train Harder.</span><br />
+          <span class="text-accent drop-shadow-[0_0_30px_rgba(232,0,30,0.5)]">Move Faster.</span><br />
+          <span class="text-white">Grow Stronger.</span>
         </h1>
 
-        <p class="mt-6 text-lg sm:text-xl text-ink-muted max-w-xl mx-auto leading-relaxed">
+        <p class="mt-6 text-lg sm:text-xl text-white/80 max-w-xl mx-auto leading-relaxed animate-[fade-in-up_0.7s_ease-out_0.3s_both]">
           Professional badminton courts, fully equipped gym, and recovery facilities, all under one roof in Bhaisepati.
         </p>
 
-        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
+        <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4 animate-[fade-in-up_0.7s_ease-out_0.5s_both]">
           <NuxtLink to="/book">
             <UiAppButton variant="primary" size="lg">
               Book a Court
@@ -132,23 +192,23 @@ const pillars = [
             </UiAppButton>
           </NuxtLink>
           <NuxtLink to="/programs">
-            <UiAppButton variant="secondary" size="lg">
+            <button class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all">
               View Programs
-            </UiAppButton>
+            </button>
           </NuxtLink>
         </div>
 
         <!-- Quick info -->
-        <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-ink-muted">
-          <span class="flex items-center gap-1.5">
+        <div class="mt-10 flex flex-wrap items-center justify-center gap-6 text-sm text-white/70 animate-[fade-in-up_0.7s_ease-out_0.7s_both]">
+          <a :href="settings.googleMapsUrl ?? BRAND.googleMaps" target="_blank" rel="noopener noreferrer" class="flex items-center gap-1.5 hover:text-white transition-colors">
             <MapPin class="h-4 w-4 text-accent" />
             Bhaisepati, Lalitpur
-          </span>
+          </a>
           <span class="flex items-center gap-1.5">
             <Clock class="h-4 w-4 text-accent" />
             {{ BRAND.openingHours }}
           </span>
-          <a :href="`tel:+977${BRAND.phone}`" class="flex items-center gap-1.5 hover:text-accent transition-colors">
+          <a :href="`tel:+977${BRAND.phone}`" class="flex items-center gap-1.5 hover:text-white transition-colors">
             <Phone class="h-4 w-4 text-accent" />
             +977 {{ BRAND.phone }}
           </a>
@@ -156,9 +216,9 @@ const pillars = [
       </div>
 
       <!-- Scroll indicator -->
-      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2">
-        <span class="text-xs uppercase tracking-wider text-ink-faint">Scroll</span>
-        <div class="h-8 w-[1px] bg-gradient-to-b from-accent/50 to-transparent animate-pulse" />
+      <div class="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 z-10">
+        <span class="text-xs uppercase tracking-wider text-white/50">Scroll</span>
+        <div class="h-8 w-[1px] bg-gradient-to-b from-white/50 to-transparent animate-pulse" />
       </div>
     </section>
 
@@ -166,9 +226,9 @@ const pillars = [
     <section class="border-y border-border bg-surface">
       <div class="mx-auto max-w-7xl px-4 py-14 lg:px-8">
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-8">
-          <div v-for="pillar in pillars" :key="pillar.title" class="text-center group">
+          <div v-for="(pillar, i) in pillars" :key="pillar.title" v-scroll:[i*150]="'fade-up'" class="text-center group">
             <div class="inline-flex items-center justify-center h-14 w-14 rounded-xl bg-accent/10 mb-4 group-hover:bg-accent/20 transition-colors">
-              <component :is="pillar.icon" class="h-6 w-6 text-accent" />
+              <component :is="pillar.icon" :class="[pillar.iconSize, 'text-accent']" />
             </div>
             <h3 class="font-display text-lg uppercase tracking-wider text-ink">{{ pillar.title }}</h3>
             <p class="mt-2 text-sm text-ink-muted leading-relaxed">{{ pillar.desc }}</p>
@@ -180,39 +240,55 @@ const pillars = [
     <!-- ═══ FACILITIES SHOWCASE ═══ -->
     <section class="section-padding">
       <div class="section-container">
-        <div class="text-center mb-12">
+        <div v-scroll="'fade-up'" class="text-center mb-12">
           <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">World-Class Amenities</p>
           <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Our Facilities</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
-            v-for="facility in (facilities ?? [])"
+            v-for="(facility, fIdx) in (facilities ?? [])"
             :key="facility.id"
-            class="group relative overflow-hidden rounded-2xl border border-border bg-surface p-6 hover:border-accent/30 transition-all duration-300"
+            v-scroll:[fIdx*150]="'scale-in'"
+            class="group relative overflow-hidden rounded-2xl border border-border pb-16 hover:border-accent/30 transition-all duration-500 min-h-[300px] cursor-pointer"
           >
-            <!-- Accent corner -->
-            <div class="absolute top-0 right-0 h-20 w-20 bg-gradient-to-bl from-accent/10 to-transparent rounded-bl-3xl" />
+            <!-- Background image -->
+            <img
+              v-if="facility.image_url"
+              :src="facility.image_url"
+              :alt="facility.name"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <!-- Overlay: dark gradient when image present, solid dark when not -->
+            <div
+              v-if="facility.image_url"
+              class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30 transition-opacity duration-500 group-hover:from-black/95 group-hover:via-black/70"
+            />
+            <div v-else class="absolute inset-0 bg-ink" />
 
-            <div class="relative z-10">
-              <div class="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent/10 mb-4">
-                <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-accent" />
-                <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-accent" />
-                <svg v-else class="h-5 w-5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <circle cx="12" cy="5" r="3" />
-                  <path d="M12 8L6 20M12 8L18 20" />
-                </svg>
-              </div>
-
-              <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ facility.name }}</h3>
-              <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ facility.description }}</p>
+            <div class="relative z-10 p-6">
+              <h3 class="font-display text-xl uppercase tracking-wider text-white mb-2">{{ facility.name }}</h3>
+              <p class="text-sm mb-4 leading-relaxed text-white/70">{{ facility.description }}</p>
 
               <ul class="space-y-2">
-                <li v-for="feature in facility.features.slice(0, 3)" :key="feature" class="flex items-center gap-2 text-sm text-ink-muted">
+                <li v-for="feature in facility.features.slice(0, 3)" :key="feature" class="flex items-center gap-2 text-sm text-white/70">
                   <span class="h-1 w-1 rounded-full bg-accent flex-shrink-0" />
                   {{ feature }}
                 </li>
               </ul>
+            </div>
+
+            <!-- Icon badge — bottom-left for first, bottom-right for last, bottom-center for middle -->
+            <div
+              class="absolute bottom-4 z-10 inline-flex items-center justify-center h-12 w-12 rounded-xl bg-accent shadow-lg"
+              :class="fIdx === 0 ? 'left-4' : fIdx === (facilities ?? []).length - 1 ? 'right-4' : 'left-1/2 -translate-x-1/2'"
+            >
+              <Dumbbell v-if="facility.category === 'GYM'" class="h-5 w-5 text-white" />
+              <Flame v-else-if="facility.category === 'SAUNA'" class="h-5 w-5 text-white" />
+              <svg v-else class="h-5 w-5 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="5" r="3" />
+                <path d="M12 8L6 20M12 8L18 20" />
+              </svg>
             </div>
           </div>
         </div>
@@ -229,7 +305,7 @@ const pillars = [
     <!-- ═══ POPULAR PROGRAMS ═══ -->
     <section class="section-padding bg-surface">
       <div class="section-container">
-        <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
+        <div v-scroll="'fade-up'" class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
           <div>
             <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Train With Us</p>
             <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Popular Programs</h2>
@@ -242,19 +318,29 @@ const pillars = [
 
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
-            v-for="program in popularPrograms"
+            v-for="(program, pIdx) in popularPrograms"
             :key="program.id"
-            class="group rounded-2xl border border-border bg-canvas overflow-hidden hover:border-accent/30 transition-all duration-300"
+            v-scroll:[pIdx*150]="'fade-up'"
+            class="group rounded-2xl border border-border bg-canvas overflow-hidden hover:border-accent/30 hover:shadow-xl hover:shadow-accent/5 transition-all duration-500"
           >
-            <!-- Header stripe -->
-            <div class="h-1 bg-gradient-to-r from-accent via-accent to-accent/50" />
-
-            <div class="p-6">
-              <!-- Category badge -->
-              <span class="inline-block rounded-full bg-accent/10 px-3 py-1 text-xs font-medium uppercase tracking-wider text-accent mb-3">
+            <!-- Program category image -->
+            <div class="relative h-44 overflow-hidden">
+              <img
+                :src="PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
+                :alt="program.name"
+                class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+              <!-- Category badge on image -->
+              <span class="absolute top-3 left-3 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                 {{ program.category }}
               </span>
+              <span v-if="program.is_popular" class="absolute top-3 right-3 rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
+                Popular
+              </span>
+            </div>
 
+            <div class="p-6">
               <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ program.name }}</h3>
               <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ program.description }}</p>
 
@@ -284,14 +370,19 @@ const pillars = [
     </section>
 
     <!-- ═══ STATS COUNTER ═══ -->
-    <section class="border-y border-border bg-canvas">
-      <div class="mx-auto max-w-7xl px-4 py-16 lg:px-8">
+    <section class="relative border-y border-border overflow-hidden">
+      <!-- Stats background image -->
+      <div class="absolute inset-0">
+        <img :src="IMAGES.teamSport" alt="" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-black/80" />
+      </div>
+      <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 lg:px-8">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="(stat, i) in stats" :key="stat.label" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
+          <div v-for="(stat, i) in stats" :key="stat.label" v-scroll:[i*100]="'fade-up'" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
             <p class="font-display text-4xl sm:text-5xl text-accent tracking-tight">
               {{ stat.count.value }}<span class="text-accent/60">{{ stat.suffix }}</span>
             </p>
-            <p class="mt-2 text-sm uppercase tracking-wider text-ink-muted">{{ stat.label }}</p>
+            <p class="mt-2 text-sm uppercase tracking-wider text-white/70">{{ stat.label }}</p>
           </div>
         </div>
       </div>
@@ -331,16 +422,17 @@ const pillars = [
     <!-- ═══ TESTIMONIALS ═══ -->
     <section class="section-padding">
       <div class="section-container">
-        <div class="text-center mb-10">
+        <div v-scroll="'fade-up'" class="text-center mb-10">
           <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Community Voices</p>
           <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">What Players Say</h2>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
-            v-for="testimonial in (testimonials ?? [])"
+            v-for="(testimonial, tIdx) in (testimonials ?? [])"
             :key="testimonial.name"
-            class="rounded-2xl border border-border bg-surface p-6"
+            v-scroll:[tIdx*150]="'fade-up'"
+            class="rounded-2xl border border-border bg-surface p-6 hover:shadow-lg hover:shadow-accent/5 transition-all duration-500"
           >
             <!-- Stars -->
             <div class="flex gap-0.5 mb-4">
@@ -358,19 +450,84 @@ const pillars = [
             </div>
           </div>
         </div>
+
+        <!-- Leave a testimonial -->
+        <div class="mt-12 max-w-xl mx-auto">
+          <div class="rounded-2xl border border-border bg-surface p-6">
+            <h3 class="font-display text-lg uppercase tracking-wider text-ink mb-1">Share Your Experience</h3>
+            <p class="text-xs text-ink-muted mb-5">Your review will be shown after approval.</p>
+
+            <div v-if="tSubmitted" class="flex items-center gap-3 rounded-xl bg-accent/10 border border-accent/20 px-4 py-3">
+              <span class="h-2 w-2 rounded-full bg-accent" />
+              <p class="text-sm font-medium text-accent">Thank you! Your testimonial is pending review.</p>
+            </div>
+
+            <form v-else class="space-y-4" @submit.prevent="submitTestimonial">
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Name *</label>
+                  <input
+                    v-model="tName"
+                    type="text"
+                    required
+                    maxlength="100"
+                    placeholder="Your name"
+                    class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+                <div>
+                  <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Role</label>
+                  <input
+                    v-model="tRole"
+                    type="text"
+                    maxlength="100"
+                    placeholder="e.g. Badminton Player"
+                    class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                  />
+                </div>
+              </div>
+              <div>
+                <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Your Review * <span class="normal-case font-normal">(min 20 chars)</span></label>
+                <textarea
+                  v-model="tQuote"
+                  required
+                  rows="3"
+                  maxlength="500"
+                  placeholder="Tell us about your experience at BSA..."
+                  class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                />
+              </div>
+              <p v-if="tError" class="text-xs text-error">{{ tError }}</p>
+              <UiAppButton
+                type="submit"
+                variant="primary"
+                size="sm"
+                :loading="tSubmitting"
+                :disabled="!tName.trim() || tQuote.trim().length < 20"
+              >
+                <Send class="h-3.5 w-3.5 mr-1.5" />
+                Submit Review
+              </UiAppButton>
+            </form>
+          </div>
+        </div>
       </div>
     </section>
 
     <!-- ═══ CTA ═══ -->
     <section class="relative overflow-hidden">
-      <div class="absolute inset-0 bg-gradient-to-r from-accent/10 via-accent/5 to-transparent" />
-      <div class="absolute inset-0 opacity-[0.02]" style="background-image: repeating-linear-gradient(-45deg, #FFB800 0, #FFB800 1px, transparent 0, transparent 50%); background-size: 40px 40px;" />
+      <!-- CTA background image -->
+      <div class="absolute inset-0">
+        <img :src="IMAGES.gym" alt="" class="w-full h-full object-cover" />
+        <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/75 to-black/85" />
+      </div>
+      <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 40px 40px;" />
 
-      <div class="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
-        <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-ink">
+      <div v-scroll="'fade-up'" class="relative z-10 mx-auto max-w-3xl px-4 py-20 text-center">
+        <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">
           Ready to <span class="text-accent">Play?</span>
         </h2>
-        <p class="mt-4 text-lg text-ink-muted max-w-md mx-auto">
+        <p class="mt-4 text-lg text-white/70 max-w-md mx-auto">
           Book a court, join a program, or drop in for a session. Your game starts here.
         </p>
         <div class="mt-8 flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -381,10 +538,10 @@ const pillars = [
             </UiAppButton>
           </NuxtLink>
           <a :href="`tel:+977${BRAND.phone}`">
-            <UiAppButton variant="ghost" size="lg">
-              <Phone class="h-4 w-4 mr-2" />
+            <button class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all">
+              <Phone class="h-4 w-4" />
               Call {{ BRAND.phone }}
-            </UiAppButton>
+            </button>
           </a>
         </div>
       </div>

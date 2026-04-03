@@ -19,9 +19,10 @@ class SettingsSeeder extends Seeder
                 'contact_address'  => 'Bhaisepati, Lalitpur, Nepal',
                 'store_lat'        => 27.6617,
                 'store_lng'        => 85.3123,
+                'google_maps_url'  => 'https://maps.app.goo.gl/ZzmXJ5rDDKihfaeu7',
                 'instagram_url'    => 'https://www.instagram.com/bhaisepatisportsacademy/',
                 'facebook_url'     => null,
-                'whatsapp_number'  => '9779821357118',
+                'whatsapp_number'  => '9821357118',
                 'delivery_tagline' => 'Free delivery on sports gear orders over NPR 5,000.',
                 'return_tagline'   => 'Satisfaction guaranteed on every visit.',
             ]

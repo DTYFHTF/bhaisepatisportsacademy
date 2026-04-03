@@ -14,144 +14,144 @@ class ProductSeeder extends Seeder
     public function run(): void
     {
         $products = [
-            // ── SKINCARE ────────────────────────────────────────────────────
+            // ── EQUIPMENT ───────────────────────────────────────────────────
             [
-                'slug'             => 'aloe-vera-soothing-gel',
-                'name'             => 'Aloe Vera Soothing Gel',
-                'tagline'          => 'Instant post-wax relief',
-                'price'            => 85000,
-                'compare_at_price' => 120000,
-                'category'         => Category::SKINCARE,
-                'description'      => 'A lightweight, fast-absorbing aloe vera gel that calms redness and irritation after any waxing session. Perfect for sensitive skin.',
-                'ingredients'      => 'Aloe Vera Extract, Glycerin, Vitamin E, Chamomile Extract, Purified Water',
-                'tags'             => ['skincare', 'bestseller', 'aftercare'],
-                'variants'         => [['100ml', 85000, 30], ['200ml', 150000, 20]],
+                'slug'             => 'yonex-nanoflare-racket',
+                'name'             => 'Yonex Nanoflare 370 Speed Racket',
+                'tagline'          => 'Lightweight speed on court',
+                'price'            => 850000,
+                'compare_at_price' => 1050000,
+                'category'         => Category::EQUIPMENT,
+                'description'      => 'A lightweight yet powerful badminton racket designed for fast swings and precise control. Ideal for intermediate to advanced players.',
+                'ingredients'      => '',
+                'tags'             => ['equipment', 'bestseller', 'rackets'],
+                'variants'         => [['4U-G5', 850000, 12], ['3U-G5', 900000, 8]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1617897903246-719242758050?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Aloe Vera Soothing Gel - 100ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1613918431703-aa50889e3be4?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Yonex Nanoflare 370 Racket'],
                 ],
             ],
             [
-                'slug'             => 'pre-wax-cleansing-oil',
-                'name'             => 'Pre-Wax Cleansing Oil',
-                'tagline'          => 'Prep your skin, perfect results',
-                'price'            => 95000,
+                'slug'             => 'feather-shuttlecocks-12pk',
+                'name'             => 'Feather Shuttlecocks (12-Pack)',
+                'tagline'          => 'Tournament-grade flight',
+                'price'            => 180000,
                 'compare_at_price' => null,
-                'category'         => Category::SKINCARE,
-                'description'      => 'A gentle cleansing oil that removes dirt and excess oil before waxing, ensuring better wax adhesion and cleaner results.',
-                'ingredients'      => 'Jojoba Oil, Tea Tree Oil, Vitamin E, Sweet Almond Oil',
-                'tags'             => ['skincare', 'new-arrival'],
-                'variants'         => [['150ml', 95000, 25]],
+                'category'         => Category::EQUIPMENT,
+                'description'      => 'Premium goose feather shuttlecocks with cork base. Consistent flight and durability for competitive play and training.',
+                'ingredients'      => '',
+                'tags'             => ['equipment', 'shuttles', 'essential'],
+                'variants'         => [['Speed 77', 180000, 40], ['Speed 78', 180000, 30]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Pre-Wax Cleansing Oil - 150ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Feather Shuttlecocks Pack'],
                 ],
             ],
             [
-                'slug'             => 'ingrown-hair-serum',
-                'name'             => 'Ingrown Hair Serum',
-                'tagline'          => 'Smooth skin, no bumps',
+                'slug'             => 'court-shoes-grip-pro',
+                'name'             => 'Court Shoes Grip Pro',
+                'tagline'          => 'Superior court grip',
+                'price'            => 650000,
+                'compare_at_price' => 800000,
+                'category'         => Category::EQUIPMENT,
+                'description'      => 'Non-marking rubber sole court shoes with cushioned midsole. Designed for quick lateral movements on indoor courts.',
+                'ingredients'      => '',
+                'tags'             => ['equipment', 'shoes', 'new-arrival'],
+                'variants'         => [['EU 40', 650000, 6], ['EU 42', 650000, 8], ['EU 44', 650000, 5]],
+                'images'           => [
+                    ['url' => 'https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Court Shoes Grip Pro'],
+                ],
+            ],
+            [
+                'slug'             => 'racket-grip-tape-3pk',
+                'name'             => 'Overgrip Tape (3-Pack)',
+                'tagline'          => 'Better grip, better game',
+                'price'            => 35000,
+                'compare_at_price' => null,
+                'category'         => Category::EQUIPMENT,
+                'description'      => 'Sweat-absorbing PU overgrip tape for badminton rackets. Provides a tacky, comfortable hold during intense rallies.',
+                'ingredients'      => '',
+                'tags'             => ['equipment', 'accessories', 'essential'],
+                'variants'         => [['White', 35000, 50], ['Black', 35000, 45]],
+                'images'           => [
+                    ['url' => 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Overgrip Tape Pack'],
+                ],
+            ],
+
+            // ── APPAREL ─────────────────────────────────────────────────────
+            [
+                'slug'             => 'bsa-training-tee',
+                'name'             => 'BSA Training Tee',
+                'tagline'          => 'Official academy gear',
                 'price'            => 120000,
-                'compare_at_price' => 150000,
-                'category'         => Category::SKINCARE,
-                'description'      => 'A targeted serum with salicylic acid and tea tree to prevent and treat ingrown hairs. Apply daily after waxing.',
-                'ingredients'      => 'Salicylic Acid (2%), Tea Tree Oil, Witch Hazel, Niacinamide, Purified Water',
-                'tags'             => ['skincare', 'bestseller'],
-                'variants'         => [['30ml', 120000, 35]],
-                'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1608248597279-f99d160bfcbc?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Ingrown Hair Serum - 30ml'],
-                ],
-            ],
-            [
-                'slug'             => 'moisturizing-body-lotion',
-                'name'             => 'Moisturizing Body Lotion',
-                'tagline'          => 'Hydrate and glow',
-                'price'            => 75000,
                 'compare_at_price' => null,
-                'category'         => Category::SKINCARE,
-                'description'      => 'A rich yet non-greasy body lotion that hydrates and nourishes freshly waxed skin. Light peach scent.',
-                'ingredients'      => 'Shea Butter, Coconut Oil, Vitamin E, Peach Extract, Hyaluronic Acid',
-                'tags'             => ['skincare', 'essential'],
-                'variants'         => [['200ml', 75000, 40], ['400ml', 130000, 15]],
+                'category'         => Category::APPAREL,
+                'description'      => 'Breathable, moisture-wicking training t-shirt with the BSA logo. Lightweight polyester fabric perfect for court sessions.',
+                'ingredients'      => '',
+                'tags'             => ['apparel', 'bestseller', 'new-arrival'],
+                'variants'         => [['S', 120000, 15], ['M', 120000, 25], ['L', 120000, 20], ['XL', 120000, 10]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1556228578-8c89e6adf883?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Moisturizing Body Lotion - 200ml'],
-                ],
-            ],
-
-            // ── AFTERCARE ───────────────────────────────────────────────────
-            [
-                'slug'             => 'post-wax-cooling-spray',
-                'name'             => 'Post-Wax Cooling Spray',
-                'tagline'          => 'Cool, calm, collected skin',
-                'price'            => 65000,
-                'compare_at_price' => 85000,
-                'category'         => Category::AFTERCARE,
-                'description'      => 'A refreshing mist that instantly cools and soothes skin after waxing. Contains menthol and chamomile for quick relief.',
-                'ingredients'      => 'Chamomile Extract, Menthol, Aloe Vera, Purified Water, Witch Hazel',
-                'tags'             => ['aftercare', 'new-arrival', 'bestseller'],
-                'variants'         => [['100ml', 65000, 50]],
-                'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1585386959984-a4155224a1ad?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Post-Wax Cooling Spray - 100ml'],
+                    ['url' => 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'BSA Training Tee'],
                 ],
             ],
             [
-                'slug'             => 'exfoliating-scrub',
-                'name'             => 'Gentle Exfoliating Scrub',
-                'tagline'          => 'Prevent bumps, stay smooth',
-                'price'            => 110000,
-                'compare_at_price' => null,
-                'category'         => Category::AFTERCARE,
-                'description'      => 'A fine-grain scrub for use 48 hours after waxing. Prevents ingrown hairs and keeps skin silky smooth between sessions.',
-                'ingredients'      => 'Walnut Shell Powder, Coconut Oil, Vitamin E, Lavender Oil, Green Tea Extract',
-                'tags'             => ['aftercare', 'essential'],
-                'variants'         => [['150g', 110000, 25]],
-                'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1599305445671-ac291c95aaa9?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Gentle Exfoliating Scrub - 150g'],
-                ],
-            ],
-            [
-                'slug'             => 'calming-face-mask',
-                'name'             => 'Calming Face Mask',
-                'tagline'          => 'Post-facial glow boost',
+                'slug'             => 'bsa-shorts-pro',
+                'name'             => 'BSA Court Shorts',
+                'tagline'          => 'Move without limits',
                 'price'            => 95000,
-                'compare_at_price' => 120000,
-                'category'         => Category::AFTERCARE,
-                'description'      => 'A soothing clay mask with kaolin and rose extract. Perfect after facial waxing or as a weekly skin treat.',
-                'ingredients'      => 'Kaolin Clay, Rose Extract, Honey, Oat Extract, Glycerin',
-                'tags'             => ['aftercare', 'new-arrival'],
-                'variants'         => [['50g', 95000, 20], ['100g', 165000, 12]],
+                'compare_at_price' => null,
+                'category'         => Category::APPAREL,
+                'description'      => 'Lightweight badminton shorts with elastic waistband and side pockets. Designed for freedom of movement on court.',
+                'ingredients'      => '',
+                'tags'             => ['apparel', 'essential'],
+                'variants'         => [['S', 95000, 12], ['M', 95000, 20], ['L', 95000, 18], ['XL', 95000, 8]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1590439471364-192aa70c0b53?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Calming Face Mask - 50g'],
+                    ['url' => 'https://images.unsplash.com/photo-1591195853828-11db59a44f6b?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'BSA Court Shorts'],
                 ],
             ],
 
-            // ── WAX KITS ────────────────────────────────────────────────────
+            // ── NUTRITION ───────────────────────────────────────────────────
             [
-                'slug'             => 'at-home-wax-kit-rica',
-                'name'             => 'At-Home Rica Wax Kit',
-                'tagline'          => 'Salon results at home',
-                'price'            => 250000,
-                'compare_at_price' => 320000,
-                'category'         => Category::WAX_KIT,
-                'description'      => 'Everything you need for a professional Rica wax at home. Includes wax, warmer, pre-wax lotion, post-wax oil, and instructions.',
-                'ingredients'      => 'Rica Wax (200g), Pre-Wax Lotion (50ml), Post-Wax Oil (50ml), Reusable Spatulas (3), Instruction Card',
-                'tags'             => ['wax-kit', 'bestseller', 'new-arrival'],
-                'variants'         => [['Standard', 250000, 15]],
+                'slug'             => 'whey-protein-1kg',
+                'name'             => 'Whey Protein Powder (1kg)',
+                'tagline'          => 'Fuel your recovery',
+                'price'            => 450000,
+                'compare_at_price' => 550000,
+                'category'         => Category::NUTRITION,
+                'description'      => 'Premium whey protein powder for post-workout muscle recovery. 24g protein per serving with low sugar. Chocolate flavour.',
+                'ingredients'      => 'Whey Protein Concentrate, Cocoa Powder, Natural Sweetener, Lecithin',
+                'tags'             => ['nutrition', 'bestseller', 'recovery'],
+                'variants'         => [['Chocolate', 450000, 20], ['Vanilla', 450000, 15]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1607748862156-7c548e7e98f4?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'At-Home Rica Wax Kit'],
+                    ['url' => 'https://images.unsplash.com/photo-1593095948071-474c5cc2c4d8?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Whey Protein Powder'],
                 ],
             ],
             [
-                'slug'             => 'brow-shaping-kit',
-                'name'             => 'Brow Shaping Kit',
-                'tagline'          => 'Perfect brows, your way',
+                'slug'             => 'electrolyte-sachets-20pk',
+                'name'             => 'Electrolyte Sachets (20-Pack)',
+                'tagline'          => 'Stay hydrated, play longer',
                 'price'            => 85000,
                 'compare_at_price' => null,
-                'category'         => Category::WAX_KIT,
-                'description'      => 'A precision brow shaping kit with mini wax strips, tweezers, and brow gel. For touch-ups between salon visits.',
-                'ingredients'      => 'Mini Wax Strips (20), Precision Tweezers, Brow Gel (5ml), Mirror',
-                'tags'             => ['wax-kit', 'essential'],
-                'variants'         => [['Standard', 85000, 30]],
+                'category'         => Category::NUTRITION,
+                'description'      => 'Rapid hydration electrolyte sachets with sodium, potassium, and magnesium. Mix with water during or after training.',
+                'ingredients'      => 'Sodium Citrate, Potassium Chloride, Magnesium Glycinate, Natural Lemon Flavour, Stevia',
+                'tags'             => ['nutrition', 'essential', 'hydration'],
+                'variants'         => [['Lemon', 85000, 35], ['Orange', 85000, 25]],
                 'images'           => [
-                    ['url' => 'https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Brow Shaping Kit'],
+                    ['url' => 'https://images.unsplash.com/photo-1622543925917-763c34d1a86e?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Electrolyte Sachets'],
+                ],
+            ],
+            [
+                'slug'             => 'energy-bar-box-12',
+                'name'             => 'Energy Bar Box (12 bars)',
+                'tagline'          => 'Quick fuel, great taste',
+                'price'            => 240000,
+                'compare_at_price' => 290000,
+                'category'         => Category::NUTRITION,
+                'description'      => 'Oat-based energy bars with dates, nuts, and honey. Perfect pre-workout fuel or post-game snack. No artificial ingredients.',
+                'ingredients'      => 'Rolled Oats, Dates, Almonds, Honey, Peanut Butter, Dark Chocolate Chips, Salt',
+                'tags'             => ['nutrition', 'new-arrival', 'snacks'],
+                'variants'         => [['Mixed Box', 240000, 18]],
+                'images'           => [
+                    ['url' => 'https://images.unsplash.com/photo-1622484212850-eb596d769edc?auto=format&fit=crop&w=800&h=1000&q=80', 'alt_text' => 'Energy Bar Box'],
                 ],
             ],
         ];
@@ -174,7 +174,7 @@ class ProductSeeder extends Seeder
                 $skuLabel = strtoupper(str_replace([' ', 'ml', 'g'], '', $label));
                 $product->variants()->create([
                     'label'          => $label,
-                    'sku'            => 'PP-' . $skuSlug . '-' . $skuLabel,
+                    'sku'            => 'BSA-' . $skuSlug . '-' . $skuLabel,
                     'price_override' => $priceOverride,
                     'stock'          => $stock,
                 ]);
@@ -185,17 +185,17 @@ class ProductSeeder extends Seeder
             }
         }
 
-        // Product pairing
-        $aloeGel  = Product::where('slug', 'aloe-vera-soothing-gel')->first();
-        $cooling  = Product::where('slug', 'post-wax-cooling-spray')->first();
-        $ingrown  = Product::where('slug', 'ingrown-hair-serum')->first();
-        $scrub    = Product::where('slug', 'exfoliating-scrub')->first();
+        // Product pairing (cross-sell)
+        $racket  = Product::where('slug', 'yonex-nanoflare-racket')->first();
+        $grip    = Product::where('slug', 'racket-grip-tape-3pk')->first();
+        $tee     = Product::where('slug', 'bsa-training-tee')->first();
+        $shorts  = Product::where('slug', 'bsa-shorts-pro')->first();
 
-        if ($aloeGel && $cooling) {
-            $aloeGel->pairedWith()->attach($cooling->id);
+        if ($racket && $grip) {
+            $racket->pairedWith()->attach($grip->id);
         }
-        if ($ingrown && $scrub) {
-            $ingrown->pairedWith()->attach($scrub->id);
+        if ($tee && $shorts) {
+            $tee->pairedWith()->attach($shorts->id);
         }
     }
 }

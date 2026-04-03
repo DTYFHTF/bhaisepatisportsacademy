@@ -9,10 +9,12 @@ class CategorySeeder extends Seeder
 {
     public function run(): void
     {
+        ProductCategory::query()->delete();
+
         $categories = [
-            ['name' => 'Skincare',  'value' => 'SKINCARE',  'description' => 'Cleansers, serums, and moisturizers.', 'sort_order' => 1],
-            ['name' => 'Aftercare', 'value' => 'AFTERCARE', 'description' => 'Post-wax sprays, scrubs, and masks.',  'sort_order' => 2],
-            ['name' => 'Wax Kits',  'value' => 'WAX_KIT',   'description' => 'At-home waxing kits and tools.',       'sort_order' => 3],
+            ['name' => 'Equipment',  'value' => 'EQUIPMENT',  'description' => 'Rackets, shuttlecocks, court shoes, and gear.', 'sort_order' => 1],
+            ['name' => 'Apparel',    'value' => 'APPAREL',    'description' => 'Sports clothing, jerseys, and activewear.',      'sort_order' => 2],
+            ['name' => 'Nutrition',  'value' => 'NUTRITION',  'description' => 'Protein, supplements, and sports drinks.',       'sort_order' => 3],
         ];
 
         foreach ($categories as $data) {

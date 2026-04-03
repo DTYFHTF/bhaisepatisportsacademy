@@ -9,7 +9,6 @@ use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -26,7 +25,7 @@ class ServiceResource extends Resource
 {
     protected static ?string $model = Service::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-sparkles';
+    protected static ?string $navigationIcon = 'heroicon-o-trophy';
 
     protected static ?int $navigationSort = 1;
 
@@ -38,7 +37,7 @@ class ServiceResource extends Resource
     {
         return $form->schema([
             Section::make('Service Details')
-                ->icon('heroicon-o-sparkles')
+                ->icon('heroicon-o-trophy')
                 ->schema([
                     Grid::make(2)->schema([
                         TextInput::make('name')
@@ -72,10 +71,6 @@ class ServiceResource extends Resource
                             ->prefix('NPR')
                             ->helperText('In paisa (e.g. 150000 = NPR 1,500)'),
                     ]),
-
-                    TagsInput::make('wax_types')
-                        ->placeholder('Add wax type')
-                        ->suggestions(['Rica', 'Honey', 'Chocolate', 'Sugar']),
 
                     Grid::make(3)->schema([
                         Toggle::make('is_popular')->label('Popular'),

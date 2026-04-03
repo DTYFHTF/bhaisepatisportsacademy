@@ -5,7 +5,7 @@ export interface Product {
   tagline?: string
   price: number
   compareAtPrice?: number
-  category: 'SKINCARE' | 'AFTERCARE' | 'WAX_KIT'
+  category: 'EQUIPMENT' | 'APPAREL' | 'NUTRITION'
   description: string
   productDetails?: {
     ingredients?: string

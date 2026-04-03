@@ -11,20 +11,19 @@ return new class extends Migration
     {
         Schema::create('categories', function (Blueprint $table) {
             $table->id();
-            $table->string('name');          // Display name: "Jackets"
-            $table->string('value')->unique(); // Stored value: "JACKET"
+            $table->string('name');          // Display name: "Equipment"
+            $table->string('value')->unique(); // Stored value: "EQUIPMENT"
             $table->string('description')->nullable();
             $table->unsignedInteger('sort_order')->default(0);
             $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
 
-        // Seed with the 4 existing enum values
+        // Seed with the 3 sports academy categories
         DB::table('categories')->insert([
-            ['name' => 'Jackets',     'value' => 'JACKET',    'sort_order' => 1, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Tops',        'value' => 'TOP',       'sort_order' => 2, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Bottoms',     'value' => 'BOTTOM',    'sort_order' => 3, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
-            ['name' => 'Accessories', 'value' => 'ACCESSORY', 'sort_order' => 4, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Equipment',  'value' => 'EQUIPMENT',  'sort_order' => 1, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Apparel',    'value' => 'APPAREL',    'sort_order' => 2, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
+            ['name' => 'Nutrition',  'value' => 'NUTRITION',  'sort_order' => 3, 'is_active' => true, 'created_at' => now(), 'updated_at' => now()],
         ]);
     }
 

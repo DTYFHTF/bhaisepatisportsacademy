@@ -10,48 +10,48 @@ class LookSeeder extends Seeder
 {
     public function run(): void
     {
-        $aloeGel  = Product::where('slug', 'aloe-vera-soothing-gel')->firstOrFail();
-        $cooling  = Product::where('slug', 'post-wax-cooling-spray')->firstOrFail();
-        $ingrown  = Product::where('slug', 'ingrown-hair-serum')->first();
-        $scrub    = Product::where('slug', 'exfoliating-scrub')->firstOrFail();
-        $cleanser = Product::where('slug', 'pre-wax-cleansing-oil')->firstOrFail();
-        $lotion   = Product::where('slug', 'moisturizing-body-lotion')->firstOrFail();
-        $mask     = Product::where('slug', 'calming-face-mask')->firstOrFail();
+        $racket   = Product::where('slug', 'yonex-nanoflare-racket')->firstOrFail();
+        $shuttles = Product::where('slug', 'feather-shuttlecocks-12pk')->firstOrFail();
+        $grip     = Product::where('slug', 'racket-grip-tape-3pk')->firstOrFail();
+        $tee      = Product::where('slug', 'bsa-training-tee')->firstOrFail();
+        $shorts   = Product::where('slug', 'bsa-shorts-pro')->firstOrFail();
+        $protein  = Product::where('slug', 'whey-protein-1kg')->firstOrFail();
+        $electro  = Product::where('slug', 'electrolyte-sachets-20pk')->firstOrFail();
 
-        // ── Look 1: The Pre-Wax Ritual (3 pieces) ─────────────────────────
+        // ── Look 1: Court Starter Kit (3 pieces) ──────────────────────────
         $look1 = Look::create([
-            'look_hash'      => 'PRE10001',
-            'display_name'   => 'The Pre-Wax Ritual',
+            'look_hash'      => 'KIT10001',
+            'display_name'   => 'Court Starter Kit',
             'phone_hash'     => hash_hmac('sha256', '9841234567', config('app.key')),
-            'ai_explanation' => 'Prepare your skin for the best wax results. Start with the Pre-Wax Cleansing Oil to remove impurities, follow with the Exfoliating Scrub to lift dead skin, then finish with the Aloe Vera Soothing Gel for a calm, ready canvas.',
+            'ai_explanation' => 'Everything you need to start playing. The Nanoflare racket delivers speed and control, feather shuttlecocks give authentic flight, and fresh grip tape ensures a secure hold.',
         ]);
         $look1->items()->createMany([
-            ['product_id' => $cleanser->id, 'order' => 0],
-            ['product_id' => $scrub->id,    'order' => 1],
-            ['product_id' => $aloeGel->id,  'order' => 2],
+            ['product_id' => $racket->id,   'order' => 0],
+            ['product_id' => $shuttles->id, 'order' => 1],
+            ['product_id' => $grip->id,     'order' => 2],
         ]);
 
-        // ── Look 2: The Post-Wax Recovery (2 pieces) ──────────────────────
+        // ── Look 2: Match Day Outfit (2 pieces) ──────────────────────────
         $look2 = Look::create([
-            'look_hash'      => 'PST20002',
-            'display_name'   => 'The Post-Wax Recovery',
-            'ai_explanation' => 'Soothe and protect after waxing. The Post-Wax Cooling Spray instantly calms redness, while the Moisturizing Body Lotion locks in hydration and restores softness.',
+            'look_hash'      => 'OUT20002',
+            'display_name'   => 'Match Day Outfit',
+            'ai_explanation' => 'Look and perform your best on match day. The BSA Training Tee keeps you cool with moisture-wicking fabric, paired with lightweight Court Shorts for full range of movement.',
         ]);
         $look2->items()->createMany([
-            ['product_id' => $cooling->id, 'order' => 0],
-            ['product_id' => $lotion->id,  'order' => 1],
+            ['product_id' => $tee->id,    'order' => 0],
+            ['product_id' => $shorts->id, 'order' => 1],
         ]);
 
-        // ── Look 3: The Glow Routine (3 pieces) ───────────────────────────
+        // ── Look 3: Recovery Bundle (3 pieces) ────────────────────────────
         $look3 = Look::create([
-            'look_hash'      => 'GLW30003',
-            'display_name'   => 'The Glow Routine',
-            'ai_explanation' => 'Your complete skin glow kit. The Calming Face Mask deep-cleanses and soothes, the Aloe Vera Soothing Gel replenishes moisture, and if needed the Ingrown Hair Serum keeps skin bump-free and radiant.',
+            'look_hash'      => 'REC30003',
+            'display_name'   => 'Recovery Bundle',
+            'ai_explanation' => 'Recover smarter after every session. Whey protein rebuilds muscle, electrolytes rehydrate fast, and the Training Tee is ready for your next workout.',
         ]);
         $look3->items()->createMany([
-            ['product_id' => $mask->id,    'order' => 0],
-            ['product_id' => $aloeGel->id, 'order' => 1],
-            ['product_id' => $ingrown->id, 'order' => 2],
+            ['product_id' => $protein->id, 'order' => 0],
+            ['product_id' => $electro->id, 'order' => 1],
+            ['product_id' => $tee->id,     'order' => 2],
         ]);
     }
 }

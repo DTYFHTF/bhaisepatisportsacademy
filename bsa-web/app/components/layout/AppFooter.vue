@@ -24,7 +24,7 @@ const { settings, whatsappUrl } = useSettings()
               class="text-sm text-ink-muted hover:text-accent transition-colors"
             >+977 {{ settings.contactPhone }}</a>
             <a
-              :href="BRAND.googleMaps"
+              :href="settings.googleMapsUrl ?? BRAND.googleMaps"
               target="_blank"
               rel="noopener noreferrer"
               class="text-sm text-ink-muted hover:text-accent transition-colors flex items-center gap-1"
