@@ -9,7 +9,7 @@ export const BRAND = {
   origin: 'Bhaisepati, Kathmandu, Nepal',
   phone: '9821357118',
   whatsapp: '9821357118',
-  email: 'info@bhaisepatisportsacademy.com',
+  email: 'info@bhaisepatisportsacademy.com.np',
   address: 'Bhaisepati, Lalitpur, Nepal',
   instagram: 'https://www.instagram.com/bhaisepatisportsacademy/',
   instagramHandle: '@bhaisepatisportsacademy',

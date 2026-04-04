@@ -56,7 +56,8 @@ jobs:
             "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/bhaisepatisportacademy/bsa-api/"
 
       # ── 6. Write .env on server ───────────────────────────────────────────────
-      #   BACKEND_ENV secret stores the full production .env content.
+      #   BACKEND_ENV secret stores the full production .env content (see /tmp/bsa_prod.env).
+      #   Update MAIL_USERNAME/MAIL_FROM_ADDRESS to info@bhaisepatisportsacademy.com.np
       #   We base64-encode it to safely handle newlines and special chars.
       - name: Write .env on server
         env:
