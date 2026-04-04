@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class DatabaseSeeder extends Seeder
 {
@@ -15,6 +16,9 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Disable FK checks so truncate() doesn't fail on MySQL
+        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+
         // Admin user for Filament panel
         User::updateOrCreate(
             ['email' => 'admin@bsa.com'],
@@ -34,5 +38,7 @@ class DatabaseSeeder extends Seeder
             KitchenSeeder::class,
             StatSeeder::class,
         ]);
+
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
 }

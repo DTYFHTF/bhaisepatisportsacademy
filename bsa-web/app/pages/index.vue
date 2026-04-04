@@ -555,7 +555,7 @@ onMounted(() => {
               { src: IMAGES.teamSport,   caption: 'Team Sessions' },
             ]"
             :key="tile.caption"
-            v-scroll:[(i + 1) * 100]="'fade-up'"
+            v-scroll:[i*100]="'fade-up'"
             class="relative overflow-hidden rounded-2xl group cursor-pointer"
           >
             <img

@@ -98,7 +98,7 @@ useSeoMeta({
           <div
             v-for="(img, i) in GALLERY_IMAGES"
             :key="img.caption"
-            v-scroll:[(i % 3) * 100]="'scale-in'"
+            v-scroll="'scale-in'"
             class="relative aspect-[4/3] overflow-hidden rounded-2xl group cursor-pointer"
           >
             <img
