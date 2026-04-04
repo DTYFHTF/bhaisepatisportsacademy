@@ -18,7 +18,10 @@ return [
         env('FRONTEND_URL', 'http://localhost:3000'),
     ],
 
-    'allowed_origins_patterns' => [],
+    'allowed_origins_patterns' => [
+        '#^https?://bhaisepatisportsacademy\.com\.np$#',
+        '#^https?://www\.bhaisepatisportsacademy\.com\.np$#',
+    ],
 
     'allowed_headers' => ['*'],
 
