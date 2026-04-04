@@ -1,30 +1,50 @@
-# SPA Fallback: route all requests to index.html
-# This file should be deployed alongside the generated static files
+# SPA Fallback — serve index.html for all client-side routes
+# Deploy the contents of .output/public/ to the document root (bhaisepatisportacademy/bsa-web/)
+
+Options -MultiViews -Indexes
 
 <IfModule mod_rewrite.c>
   RewriteEngine On
   RewriteBase /
 
-  # If the request is for an existing file or directory, serve it
+  # Don't rewrite real files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-
-  # Otherwise, serve index.html (SPA client-side routing)
   RewriteRule ^(.*)$ /index.html [L]
 </IfModule>
 
-# Enable gzip compression
-<IfModule mod_deflate.c>
-  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
+# ── Security headers ─────────────────────────────────────────
+<IfModule mod_headers.c>
+  Header set X-Content-Type-Options "nosniff"
+  Header set X-Frame-Options "SAMEORIGIN"
+  Header set Referrer-Policy "strict-origin-when-cross-origin"
+  Header set X-XSS-Protection "1; mode=block"
+
+  # Immutable cache for Vite-hashed assets (filenames contain content hash)
+  <FilesMatch "\.(js|css|woff2?)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # HTML must always revalidate (SPA entry point)
+  <FilesMatch "\.html$">
+    Header set Cache-Control "no-cache, must-revalidate"
+  </FilesMatch>
 </IfModule>
 
-# Cache static assets
+# ── Asset caching ─────────────────────────────────────────────
 <IfModule mod_expires.c>
   ExpiresActive On
-  ExpiresByType text/css "access plus 1 year"
+  ExpiresByType text/css              "access plus 1 year"
   ExpiresByType application/javascript "access plus 1 year"
-  ExpiresByType image/png "access plus 1 year"
-  ExpiresByType image/jpeg "access plus 1 year"
-  ExpiresByType image/svg+xml "access plus 1 year"
-  ExpiresByType font/woff2 "access plus 1 year"
+  ExpiresByType image/png             "access plus 6 months"
+  ExpiresByType image/jpeg            "access plus 6 months"
+  ExpiresByType image/webp            "access plus 6 months"
+  ExpiresByType image/svg+xml         "access plus 1 year"
+  ExpiresByType image/x-icon          "access plus 1 year"
+  ExpiresByType font/woff2            "access plus 1 year"
+</IfModule>
+
+# ── Gzip compression ─────────────────────────────────────────
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json image/svg+xml
 </IfModule>

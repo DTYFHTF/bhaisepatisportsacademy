@@ -9,7 +9,7 @@ export const BRAND = {
   origin: 'Bhaisepati, Kathmandu, Nepal',
   phone: '9821357118',
   whatsapp: '9821357118',
-  email: 'info@bsa.abinmaharjan.com.np',
+  email: 'info@bhaisepatisportsacademy.com',
   address: 'Bhaisepati, Lalitpur, Nepal',
   instagram: 'https://www.instagram.com/bhaisepatisportsacademy/',
   instagramHandle: '@bhaisepatisportsacademy',
@@ -34,6 +34,16 @@ export const IMAGES = {
   teamSport: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
   aboutFacility: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80',
 } as const
+
+// Gallery images for the facility photo grid
+export const GALLERY_IMAGES: { src: string; caption: string }[] = [
+  { src: 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=800&q=80', caption: 'Professional Courts' },
+  { src: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=800&q=80', caption: 'Action on Court' },
+  { src: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=800&q=80', caption: 'Fully Equipped Gym' },
+  { src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80', caption: 'Strength Training' },
+  { src: 'https://images.unsplash.com/photo-1520974048-a3a50c2b0eb0?auto=format&fit=crop&w=800&q=80', caption: 'Sauna & Steam' },
+  { src: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=800&q=80', caption: 'Team Sessions' },
+]
 
 // Category-to-image mapping for program cards
 export const PROGRAM_IMAGES: Record<string, string> = {

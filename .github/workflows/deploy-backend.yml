@@ -1,0 +1,76 @@
+name: Deploy Backend
+
+# Triggers on every push to main that touches the API
+on:
+  push:
+    branches: [main]
+    paths:
+      - "bsa-api/**"
+      - "!bsa-api/.env*"
+      - ".github/workflows/deploy-backend.yml"
+  workflow_dispatch:
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # ── 1. Checkout ──────────────────────────────────────────────────────────
+      - uses: actions/checkout@v4
+
+      # ── 2. PHP + Composer ────────────────────────────────────────────────────
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: none
+
+      # ── 3. Install Composer dependencies (no dev, optimised autoloader) ──────
+      - name: Install Composer packages
+        working-directory: bsa-api
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      # ── 4. Setup SSH ──────────────────────────────────────────────────────────
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+
+      # ── 5. rsync application files ────────────────────────────────────────────
+      #   Destination: ~/bhaisepatisportacademy/bsa-api/
+      #   Excluded: .env (managed separately), uploaded files, logs, cache, .git
+      - name: Rsync API files
+        run: |
+          rsync -rlptzv --delete \
+            --exclude='.env' \
+            --exclude='storage/app/public/' \
+            --exclude='storage/logs/' \
+            --exclude='bootstrap/cache/' \
+            --exclude='.git/' \
+            --exclude='database/database.sqlite' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+            bsa-api/ \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/bhaisepatisportacademy/bsa-api/"
+
+      # ── 6. Write .env on server ───────────────────────────────────────────────
+      #   BACKEND_ENV secret stores the full production .env content.
+      #   We base64-encode it to safely handle newlines and special chars.
+      - name: Write .env on server
+        env:
+          BACKEND_ENV: ${{ secrets.BACKEND_ENV }}
+        run: |
+          printf '%s' "$BACKEND_ENV" | base64 | \
+            ssh -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
+              "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+              'base64 -d > ~/bhaisepatisportacademy/bsa-api/.env'
+
+      # ── 7. Post-deploy Artisan commands ──────────────────────────────────────
+      #   If cPanel's PHP binary is not just 'php', adjust to e.g. php8.2 or /usr/local/bin/php82
+      - name: Artisan post-deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.SSH_PORT }}" \
+            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}" \
+            'cd ~/bhaisepatisportacademy/bsa-api && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && (php artisan storage:link 2>/dev/null || true)'

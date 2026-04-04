@@ -514,6 +514,81 @@ onMounted(() => {
       </div>
     </section>
 
+    <!-- ═══ GALLERY ═══ -->
+    <section class="section-padding bg-ink">
+      <div class="section-container">
+        <!-- Heading -->
+        <div v-scroll="'fade-up'" class="text-center mb-10">
+          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Visual Tour</p>
+          <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">Life at BSA</h2>
+          <p class="mt-3 text-sm text-white/50 max-w-sm mx-auto">Courts, gym, sauna — see what's waiting for you.</p>
+        </div>
+
+        <!-- Bento grid: 1 large (2×2) + 4 cells -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-3">
+          <!-- Large featured -->
+          <div
+            v-scroll="'scale-in'"
+            class="col-span-2 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
+          >
+            <img
+              :src="IMAGES.badmintonCourt"
+              alt="Professional badminton courts"
+              loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            />
+            <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent" />
+            <div class="absolute inset-0 bg-accent/0 group-hover:bg-accent/10 transition-colors duration-300" />
+            <div class="absolute bottom-5 left-5">
+              <span class="inline-flex items-center gap-1.5 rounded-full bg-accent px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white shadow-lg">
+                Professional Courts
+              </span>
+            </div>
+          </div>
+
+          <!-- 4 smaller tiles -->
+          <div
+            v-for="(tile, i) in [
+              { src: IMAGES.gym,         caption: 'Gym Floor' },
+              { src: IMAGES.sauna,       caption: 'Sauna & Steam' },
+              { src: IMAGES.gymTraining, caption: 'Strength Training' },
+              { src: IMAGES.teamSport,   caption: 'Team Sessions' },
+            ]"
+            :key="tile.caption"
+            v-scroll:[(i + 1) * 100]="'fade-up'"
+            class="relative overflow-hidden rounded-2xl group cursor-pointer"
+          >
+            <img
+              :src="tile.src"
+              :alt="tile.caption"
+              loading="lazy"
+              class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            />
+            <div class="absolute inset-0 bg-black/0 group-hover:bg-black/55 transition-colors duration-300 flex items-end p-3">
+              <span class="text-xs font-bold uppercase tracking-wider text-white translate-y-2 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
+                {{ tile.caption }}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Instagram link -->
+        <div v-scroll="'fade-up'" class="text-center mt-8">
+          <a
+            :href="BRAND.instagram"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex items-center gap-2 text-sm font-medium text-white/50 hover:text-white transition-colors"
+          >
+            <svg class="h-4 w-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z" />
+            </svg>
+            Follow <strong class="text-white/70">{{ BRAND.instagramHandle }}</strong> for daily updates
+          </a>
+        </div>
+      </div>
+    </section>
+
     <!-- ═══ CTA ═══ -->
     <section class="relative overflow-hidden">
       <!-- CTA background image -->
