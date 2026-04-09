@@ -65,7 +65,7 @@ class ViewOrder extends ViewRecord
                         ->native(false),
                     TextInput::make('courier_tracking_id')
                         ->label('Tracking Number')
-                        ->placeholder('e.g. PP-123456'),
+                        ->placeholder('e.g. NCM-123456'),
                     TextInput::make('courier_tracking_url')
                         ->label('Tracking URL (optional)')
                         ->url()

@@ -13,7 +13,7 @@ const config = useRuntimeConfig()
 
 const { data: programs } = await useFetch<{
   id: string; name: string; description: string; category: string; level: string; duration: string;
-  sessions_per_week: number; price: number; is_popular: boolean; features: string[]
+  sessionsPerWeek: number; price: number; isPopular: boolean; features: string[]
 }[]>(`${config.public.apiBase}/programs`, { server: false })
 
 const activeCategory = ref<ProgramCategory | null>(null)
@@ -88,7 +88,7 @@ const filteredPrograms = computed(() => {
                 <span class="rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                   {{ program.category }}
                 </span>
-                <span v-if="program.is_popular" class="rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
+                <span v-if="program.isPopular" class="rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
                   Popular
                 </span>
               </div>
@@ -110,7 +110,7 @@ const filteredPrograms = computed(() => {
                 </span>
                 <span class="flex items-center gap-1">
                   <Zap class="h-3.5 w-3.5 text-accent" />
-                  {{ program.sessions_per_week }}x per week
+                  {{ program.sessionsPerWeek }}x per week
                 </span>
               </div>
 

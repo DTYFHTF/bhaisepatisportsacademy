@@ -10,7 +10,7 @@ export type PaymentMethod = 'ESEWA' | 'COD'
 
 export interface Order {
   id: string
-  orderId: string // PP-YYMM-XXXX
+  orderId: string // BSA-YYMM-XXXX
   phoneHash: string
   customerName: string
   address: string

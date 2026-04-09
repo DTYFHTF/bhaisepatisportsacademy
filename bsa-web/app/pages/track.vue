@@ -192,7 +192,7 @@ onUnmounted(() => clearInterval(pollInterval))
         <UiAppInput
           v-model="orderIdInput"
           label="Order ID"
-          placeholder="PP-2601-4821"
+          placeholder="BSA-2604-0001"
         />
 
         <p class="text-xs text-ink-muted -mt-3">Enter either your phone number, order ID, or both.</p>

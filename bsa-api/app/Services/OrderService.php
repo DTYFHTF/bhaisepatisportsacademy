@@ -106,7 +106,7 @@ class OrderService
 
     private function generateOrderId(): string
     {
-        $prefix = 'PP-' . now()->format('ym') . '-';
+        $prefix = 'BSA-' . now()->format('ym') . '-';
         $random = str_pad((string) random_int(1000, 9999), 4, '0', STR_PAD_LEFT);
 
         while (Order::where('order_id', $prefix . $random)->exists()) {

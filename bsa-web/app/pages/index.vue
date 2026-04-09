@@ -13,7 +13,7 @@ const { data: facilities } = await useFetch<{ id: string; name: string; category
   `${config.public.apiBase}/facilities`, { server: false },
 )
 
-const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; is_popular: boolean; sessions_per_week: number; duration: string; level: string }[]>(
+const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; isPopular: boolean; sessionsPerWeek: number; duration: string; level: string }[]>(
   `${config.public.apiBase}/programs`, { server: false },
 )
 
@@ -86,7 +86,7 @@ const stats = computed(() =>
 )
 
 const popularPrograms = computed(() =>
-  (allPrograms.value ?? []).filter((p) => p.is_popular).slice(0, 3),
+  (allPrograms.value ?? []).filter((p) => p.isPopular).slice(0, 3),
 )
 
 const todaySchedule = computed(() => (rawSchedule.value ?? []).slice(0, 5))
@@ -155,9 +155,10 @@ onMounted(() => {
           class="absolute inset-0 w-full h-full object-cover"
         >
           <!-- Badminton & sports training – Mixkit free stock -->
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-sport-badminton-player-training-21143-large.mp4" type="video/mp4" />
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-two-people-playing-badminton-outdoors-34802-large.mp4" type="video/mp4" />
-          <source src="https://assets.mixkit.co/videos/preview/mixkit-people-working-out-in-the-gym-34752-large.mp4" type="video/mp4" />
+          <!-- Pixabay free license – no attribution required -->
+          <source src="https://cdn.pixabay.com/video/2022/08/10/127261-738976637_large.mp4" type="video/mp4" />
+          <source src="https://cdn.pixabay.com/video/2021/11/08/94908-644654820_large.mp4" type="video/mp4" />
+          <source src="https://cdn.pixabay.com/video/2019/11/22/29341-375268663_large.mp4" type="video/mp4" />
         </video>
       </div>
       <!-- Dark gradient overlay -->
@@ -335,7 +336,7 @@ onMounted(() => {
               <span class="absolute top-3 left-3 rounded-full bg-accent px-3 py-1 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                 {{ program.category }}
               </span>
-              <span v-if="program.is_popular" class="absolute top-3 right-3 rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
+              <span v-if="program.isPopular" class="absolute top-3 right-3 rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
                 Popular
               </span>
             </div>
