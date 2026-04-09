@@ -152,6 +152,8 @@ useSeoMeta({
             <div>
               <p class="font-medium text-ink">Phone</p>
               <a :href="`tel:+977${BRAND.phone}`" class="text-sm text-ink-muted hover:text-accent transition-colors">+977 {{ BRAND.phone }}</a>
+              <br />
+              <a href="tel:+9779843484950" class="text-sm text-ink-muted hover:text-accent transition-colors">+977 9843484950</a>
             </div>
           </div>
           <div v-scroll:200="'fade-up'" class="flex items-start gap-3">

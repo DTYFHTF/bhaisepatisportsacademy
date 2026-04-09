@@ -24,6 +24,10 @@ const { settings, whatsappUrl } = useSettings()
               class="text-sm text-ink-muted hover:text-accent transition-colors"
             >+977 {{ settings.contactPhone }}</a>
             <a
+              href="tel:+9779843484950"
+              class="text-sm text-ink-muted hover:text-accent transition-colors"
+            >+977 9843484950</a>
+            <a
               :href="settings.googleMapsUrl ?? BRAND.googleMaps"
               target="_blank"
               rel="noopener noreferrer"
