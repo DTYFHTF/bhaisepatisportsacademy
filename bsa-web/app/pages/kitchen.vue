@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight } from 'lucide-vue-next'
-import { BRAND, IMAGES, KITCHEN_IMAGES } from '~/utils/constants'
+import { BRAND, IMAGES, KITCHEN_IMAGES, KITCHEN_MENU, KITCHEN_CATEGORIES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
 useSeoMeta({
@@ -9,27 +9,42 @@ useSeoMeta({
 })
 
 const config = useRuntimeConfig()
-const { data: menu } = await useFetch<{
+const { data: apiMenu } = await useFetch<{
   id: string; slug: string; name: string; description: string; price: number;
   category: string; is_popular: boolean
 }[]>(`${config.public.apiBase}/kitchen`, { server: false })
 
-const KITCHEN_CATEGORIES: Record<string, string> = {
-  'pre-workout': 'Pre-Workout',
-  'post-workout': 'Post-Workout Recovery',
-  'snacks': 'Snacks',
-  'drinks': 'Drinks & Shakes',
-}
+const menu = computed(() => {
+  if (apiMenu.value && apiMenu.value.length > 0) {
+    return apiMenu.value.map((item) => ({
+      id: item.id,
+      name: item.name,
+      description: item.description,
+      price: item.price,
+      category: item.category,
+      is_popular: item.is_popular,
+    }))
+  }
+  // Fallback to static data when the API is unreachable
+  return KITCHEN_MENU.map((item) => ({
+    id: item.id,
+    name: item.name,
+    description: item.description,
+    price: item.price,
+    category: item.category,
+    is_popular: item.isPopular ?? false,
+  }))
+})
 
 const activeCategory = ref<string | null>(null)
 
 const filteredMenu = computed(() => {
-  if (!activeCategory.value) return menu.value ?? []
-  return (menu.value ?? []).filter((item) => item.category === activeCategory.value)
+  if (!activeCategory.value) return menu.value
+  return menu.value.filter((item) => item.category === activeCategory.value)
 })
 
 const categories = computed(() => {
-  const cats = [...new Set((menu.value ?? []).map((item) => item.category))]
+  const cats = [...new Set(menu.value.map((item) => item.category))]
   return cats
 })
 
@@ -85,7 +100,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
             :class="activeCategory === cat ? 'bg-accent text-canvas' : 'bg-surface text-ink-muted hover:text-ink'"
             @click="activeCategory = cat"
           >
-            {{ KITCHEN_CATEGORIES[cat] ?? cat }}
+            {{ (KITCHEN_CATEGORIES as Record<string, string>)[cat] ?? cat }}
           </button>
         </div>
       </div>
@@ -115,7 +130,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
               <div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
               <div class="absolute top-3 left-3 flex gap-2">
                 <span class="rounded-full bg-energy px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-white shadow-md">
-                  {{ KITCHEN_CATEGORIES[item.category] ?? item.category }}
+                  {{ (KITCHEN_CATEGORIES as Record<string, string>)[item.category] ?? item.category }}
                 </span>
                 <span v-if="item.is_popular" class="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-white shadow-md">
                   Popular

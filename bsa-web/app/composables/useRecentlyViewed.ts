@@ -35,7 +35,7 @@ export function useRecentlyViewed() {
     const newItem: RecentItem = {
       slug: product.slug,
       name: product.name,
-      colorName: product.colorName,
+      colorName: product.name,
       price: product.price,
       image: product.images[0]?.url || '',
       viewedAt: Date.now(),

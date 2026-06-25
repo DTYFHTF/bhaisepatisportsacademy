@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { Calendar, Clock, ArrowLeft, Phone } from 'lucide-vue-next'
+import { Calendar, Clock, ArrowLeft, Phone, ChevronDown } from 'lucide-vue-next'
 import { BRAND, COURT_BOOKING } from '~/utils/constants'
-import { formatPrice, formatTime } from '~/utils/formatters'
+import { formatPrice, formatTime, addMinutesToTime } from '~/utils/formatters'
 
 useSeoMeta({
   title: 'Book a Court | Bhaisepati Sports Academy',
@@ -11,6 +11,9 @@ useSeoMeta({
 definePageMeta({ ssr: false })
 
 const step = ref<'slot' | 'details' | 'confirm'>('slot')
+const submitting = ref(false)
+const submitError = ref('')
+const bookingRef = ref('')
 
 const selectedCourt = ref<number | null>(null)
 const preferredDate = ref('')
@@ -19,6 +22,7 @@ const duration = ref(60)
 const customerName = ref('')
 const customerPhone = ref('')
 const notes = ref('')
+const timeDropdownOpen = ref(false)
 
 const minDate = computed(() => {
   const d = new Date()
@@ -27,6 +31,27 @@ const minDate = computed(() => {
 })
 
 const availableTimes = COURT_BOOKING.timeSlots
+
+// Mock existing bookings to demonstrate overlap filtering
+const existingBookings = ref([
+  { date: '2026-06-25', startTime: '08:00', endTime: '09:30' },
+])
+
+const filteredAvailableTimes = computed(() => {
+  return availableTimes.filter((t) => {
+    const slotEnd = addMinutesToTime(t, duration.value)
+    return !existingBookings.value.some((booking) => {
+      if (booking.date !== preferredDate.value) return false
+      return t < booking.endTime && slotEnd > booking.startTime
+    })
+  })
+})
+
+const timeRangeLabel = computed(() => {
+  if (!preferredTime.value) return ''
+  const endTime = addMinutesToTime(preferredTime.value, duration.value)
+  return `${formatTime(preferredTime.value)} – ${formatTime(endTime)}`
+})
 
 const canProceed = computed(() => {
   if (step.value === 'slot') return preferredDate.value && preferredTime.value
@@ -39,6 +64,16 @@ const totalPrice = computed(() => {
   return COURT_BOOKING.pricePerHour * hours
 })
 
+function selectTime(time: string) {
+  preferredTime.value = time
+  timeDropdownOpen.value = false
+}
+
+function toggleDropdown() {
+  if (!preferredDate.value) return
+  timeDropdownOpen.value = !timeDropdownOpen.value
+}
+
 function nextStep() {
   if (step.value === 'slot') step.value = 'details'
   else if (step.value === 'details') step.value = 'confirm'
@@ -49,11 +84,55 @@ function goBack() {
   else if (step.value === 'confirm') step.value = 'details'
 }
 
-function confirmBooking() {
-  const message = `Hi! I'd like to book a badminton court at BSA.\n\nDate: ${preferredDate.value}\nTime: ${preferredTime.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${notes.value ? `\nNotes: ${notes.value}` : ''}`
-  const encoded = encodeURIComponent(message)
-  window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
+async function confirmBooking() {
+  if (submitting.value) return
+  submitting.value = true
+  submitError.value = ''
+
+  try {
+    const config = useRuntimeConfig()
+    const response = await $fetch<{ booking: { ref: string }; message: string }>(`${config.public.apiBase}/bookings`, {
+      method: 'POST',
+      body: {
+        type: 'court',
+        customer_name: customerName.value,
+        customer_phone: customerPhone.value,
+        scheduled_date: preferredDate.value,
+        scheduled_time: preferredTime.value,
+        duration: duration.value,
+        court_number: selectedCourt.value,
+        notes: notes.value || undefined,
+      },
+    })
+
+    bookingRef.value = response.booking.ref
+
+    // Open WhatsApp with confirmation message including booking ID
+    const message = `Hello, I confirm my booking.\n\nBooking ID: ${response.booking.ref}\nDate: ${preferredDate.value}\nTime: ${timeRangeLabel.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}`
+    const encoded = encodeURIComponent(message)
+    window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
+  } catch (e: any) {
+    submitError.value = e?.data?.message || e?.message || 'Something went wrong. Please try again.'
+  } finally {
+    submitting.value = false
+  }
 }
+
+// Close dropdown when clicking outside
+function onWindowClick(e: MouseEvent) {
+  const target = e.target as HTMLElement
+  if (!target.closest('[data-time-dropdown]')) {
+    timeDropdownOpen.value = false
+  }
+}
+
+onMounted(() => {
+  window.addEventListener('click', onWindowClick)
+})
+
+onUnmounted(() => {
+  window.removeEventListener('click', onWindowClick)
+})
 </script>
 
 <template>
@@ -102,19 +181,40 @@ function confirmBooking() {
               </div>
             </div>
 
-            <!-- Time -->
+            <!-- Time (Custom Dropdown) -->
             <div>
               <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Time</label>
-              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
+              <div class="relative max-w-xs" data-time-dropdown>
                 <button
-                  v-for="t in availableTimes"
-                  :key="t"
-                  class="rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors"
-                  :class="preferredTime === t ? 'border-accent bg-accent text-canvas' : 'border-border text-ink-muted hover:border-accent/30'"
-                  @click="preferredTime = t"
+                  class="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-left text-ink flex items-center justify-between focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent transition-colors"
+                  :class="preferredTime ? 'text-ink' : 'text-ink-muted'"
+                  :disabled="!preferredDate"
+                  @click="toggleDropdown"
                 >
-                  {{ formatTime(t) }}
+                  <span>{{ preferredTime ? timeRangeLabel : 'Choose a time' }}</span>
+                  <ChevronDown
+                    class="h-4 w-4 text-ink-muted transition-transform duration-200"
+                    :class="timeDropdownOpen ? 'rotate-180' : ''"
+                  />
                 </button>
+
+                <div
+                  v-if="timeDropdownOpen"
+                  class="absolute z-50 mt-1 w-full max-w-xs rounded-lg border border-border bg-surface shadow-xl max-h-60 overflow-y-auto"
+                >
+                  <div v-if="filteredAvailableTimes.length === 0" class="px-4 py-6 text-sm text-ink-muted text-center">
+                    No available times for this date and duration.
+                  </div>
+                  <button
+                    v-for="t in filteredAvailableTimes"
+                    :key="t"
+                    class="w-full text-left px-4 py-2.5 text-sm cursor-pointer transition-colors duration-150"
+                    :class="preferredTime === t ? 'bg-accent text-canvas' : 'text-ink hover:bg-accent hover:text-canvas'"
+                    @click="selectTime(t)"
+                  >
+                    {{ formatTime(t) }} – {{ formatTime(addMinutesToTime(t, duration)) }}
+                  </button>
+                </div>
               </div>
             </div>
 
@@ -192,7 +292,8 @@ function confirmBooking() {
             <div class="rounded-2xl border border-accent/20 bg-accent/5 p-6 space-y-4">
               <div>
                 <p class="text-xs font-medium uppercase tracking-wider text-accent mb-1">Court Booking</p>
-                <p class="text-sm text-ink">{{ preferredDate }} at {{ formatTime(preferredTime) }}</p>
+                <p class="text-sm text-ink">{{ preferredDate }}</p>
+                <p class="text-sm text-ink-muted">{{ timeRangeLabel }}</p>
                 <p class="text-sm text-ink-muted">{{ duration }} minutes{{ selectedCourt ? ` · Court ${selectedCourt}` : '' }}</p>
               </div>
 
@@ -208,8 +309,10 @@ function confirmBooking() {
               </div>
             </div>
 
+            <p v-if="submitError" class="text-sm text-error font-medium">{{ submitError }}</p>
+
             <p class="text-sm text-ink-muted">
-              Clicking confirm opens WhatsApp with your booking details. Our team will confirm your slot.
+              Clicking confirm saves your booking and opens WhatsApp. Our team will confirm your slot.
             </p>
           </div>
         </div>
@@ -233,11 +336,11 @@ function confirmBooking() {
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-ink-muted">Time</span>
-                <span class="text-ink">{{ formatTime(preferredTime) }}</span>
+                <span class="text-ink">{{ timeRangeLabel }}</span>
               </div>
               <div class="flex justify-between text-sm">
                 <span class="text-ink-muted">Duration</span>
-                <span class="text-ink">{{ duration }} min</span>
+                <span class="text-ink">{{ duration }} min ({{ timeRangeLabel }})</span>
               </div>
               <div v-if="selectedCourt" class="flex justify-between text-sm">
                 <span class="text-ink-muted">Court</span>
@@ -266,7 +369,8 @@ function confirmBooking() {
               variant="primary"
               size="lg"
               class="w-full"
-              :disabled="!canProceed"
+              :disabled="!canProceed || submitting"
+              :loading="submitting"
               @click="step === 'confirm' ? confirmBooking() : nextStep()"
             >
               {{ step === 'confirm' ? 'Confirm via WhatsApp' : 'Continue' }}

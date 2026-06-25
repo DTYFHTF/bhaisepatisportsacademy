@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight, Dumbbell, Flame, Phone } from 'lucide-vue-next'
-import { BRAND, IMAGES } from '~/utils/constants'
+import { BRAND, IMAGES, FACILITIES } from '~/utils/constants'
 
 useSeoMeta({
   title: 'Facilities | Bhaisepati Sports Academy',
@@ -8,9 +8,31 @@ useSeoMeta({
 })
 
 const config = useRuntimeConfig()
-const { data: facilities } = await useFetch<{
+const { data: apiFacilities } = await useFetch<{
   id: string; name: string; category: string; description: string; features: string[]; image_url: string | null
 }[]>(`${config.public.apiBase}/facilities`, { server: false })
+
+const facilities = computed(() => {
+  if (apiFacilities.value && apiFacilities.value.length > 0) {
+    return apiFacilities.value.map((f) => ({
+      id: f.id,
+      name: f.name,
+      category: f.category,
+      description: f.description,
+      features: f.features,
+      image_url: f.image_url,
+    }))
+  }
+  // Fallback to static data when the API is unreachable
+  return FACILITIES.map((f) => ({
+    id: f.id,
+    name: f.name,
+    category: f.category,
+    description: f.description,
+    features: f.features,
+    image_url: null,
+  }))
+})
 
 // Fallback images per category
 const categoryImage = (cat: string, imgUrl: string | null) => {

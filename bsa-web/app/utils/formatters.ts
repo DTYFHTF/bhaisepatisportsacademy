@@ -68,6 +68,17 @@ export function calculateDeliveryFee(city: string, subtotal: number): number {
 }
 
 /**
+ * Add minutes to a "HH:MM" time string and return the result as "HH:MM".
+ */
+export function addMinutesToTime(time: string, minutes: number): string {
+  const [h, m] = time.split(':').map(Number)
+  const totalMinutes = h * 60 + m + minutes
+  const newH = Math.floor(totalMinutes / 60)
+  const newM = totalMinutes % 60
+  return `${String(newH).padStart(2, '0')}:${String(newM).padStart(2, '0')}`
+}
+
+/**
  * Format a time slot string "HH:MM" to 12-hour format.
  */
 export function formatTime(time: string): string {

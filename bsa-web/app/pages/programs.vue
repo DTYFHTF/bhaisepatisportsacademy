@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ChevronRight, Clock, Users, Zap } from 'lucide-vue-next'
-import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
+import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, PROGRAMS, BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
 
@@ -11,16 +11,48 @@ useSeoMeta({
 
 const config = useRuntimeConfig()
 
-const { data: programs } = await useFetch<{
-  id: string; name: string; description: string; category: string; level: string; duration: string;
-  sessionsPerWeek: number; price: number; isPopular: boolean; features: string[]
+const { data: apiPrograms } = await useFetch<{
+  id: string; slug: string; name: string; description: string; category: string; level: string;
+  age_group: string; duration: string; sessions_per_week: number; price: number;
+  is_popular: boolean; features: string[]; sort_order: number
 }[]>(`${config.public.apiBase}/programs`, { server: false })
+
+// Normalise API programs to match the template expectations, falling back to static PROGRAMS
+const programs = computed(() => {
+  if (apiPrograms.value && apiPrograms.value.length > 0) {
+    return apiPrograms.value.map((p) => ({
+      id: p.id,
+      name: p.name,
+      description: p.description,
+      category: p.category,
+      level: p.level,
+      duration: p.duration,
+    sessionsPerWeek: p.sessions_per_week,
+      price: p.price,
+      isPopular: p.is_popular,
+      features: p.features,
+    }))
+  }
+  // Fallback to static data when the API is unreachable
+  return PROGRAMS.map((p) => ({
+    id: p.id,
+    name: p.name,
+    description: p.description,
+    category: p.category,
+    level: p.level,
+    duration: p.duration,
+    sessionsPerWeek: p.sessionsPerWeek,
+    price: p.price,
+    isPopular: p.isPopular,
+    features: p.features,
+  }))
+})
 
 const activeCategory = ref<ProgramCategory | null>(null)
 
 const filteredPrograms = computed(() => {
-  if (!activeCategory.value) return programs.value ?? []
-  return (programs.value ?? []).filter((p) => p.category === activeCategory.value)
+  if (!activeCategory.value) return programs.value
+  return programs.value.filter((p) => p.category === activeCategory.value)
 })
 </script>
 
@@ -162,7 +194,7 @@ const filteredPrograms = computed(() => {
           Drop by for a trial session or call us to discuss your training goals.
         </p>
         <div class="mt-6">
-          <NuxtLink to="/book">
+          <NuxtLink to="/book-trial">
             <UiAppButton variant="primary" size="lg">
               Book a Trial Session
               <ChevronRight class="h-4 w-4 ml-1" />

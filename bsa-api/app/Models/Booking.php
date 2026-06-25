@@ -31,10 +31,9 @@ class Booking extends Model
 
     public static function generateRef(): string
     {
-        $prefix = 'BSA';
-        $date = now()->format('ym');
-        $random = str_pad((string) random_int(0, 9999), 4, '0', STR_PAD_LEFT);
-
-        return "{$prefix}-{$date}-{$random}";
+        $prefix = 'BK';
+        $count = self::count();
+        $number = str_pad((string) ($count + 1), 5, '0', STR_PAD_LEFT);
+        return "{$prefix}-{$number}";
     }
 }

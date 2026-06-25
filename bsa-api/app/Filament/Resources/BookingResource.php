@@ -111,6 +111,11 @@ class BookingResource extends Resource
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options(collect(BookingStatus::cases())->mapWithKeys(fn ($s) => [$s->value => $s->name])),
+                Tables\Filters\SelectFilter::make('type')
+                    ->options([
+                        'court' => 'Court Bookings',
+                        'trial' => 'Free Trial Sessions',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\BookingController;
+use App\Http\Controllers\TrialBookingController;
 use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\KitchenController;
@@ -45,7 +46,13 @@ Route::get('/services/{slug}', [ServiceController::class, 'show']);
 
 // Bookings
 Route::post('/bookings', [BookingController::class, 'store']);
+Route::get('/bookings', [BookingController::class, 'index']);
 Route::get('/bookings/{ref}', [BookingController::class, 'show']);
+
+// Trial Bookings
+Route::post('/trial-bookings', [TrialBookingController::class, 'store']);
+Route::get('/trial-bookings', [TrialBookingController::class, 'index']);
+Route::get('/trial-bookings/{ref}', [TrialBookingController::class, 'show']);
 
 // Products
 Route::get('/products', [ProductController::class, 'index']);

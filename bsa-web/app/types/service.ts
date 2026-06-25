@@ -1,5 +1,5 @@
 export type FacilityCategory = 'BADMINTON' | 'GYM' | 'SAUNA'
-export type ProgramCategory = 'BADMINTON' | 'GYM' | 'MEMBERSHIP'
+export type ProgramCategory = 'BADMINTON' | 'FITNESS' | 'RECOVERY'
 
 export interface Program {
   id: string
