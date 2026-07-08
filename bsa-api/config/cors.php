@@ -15,6 +15,7 @@ return [
     'allowed_origins' => [
         'http://localhost:3000',
         'http://localhost:3001',
+        'http://bsa-web.test',
         env('FRONTEND_URL', 'http://localhost:3000'),
     ],
 

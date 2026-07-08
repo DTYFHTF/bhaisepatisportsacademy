@@ -22,28 +22,6 @@ export function formatDuration(minutes: number): string {
 }
 
 /**
- * Get Cloudinary optimized image URL.
- */
-export function getCloudinaryUrl(
-  cloudinaryId: string,
-  width: number,
-  quality: string = 'auto',
-): string {
-  const cloudName = useRuntimeConfig().public.cloudinaryCloudName || 'dhknx0eac'
-  return `https://res.cloudinary.com/${cloudName}/image/upload/f_auto,q_${quality},w_${width}/${cloudinaryId}`
-}
-
-/**
- * Generate responsive srcset for Cloudinary images.
- */
-export function getCloudinarySrcSet(cloudinaryId: string): string {
-  const widths = [400, 600, 800, 1200]
-  return widths
-    .map((w) => `${getCloudinaryUrl(cloudinaryId, w)} ${w}w`)
-    .join(', ')
-}
-
-/**
  * Format enrollment ID in BSA-YYMM-XXXX format.
  */
 export function formatEnrollmentId(enrollmentId: string): string {

@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { ChevronLeft, ChevronRight } from 'lucide-vue-next'
 import type { ProductImage } from '~/types/product'
-import { getCloudinaryUrl, getCloudinarySrcSet } from '~/utils/formatters'
 
 interface Props {
   images: ProductImage[]
@@ -25,12 +24,12 @@ function goTo(index: number) {
 
 const activeImage = computed(() => props.images[activeIndex.value])
 
-function imgSrc(image: ProductImage, width: number): string {
-  return image.cloudinaryId ? getCloudinaryUrl(image.cloudinaryId, width) : image.url
+function imgSrc(image: ProductImage): string {
+  return image.url
 }
 
-function imgSrcset(image: ProductImage): string | undefined {
-  return image.cloudinaryId ? getCloudinarySrcSet(image.cloudinaryId) : undefined
+function imgSrcset(): string | undefined {
+  return undefined
 }
 </script>
 
@@ -48,7 +47,7 @@ function imgSrcset(image: ProductImage): string | undefined {
         @click="goTo(index)"
       >
         <img
-          :src="imgSrc(image, 200)"
+          :src="imgSrc(image)"
           :alt="image.altText || `${productName} view ${index + 1}`"
           class="h-full w-full object-cover"
           loading="lazy"
@@ -60,8 +59,8 @@ function imgSrcset(image: ProductImage): string | undefined {
     <div class="relative flex-1 aspect-[4/5] overflow-hidden bg-surface group cursor-zoom-in">
       <img
         v-if="activeImage"
-        :src="imgSrc(activeImage, 1200)"
-        :srcset="imgSrcset(activeImage)"
+        :src="imgSrc(activeImage)"
+        :srcset="imgSrcset()"
         sizes="(max-width: 1024px) 100vw, 50vw"
         :alt="activeImage.altText || productName"
         class="h-full w-full object-cover transition-transform duration-500 ease-out group-hover:scale-110"

@@ -48,14 +48,14 @@ class ProductResource extends Resource
                         ->schema([
                             Grid::make(2)->schema([
                                 TextInput::make('name')
-                                    ->required()
+                                    ->required('Product name is required')
                                     ->maxLength(255)
                                     ->live(onBlur: true)
                                     ->afterStateUpdated(fn (Set $set, ?string $state) =>
                                         $set('slug', Str::slug($state ?? ''))
                                     ),
                                 TextInput::make('slug')
-                                    ->required()
+                                    ->required('Product slug is required')
                                     ->unique(ignoreRecord: true)
                                     ->maxLength(255),
                             ]),
@@ -65,7 +65,7 @@ class ProductResource extends Resource
                                     ->placeholder('e.g. Gentle post-wax care'),
                                 Select::make('category')
                                     ->options(collect(Category::cases())->mapWithKeys(fn ($c) => [$c->value => $c->name]))
-                                    ->required()
+                                    ->required('Category is required')
                                     ->native(false),
                             ]),
                             Textarea::make('description')
@@ -90,26 +90,21 @@ class ProductResource extends Resource
 
                     Section::make('Images')
                         ->icon('heroicon-o-photo')
-                        ->description('Upload images - they go straight to Cloudinary.')
+                        ->description('Upload images to public storage and save the delivery URL automatically.')
                         ->schema([
                             Repeater::make('images')
                                 ->relationship()
                                 ->schema([
-                                    FileUpload::make('cloudinary_id')
+                                    FileUpload::make('url')
                                         ->label('Image')
+                                        ->required('Image is required')
                                         ->image()
-                                        ->disk('cloudinary')
-                                        ->directory('bsa/products')
+                                        ->disk('public')
+                                        ->directory('products')
                                         ->visibility('public')
                                         ->imagePreviewHeight('240')
                                         ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                         ->maxSize(8192)
-                                        ->columnSpanFull(),
-                                    TextInput::make('url')
-                                        ->label('Image URL (auto-filled on upload)')
-                                        ->url()
-                                        ->readOnly()
-                                        ->placeholder('Auto-filled after upload')
                                         ->columnSpanFull(),
                                     TextInput::make('alt_text')
                                         ->label('Alt text')
@@ -126,6 +121,8 @@ class ProductResource extends Resource
                                         : (is_string($state['url'] ?? null) && $state['url'] !== '' ? $state['url'] : 'Image')
                                 )
                                 ->maxItems(4)
+                                ->minItems(1)
+                                ->required('At least one product image is required')
                                 ->defaultItems(0)
                                 ->addActionLabel('Add image'),
                         ]),
@@ -161,7 +158,7 @@ class ProductResource extends Resource
                                 ->numeric()
                                 ->prefix('NPR')
                                 ->helperText('In paisa (150000 = NPR 1,500)')
-                                ->required(),
+                                ->required('Product price is required'),
                             TextInput::make('compare_at_price')
                                 ->numeric()
                                 ->prefix('NPR')

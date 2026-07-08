@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Storage;
 
 class ProductImage extends Model
 {
@@ -13,15 +14,13 @@ class ProductImage extends Model
     protected $guarded = [];
 
     /**
-     * If a cloudinary_id is saved without a URL, auto-generate the delivery URL.
-     * Format: f_auto,q_auto for browser-optimal format + quality.
+     * Convert a local public storage path into a full public URL on save.
      */
     protected static function booted(): void
     {
         static::saving(function (ProductImage $image) {
-            if ($image->cloudinary_id) {
-                $cloud = config('cloudinary.cloud_name', env('CLOUDINARY_CLOUD_NAME', 'dhknx0eac'));
-                $image->url = "https://res.cloudinary.com/{$cloud}/image/upload/f_auto,q_auto/{$image->cloudinary_id}";
+            if (! empty($image->url) && ! str_contains($image->url, '://')) {
+                $image->url = Storage::disk('public')->url($image->url);
             }
         });
     }

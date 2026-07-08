@@ -25,7 +25,6 @@ module.exports = {
         // Public runtime config overrides (baked at build, but PM2 can override)
         NUXT_PUBLIC_API_BASE: 'https://api.bhaisepatisportsacademy.com.np/api',
         NUXT_PUBLIC_SITE_URL: 'https://bhaisepatisportsacademy.com.np',
-        NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME: 'dhknx0eac',
         NUXT_PUBLIC_UMAMI_HOST: 'https://cloud.umami.is',
         NUXT_PUBLIC_UMAMI_WEBSITE_ID: 'cffc5868-c5ec-4824-81fb-34b170c74051',
         // Google Maps key: baked at build time via GitHub Actions secret

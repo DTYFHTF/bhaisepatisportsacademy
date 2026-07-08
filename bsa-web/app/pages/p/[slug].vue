@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import { formatPrice, getCloudinaryUrl } from '~/utils/formatters'
+import { formatPrice } from '~/utils/formatters'
 import { useRecentlyViewed } from '~/composables/useRecentlyViewed'
 
 const config = useRuntimeConfig()
@@ -65,9 +65,7 @@ function addToCart() {
   if (!product.value || !selectedVariant.value) return
 
   const img = product.value.images[0]
-  const imageUrl = img?.cloudinaryId
-    ? getCloudinaryUrl(img.cloudinaryId, 400)
-    : img?.url || ''
+  const imageUrl = img?.url || ''
 
   cart.addItem({
     productId: product.value.id,

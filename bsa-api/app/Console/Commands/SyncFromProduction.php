@@ -105,7 +105,7 @@ class SyncFromProduction extends Command
             'created_at', 'updated_at',
         ];
         $variantFields = ['id', 'product_id', 'size', 'stock', 'sku', 'created_at', 'updated_at'];
-        $imageFields   = ['id', 'product_id', 'url', 'alt_text', 'cloudinary_id', 'order', 'created_at', 'updated_at'];
+        $imageFields   = ['id', 'product_id', 'url', 'alt_text', 'order', 'created_at', 'updated_at'];
 
         // Production IDs differ from seeder IDs - wipe local tables and re-insert fresh.
         // FK checks off so we can clear in any order; seeded test-orders become orphaned

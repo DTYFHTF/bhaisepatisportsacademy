@@ -10,7 +10,7 @@ class ServiceSeeder extends Seeder
 {
     /**
      * BSA sports facility image pool (free Unsplash images).
-     * Replace with actual BSA photos (upload to Cloudinary) when available.
+     * Replace with actual BSA photos when available.
      */
     private array $badmintonPool = [
         'photo-1613914153966-fd0cf11e0e8b', // badminton court

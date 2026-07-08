@@ -44,8 +44,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
-      cloudinaryCloudName: process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://bsa-backend.test/api',
       googleMapsKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_KEY || '',
       storeLat: 27.7172,
       storeLng: 85.3240,
@@ -56,13 +55,6 @@ export default defineNuxtConfig({
 
   // Static SPA: build with `npx nuxi generate`, deploy .output/public/ to server
   // No Node.js process needed on shared hosting
-
-  image: {
-    provider: 'cloudinary',
-    cloudinary: {
-      baseURL: `https://res.cloudinary.com/${process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dhknx0eac'}/image/upload/`,
-    },
-  },
 
   tailwindcss: {
     cssPath: '~/assets/css/main.css',

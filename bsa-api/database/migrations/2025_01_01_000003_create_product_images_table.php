@@ -11,7 +11,6 @@ return new class extends Migration
         Schema::create('product_images', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('product_id');
-            $table->string('cloudinary_id')->nullable();
             $table->string('url');
             $table->string('alt_text')->nullable();
             $table->unsignedInteger('order')->default(0);

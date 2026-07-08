@@ -65,7 +65,7 @@ const fallbackProducts: Product[] = [
     tags: ['new-arrival'], isActive: true, variants: [
       { id: 'v-f1', productId: 'fallback-1', label: 'Standard', sku: 'RKT-PRO-STD', stock: 10, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f1', productId: 'fallback-1', cloudinaryId: '', url: IMAGES.badmintonCourt, altText: 'Pro Badminton Racket', order: 0 }],
+    images: [{ id: 'i-f1', productId: 'fallback-1', url: IMAGES.badmintonCourt, altText: 'Pro Badminton Racket', order: 0 }],
     createdAt: '', updatedAt: '',
   },
   {
@@ -75,7 +75,7 @@ const fallbackProducts: Product[] = [
     tags: [], isActive: true, variants: [
       { id: 'v-f2', productId: 'fallback-2', label: 'Tube of 6', sku: 'SHUT-T6', stock: 25, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f2', productId: 'fallback-2', cloudinaryId: '', url: IMAGES.badmintonPlayer, altText: 'Shuttlecocks', order: 0 }],
+    images: [{ id: 'i-f2', productId: 'fallback-2', url: IMAGES.badmintonPlayer, altText: 'Shuttlecocks', order: 0 }],
     createdAt: '', updatedAt: '',
   },
   {
@@ -87,7 +87,7 @@ const fallbackProducts: Product[] = [
       { id: 'v-f4', productId: 'fallback-3', label: 'Medium', sku: 'TEE-M', stock: 20, reservedStock: 0 },
       { id: 'v-f5', productId: 'fallback-3', label: 'Large', sku: 'TEE-L', stock: 18, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f3', productId: 'fallback-3', cloudinaryId: '', url: IMAGES.teamSport, altText: 'BSA Training Tee', order: 0 }],
+    images: [{ id: 'i-f3', productId: 'fallback-3', url: IMAGES.teamSport, altText: 'BSA Training Tee', order: 0 }],
     createdAt: '', updatedAt: '',
   },
   {
@@ -98,7 +98,7 @@ const fallbackProducts: Product[] = [
       { id: 'v-f6', productId: 'fallback-4', label: 'M', sku: 'GLOV-M', stock: 12, reservedStock: 0 },
       { id: 'v-f7', productId: 'fallback-4', label: 'L', sku: 'GLOV-L', stock: 10, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f4', productId: 'fallback-4', cloudinaryId: '', url: IMAGES.gymTraining, altText: 'Gym Gloves', order: 0 }],
+    images: [{ id: 'i-f4', productId: 'fallback-4', url: IMAGES.gymTraining, altText: 'Gym Gloves', order: 0 }],
     createdAt: '', updatedAt: '',
   },
   {
@@ -108,7 +108,7 @@ const fallbackProducts: Product[] = [
     tags: [], isActive: true, variants: [
       { id: 'v-f8', productId: 'fallback-5', label: '1kg', sku: 'PROT-1KG', stock: 8, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f5', productId: 'fallback-5', cloudinaryId: '', url: IMAGES.food, altText: 'Protein Powder', order: 0 }],
+    images: [{ id: 'i-f5', productId: 'fallback-5', url: IMAGES.food, altText: 'Protein Powder', order: 0 }],
     createdAt: '', updatedAt: '',
   },
   {
@@ -118,7 +118,7 @@ const fallbackProducts: Product[] = [
     tags: [], isActive: true, variants: [
       { id: 'v-f9', productId: 'fallback-6', label: '500ml', sku: 'ENRG-500', stock: 30, reservedStock: 0 },
     ],
-    images: [{ id: 'i-f6', productId: 'fallback-6', cloudinaryId: '', url: IMAGES.smoothie, altText: 'Energy Drink', order: 0 }],
+    images: [{ id: 'i-f6', productId: 'fallback-6', url: IMAGES.smoothie, altText: 'Energy Drink', order: 0 }],
     createdAt: '', updatedAt: '',
   },
 ]

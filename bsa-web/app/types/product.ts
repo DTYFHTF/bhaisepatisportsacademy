@@ -36,7 +36,6 @@ export interface ProductVariant {
 export interface ProductImage {
   id: string
   productId: string
-  cloudinaryId: string
   url: string
   altText?: string
   order: number

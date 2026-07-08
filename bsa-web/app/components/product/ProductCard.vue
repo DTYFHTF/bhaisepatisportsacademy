@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Product } from '~/types/product'
-import { formatPrice, getCloudinaryUrl, getCloudinarySrcSet } from '~/utils/formatters'
+import { formatPrice } from '~/utils/formatters'
 
 interface Props {
   product: Product
@@ -22,12 +22,8 @@ function getAvailableStock(product: Product): number {
     <div class="relative aspect-[3/4] overflow-hidden bg-surface">
       <img
         v-if="product.images[0]"
-        :src="product.images[0].cloudinaryId
-          ? getCloudinaryUrl(product.images[0].cloudinaryId, 800)
-          : product.images[0].url"
-        :srcset="product.images[0].cloudinaryId
-          ? getCloudinarySrcSet(product.images[0].cloudinaryId)
-          : undefined"
+        :src="product.images[0].url"
+        :srcset="undefined"
         sizes="(max-width: 480px) 50vw, (max-width: 1024px) 33vw, 25vw"
         :alt="product.images[0].altText || product.name"
         class="h-full w-full object-cover transition-transform duration-slow group-hover:scale-[1.02]"
