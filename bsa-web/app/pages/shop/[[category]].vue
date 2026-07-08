@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ShoppingBag, CheckCircle } from 'lucide-vue-next'
+import { ShoppingBag, CheckCircle, RefreshCw } from 'lucide-vue-next'
 import type { Product } from '~/types/product'
 import { BRAND, CATEGORY_LABELS, CATEGORY_SLUGS, CATEGORY_SLUG_BY_KEY, IMAGES } from '~/utils/constants'
 
@@ -35,7 +35,7 @@ function submitSurvey() {
 const config = useRuntimeConfig()
 const route = useRoute()
 
-// Route param is the URL slug (e.g. 'jackets') - map it to the DB enum key
+// Route param is the URL slug (e.g. 'equipment') - map it to the DB enum key
 const category = computed(() => (route.params.category as string) || null)
 const categoryKey = computed(() =>
   category.value ? (CATEGORY_SLUGS[category.value.toLowerCase()] ?? null) : null
@@ -49,14 +49,20 @@ useHead({
   title: `${pageTitle.value} | Bhaisepati Sports Academy`,
 })
 
-const { data: apiProducts, status } = await useFetch<Product[]>(`${config.public.apiBase}/products`, {
+const { data: apiProducts, status, refresh } = await useFetch<Product[]>(`${config.public.apiBase}/products`, {
   query: computed(() => ({
     category: categoryKey.value ?? undefined,
   })),
   default: () => [],
+  onResponseError() {
+    // Silent — status will be 'error', UI shows retry state
+  },
 })
 
-// Static fallback products when the API is unreachable
+// Whether to use demo/fallback data (opt-in via env flag)
+const useDemoData = config.public.useDemoData === true
+
+// Static fallback products when the API is unreachable AND demo mode is enabled
 const fallbackProducts: Product[] = [
   {
     id: 'fallback-1', slug: 'badminton-racket-pro', name: 'Pro Badminton Racket',
@@ -124,14 +130,19 @@ const fallbackProducts: Product[] = [
 ]
 
 const products = computed(() => {
+  if (status.value === 'error') {
+    if (useDemoData) {
+      console.warn('[BSA Shop] API unreachable — serving demo/fallback data. Set NUXT_PUBLIC_USE_DEMO_DATA=false to disable.')
+      return categoryKey.value
+        ? fallbackProducts.filter((p) => p.category === categoryKey.value)
+        : fallbackProducts
+    }
+    return [] // show error state
+  }
   if (apiProducts.value && apiProducts.value.length > 0) {
     return apiProducts.value
   }
-  // Fallback to static data when the API is unreachable
-  if (categoryKey.value) {
-    return fallbackProducts.filter((p) => p.category === categoryKey.value)
-  }
-  return fallbackProducts
+  return [] // show empty/error state
 })
 </script>
 
@@ -166,7 +177,7 @@ const products = computed(() => {
       </NuxtLink>
     </nav>
 
-    <!-- Products grid -->
+    <!-- Loading skeleton -->
     <div v-if="status === 'pending'" class="grid grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6">
       <div v-for="i in 6" :key="i" class="space-y-3">
         <UiAppSkeleton class="aspect-[3/4] w-full" />
@@ -175,15 +186,34 @@ const products = computed(() => {
       </div>
     </div>
 
+    <!-- Products grid -->
     <ProductGrid
       v-else-if="products && products.length > 0"
       :products="products"
       :columns="3"
     />
 
+    <!-- Error / empty state -->
     <div v-else class="py-12">
-      <!-- Survey: submitted state -->
-      <div v-if="surveySent" class="flex flex-col items-center gap-6 text-center max-w-sm mx-auto">
+      <div v-if="status === 'error' && !useDemoData" class="flex flex-col items-center gap-6 text-center max-w-sm mx-auto">
+        <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+          <ShoppingBag class="h-6 w-6 text-red-500" />
+        </div>
+        <div>
+          <p class="font-display text-2xl text-ink">Unable to load products</p>
+          <p class="mt-2 text-ink-muted text-sm">We couldn't reach the product catalogue. Please check your connection and try again.</p>
+        </div>
+        <button
+          @click="refresh()"
+          class="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-canvas transition hover:bg-accent/90"
+        >
+          <RefreshCw class="h-4 w-4" />
+          Retry
+        </button>
+      </div>
+
+      <!-- Survey: submitted state (only when API returned empty) -->
+      <div v-else-if="surveySent" class="flex flex-col items-center gap-6 text-center max-w-sm mx-auto">
         <CheckCircle class="h-12 w-12 text-accent" />
         <div>
           <p class="font-display text-2xl text-ink">Thanks for letting us know!</p>
@@ -199,7 +229,7 @@ const products = computed(() => {
         </a>
       </div>
 
-      <!-- Survey: selection state -->
+      <!-- Survey: selection state (only when API returned empty) -->
       <div v-else class="max-w-lg mx-auto">
         <div class="flex items-center gap-3 mb-6">
           <div class="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10">

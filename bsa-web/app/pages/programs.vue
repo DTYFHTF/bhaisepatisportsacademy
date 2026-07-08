@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, Clock, Users, Zap } from 'lucide-vue-next'
+import { ChevronRight, Clock, Users, Zap, RefreshCw } from 'lucide-vue-next'
 import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, PROGRAMS, BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
@@ -11,14 +11,40 @@ useSeoMeta({
 
 const config = useRuntimeConfig()
 
-const { data: apiPrograms } = await useFetch<{
+const { data: apiPrograms, status, refresh } = await useFetch<{
   id: string; slug: string; name: string; description: string; category: string; level: string;
   age_group: string; duration: string; sessions_per_week: number; price: number;
   is_popular: boolean; features: string[]; sort_order: number
-}[]>(`${config.public.apiBase}/programs`, { server: false })
+}[]>(`${config.public.apiBase}/programs`, {
+  server: false,
+  onResponseError() {
+    // Silent — status will be 'error', UI shows retry state
+  },
+})
 
-// Normalise API programs to match the template expectations, falling back to static PROGRAMS
+// Whether to use demo/fallback data (opt-in via env flag)
+const useDemoData = config.public.useDemoData === true
+
+// Normalise API programs to match the template expectations
 const programs = computed(() => {
+  if (status.value === 'error') {
+    if (useDemoData) {
+      console.warn('[BSA Programs] API unreachable — serving demo/fallback data. Set NUXT_PUBLIC_USE_DEMO_DATA=false to disable.')
+      return PROGRAMS.map((p) => ({
+        id: p.id,
+        name: p.name,
+        description: p.description,
+        category: p.category,
+        level: p.level,
+        duration: p.duration,
+        sessionsPerWeek: p.sessionsPerWeek,
+        price: p.price,
+        isPopular: p.isPopular,
+        features: p.features,
+      }))
+    }
+    return []
+  }
   if (apiPrograms.value && apiPrograms.value.length > 0) {
     return apiPrograms.value.map((p) => ({
       id: p.id,
@@ -27,25 +53,13 @@ const programs = computed(() => {
       category: p.category,
       level: p.level,
       duration: p.duration,
-    sessionsPerWeek: p.sessions_per_week,
+      sessionsPerWeek: p.sessions_per_week,
       price: p.price,
       isPopular: p.is_popular,
       features: p.features,
     }))
   }
-  // Fallback to static data when the API is unreachable
-  return PROGRAMS.map((p) => ({
-    id: p.id,
-    name: p.name,
-    description: p.description,
-    category: p.category,
-    level: p.level,
-    duration: p.duration,
-    sessionsPerWeek: p.sessionsPerWeek,
-    price: p.price,
-    isPopular: p.isPopular,
-    features: p.features,
-  }))
+  return []
 })
 
 const activeCategory = ref<ProgramCategory | null>(null)
@@ -97,10 +111,52 @@ const filteredPrograms = computed(() => {
       </div>
     </section>
 
-    <!-- Programs grid -->
-    <section class="section-padding">
+    <!-- Loading state -->
+    <section v-if="status === 'pending'" class="section-padding">
       <div class="section-container">
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="i in 6" :key="i" class="rounded-2xl border border-border bg-surface overflow-hidden">
+            <UiAppSkeleton class="h-44 w-full" />
+            <div class="p-6 space-y-3">
+              <UiAppSkeleton class="h-6 w-3/4" />
+              <UiAppSkeleton class="h-12 w-full" />
+              <UiAppSkeleton class="h-4 w-1/2" />
+              <UiAppSkeleton class="h-10 w-full" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error state -->
+    <section v-else-if="status === 'error' && !useDemoData" class="section-padding">
+      <div class="section-container">
+        <div class="flex flex-col items-center gap-6 text-center max-w-sm mx-auto py-16">
+          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+            <Zap class="h-6 w-6 text-red-500" />
+          </div>
+          <div>
+            <p class="font-display text-2xl text-ink">Unable to load programs</p>
+            <p class="mt-2 text-ink-muted text-sm">We couldn't reach the server. Please check your connection and try again.</p>
+          </div>
+          <button
+            @click="refresh()"
+            class="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-canvas transition hover:bg-accent/90"
+          >
+            <RefreshCw class="h-4 w-4" />
+            Retry
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Programs grid -->
+    <section v-else class="section-padding">
+      <div class="section-container">
+        <div v-if="filteredPrograms.length === 0" class="text-center py-16">
+          <p class="text-ink-muted">No programs available right now.</p>
+        </div>
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="(program, pIdx) in filteredPrograms"
             :key="program.id"
@@ -174,10 +230,6 @@ const filteredPrograms = computed(() => {
               </div>
             </div>
           </div>
-        </div>
-
-        <div v-if="filteredPrograms.length === 0" class="text-center py-16">
-          <p class="text-ink-muted">No programs in this category yet.</p>
         </div>
       </div>
     </section>

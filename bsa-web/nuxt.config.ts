@@ -44,12 +44,13 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
-      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://bsa-backend.test/api',
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://bsa-api.test/api',
       googleMapsKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_KEY || '',
       storeLat: 27.7172,
       storeLng: 85.3240,
       umamiHost: process.env.NUXT_PUBLIC_UMAMI_HOST || '',
       umamiWebsiteId: process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID || '',
+      useDemoData: process.env.NUXT_PUBLIC_USE_DEMO_DATA === 'true',
     },
   },
 

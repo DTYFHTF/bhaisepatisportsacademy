@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight } from 'lucide-vue-next'
+import { ChevronRight, RefreshCw } from 'lucide-vue-next'
 import { BRAND, IMAGES, KITCHEN_IMAGES, KITCHEN_MENU, KITCHEN_CATEGORIES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
@@ -9,12 +9,34 @@ useSeoMeta({
 })
 
 const config = useRuntimeConfig()
-const { data: apiMenu } = await useFetch<{
+const { data: apiMenu, status, refresh } = await useFetch<{
   id: string; slug: string; name: string; description: string; price: number;
   category: string; is_popular: boolean
-}[]>(`${config.public.apiBase}/kitchen`, { server: false })
+}[]>(`${config.public.apiBase}/kitchen`, {
+  server: false,
+  onResponseError() {
+    // Silent — status will be 'error', UI shows retry state
+  },
+})
+
+// Whether to use demo/fallback data (opt-in via env flag)
+const useDemoData = config.public.useDemoData === true
 
 const menu = computed(() => {
+  if (status.value === 'error') {
+    if (useDemoData) {
+      console.warn('[BSA Kitchen] API unreachable — serving demo/fallback data. Set NUXT_PUBLIC_USE_DEMO_DATA=false to disable.')
+      return KITCHEN_MENU.map((item) => ({
+        id: item.id,
+        name: item.name,
+        description: item.description,
+        price: item.price,
+        category: item.category,
+        is_popular: item.isPopular ?? false,
+      }))
+    }
+    return []
+  }
   if (apiMenu.value && apiMenu.value.length > 0) {
     return apiMenu.value.map((item) => ({
       id: item.id,
@@ -25,15 +47,7 @@ const menu = computed(() => {
       is_popular: item.is_popular,
     }))
   }
-  // Fallback to static data when the API is unreachable
-  return KITCHEN_MENU.map((item) => ({
-    id: item.id,
-    name: item.name,
-    description: item.description,
-    price: item.price,
-    category: item.category,
-    is_popular: item.isPopular ?? false,
-  }))
+  return []
 })
 
 const activeCategory = ref<string | null>(null)
@@ -106,14 +120,52 @@ const whatsappOrder = (item: { name: string; price: number }) => {
       </div>
     </section>
 
-    <!-- Menu grid -->
-    <section class="section-padding">
+    <!-- Loading state -->
+    <section v-if="status === 'pending'" class="section-padding">
       <div class="section-container">
-        <div v-if="(menu ?? []).length === 0" class="py-16 text-center text-ink-muted">
-          Loading menu...
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div v-for="i in 6" :key="i" class="rounded-2xl border border-border bg-surface overflow-hidden">
+            <UiAppSkeleton class="h-36 w-full" />
+            <div class="p-5 space-y-3">
+              <UiAppSkeleton class="h-5 w-2/3" />
+              <UiAppSkeleton class="h-10 w-full" />
+              <UiAppSkeleton class="h-6 w-1/3" />
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Error state -->
+    <section v-else-if="status === 'error' && !useDemoData" class="section-padding">
+      <div class="section-container">
+        <div class="flex flex-col items-center gap-6 text-center max-w-sm mx-auto py-16">
+          <div class="flex h-12 w-12 items-center justify-center rounded-full bg-red-500/10">
+            <Icon name="simple-icons:whatsapp" size="24" class="text-red-500" />
+          </div>
+          <div>
+            <p class="font-display text-2xl text-ink">Unable to load menu</p>
+            <p class="mt-2 text-ink-muted text-sm">We couldn't reach the server. Please check your connection and try again.</p>
+          </div>
+          <button
+            @click="refresh()"
+            class="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 text-sm font-semibold text-canvas transition hover:bg-accent/90"
+          >
+            <RefreshCw class="h-4 w-4" />
+            Retry
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Menu grid -->
+    <section v-else class="section-padding">
+      <div class="section-container">
+        <div v-if="menu.length === 0" class="py-16 text-center text-ink-muted">
+          No menu items available right now.
         </div>
 
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           <div
             v-for="(item, iIdx) in filteredMenu"
             :key="item.id"
@@ -158,7 +210,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
           </div>
         </div>
 
-        <div v-if="filteredMenu.length === 0 && (menu ?? []).length > 0" class="text-center py-16">
+        <div v-if="filteredMenu.length === 0 && menu.length > 0" class="text-center py-16">
           <p class="text-ink-muted">No items in this category.</p>
         </div>
       </div>
