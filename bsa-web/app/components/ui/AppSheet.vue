@@ -1,21 +1,22 @@
 <script setup lang="ts">
-interface Props {
+const props = withDefaults(defineProps<{
   open: boolean
   side?: 'right' | 'bottom'
-}
-
-withDefaults(defineProps<Props>(), {
+}>(), {
   side: 'right',
 })
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
 }>()
+
+const panel = ref<HTMLElement | null>(null)
+useDialogBehavior(toRef(props, 'open'), () => emit('close'), panel)
 </script>
 
 <template>
   <Teleport to="body">
-    <Transition name="sheet">
+    <Transition :name="side === 'right' ? 'sheet-right' : 'sheet-bottom'">
       <div
         v-if="open"
         class="fixed inset-0 z-50"
@@ -27,24 +28,14 @@ defineEmits<{
         />
         <!-- Sheet -->
         <div
-          v-motion="
-            side === 'right'
-              ? {
-                  initial: { x: '100%' },
-                  enter: { x: '0%', transition: { duration: 280 } },
-                  leave: { x: '100%', transition: { duration: 180 } },
-                }
-              : {
-                  initial: { y: '100%' },
-                  enter: { y: '0%', transition: { duration: 280 } },
-                  leave: { y: '100%', transition: { duration: 180 } },
-                }
-          "
+          ref="panel"
           :class="[
-            'absolute z-10 bg-canvas shadow-lg overflow-y-auto',
+            'sheet-panel absolute z-10 bg-canvas shadow-lg overflow-y-auto',
             side === 'right' ? 'right-0 top-0 h-full w-full max-w-[480px]' : 'bottom-0 left-0 w-full max-h-[85vh] rounded-t-xl',
           ]"
           role="dialog"
+          aria-modal="true"
+          tabindex="-1"
         >
           <slot />
         </div>

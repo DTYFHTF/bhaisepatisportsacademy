@@ -1,13 +1,15 @@
 <script setup lang="ts">
-interface Props {
+const props = defineProps<{
   open: boolean
   title?: string
-}
+}>()
 
-defineProps<Props>()
-defineEmits<{
+const emit = defineEmits<{
   close: []
 }>()
+
+const panel = ref<HTMLElement | null>(null)
+useDialogBehavior(toRef(props, 'open'), () => emit('close'), panel)
 </script>
 
 <template>
@@ -24,13 +26,12 @@ defineEmits<{
         />
         <!-- Content -->
         <div
-          v-motion="{
-            initial: { opacity: 0, scale: 0.96 },
-            enter: { opacity: 1, scale: 1, transition: { duration: 200 } },
-          }"
-          class="relative z-10 mx-4 w-full max-w-lg bg-canvas p-6 shadow-lg"
+          ref="panel"
+          class="modal-panel relative z-10 mx-4 w-full max-w-lg bg-canvas p-6 shadow-lg"
           role="dialog"
+          aria-modal="true"
           :aria-label="title"
+          tabindex="-1"
         >
           <div v-if="title" class="mb-4 flex items-center justify-between">
             <h2 class="text-heading-md">{{ title }}</h2>

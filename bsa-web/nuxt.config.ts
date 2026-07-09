@@ -41,7 +41,6 @@ export default defineNuxtConfig({
     '@nuxtjs/tailwindcss',
     '@pinia/nuxt',
     'pinia-plugin-persistedstate/nuxt',
-    '@vueuse/motion/nuxt',
     '@nuxt/image',
     '@nuxt/icon',
   ],
@@ -53,6 +52,7 @@ export default defineNuxtConfig({
   },
 
   app: {
+    pageTransition: { name: 'page', mode: 'out-in' },
     head: {
       title: 'Bhaisepati Sports Academy | Train Harder, Move Faster, Grow Stronger',
       htmlAttrs: { lang: 'en' },

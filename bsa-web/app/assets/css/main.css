@@ -175,3 +175,34 @@ html.js [data-scroll="zoom-in"].is-visible {
   will-change: transform;
   transition: none;
 }
+
+/* ── Overlay transitions (modal / sheet) ─────────────── */
+.modal-enter-active { transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1); }
+.modal-leave-active { transition: opacity 180ms cubic-bezier(0.55, 0, 1, 0.45); }
+.modal-enter-active .modal-panel { transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1), opacity 280ms cubic-bezier(0.16, 1, 0.3, 1); }
+.modal-enter-from,
+.modal-leave-to { opacity: 0; }
+.modal-enter-from .modal-panel { transform: scale(0.96); opacity: 0; }
+
+.sheet-right-enter-active,
+.sheet-bottom-enter-active { transition: opacity 280ms cubic-bezier(0.16, 1, 0.3, 1); }
+.sheet-right-leave-active,
+.sheet-bottom-leave-active { transition: opacity 180ms cubic-bezier(0.55, 0, 1, 0.45); }
+.sheet-right-enter-active .sheet-panel,
+.sheet-bottom-enter-active .sheet-panel { transition: transform 280ms cubic-bezier(0.16, 1, 0.3, 1); }
+.sheet-right-leave-active .sheet-panel,
+.sheet-bottom-leave-active .sheet-panel { transition: transform 180ms cubic-bezier(0.55, 0, 1, 0.45); }
+.sheet-right-enter-from,
+.sheet-right-leave-to,
+.sheet-bottom-enter-from,
+.sheet-bottom-leave-to { opacity: 0; }
+.sheet-right-enter-from .sheet-panel,
+.sheet-right-leave-to .sheet-panel { transform: translateX(100%); }
+.sheet-bottom-enter-from .sheet-panel,
+.sheet-bottom-leave-to .sheet-panel { transform: translateY(100%); }
+
+/* ── Page transitions ────────────────────────────────── */
+.page-enter-active { transition: opacity 200ms cubic-bezier(0.16, 1, 0.3, 1); }
+.page-leave-active { transition: opacity 150ms cubic-bezier(0.55, 0, 1, 0.45); }
+.page-enter-from,
+.page-leave-to { opacity: 0; }

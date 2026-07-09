@@ -1,6 +1,6 @@
 <script setup lang="ts">
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'destructive'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'ghost-inverse' | 'destructive'
   size?: 'sm' | 'md' | 'lg'
   loading?: boolean
   disabled?: boolean
@@ -23,6 +23,7 @@ const variantClasses = {
   primary: 'bg-accent text-white hover:bg-accent-hover active:scale-[0.97] rounded-lg',
   secondary: 'bg-transparent text-ink border border-ink hover:bg-ink hover:text-canvas active:scale-[0.97] rounded-lg',
   ghost: 'bg-transparent text-ink hover:bg-surface active:scale-[0.97] rounded-lg',
+  'ghost-inverse': 'border border-white/30 bg-white/10 backdrop-blur-sm text-white hover:bg-white/20 active:scale-[0.97] rounded-lg',
   destructive: 'bg-error text-canvas hover:bg-red-800 active:scale-[0.97] rounded-lg',
 }
 

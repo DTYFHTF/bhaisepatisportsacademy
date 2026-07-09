@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame, Send } from 'lucide-vue-next'
+import { Trophy, Zap, Users, Clock, MapPin, Phone, ChevronRight, Star, Dumbbell, Flame } from 'lucide-vue-next'
 import { BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
@@ -33,62 +33,7 @@ const { data: rawSchedule } = await useFetch<{ id: number; day: string; time: st
   { server: false, query: { day: today } },
 )
 
-// Animated counter — wait for data before attaching IntersectionObservers
-const MAX_STATS = 6
-const counterCounts = Array.from({ length: MAX_STATS }, () => ref(0))
-const counterEls = Array.from({ length: MAX_STATS }, () => ref<HTMLElement | null>(null))
-
-watch(rawStats, (statList) => {
-  if (!statList?.length) return
-  nextTick(() => {
-    statList.forEach((s, i) => {
-      if (i >= MAX_STATS) return
-      const target = parseInt((s.value_label ?? '').replace(/\D/g, '')) || 0
-      const el = counterEls[i]
-      const count = counterCounts[i]
-      if (!el.value) return
-
-      const runCounter = () => {
-        const start = performance.now()
-        const animate = (now: number) => {
-          const progress = Math.min((now - start) / 2000, 1)
-          const eased = 1 - Math.pow(1 - progress, 3)
-          count.value = Math.floor(eased * target)
-          if (progress < 1) requestAnimationFrame(animate)
-        }
-        requestAnimationFrame(animate)
-      }
-
-      // If already in viewport, run immediately
-      const rect = el.value.getBoundingClientRect()
-      if (rect.top < window.innerHeight && rect.bottom > 0) {
-        runCounter()
-        return
-      }
-
-      const observer = new IntersectionObserver(
-        ([entry]) => {
-          if (entry.isIntersecting) {
-            runCounter()
-            observer.disconnect()
-          }
-        },
-        { threshold: 0 },
-      )
-      observer.observe(el.value)
-    })
-  })
-})
-
-const stats = computed(() =>
-  (rawStats.value ?? []).map((s, i) => ({
-    label: s.label,
-    value_label: s.value_label,
-    count: counterCounts[i] ?? ref(0),
-    el: counterEls[i] ?? ref(null),
-    suffix: (s.value_label ?? '').replace(/^\d+/, ''),
-  })),
-)
+const stats = computed(() => rawStats.value ?? [])
 
 const popularPrograms = computed(() =>
   (allPrograms.value ?? []).filter((p) => p.isPopular).slice(0, 3),
@@ -97,33 +42,6 @@ const popularPrograms = computed(() =>
 const todaySchedule = computed(() => (rawSchedule.value ?? []).slice(0, 5))
 
 const { settings } = useSettings()
-
-// Testimonial submission form
-const tName = ref('')
-const tRole = ref('')
-const tQuote = ref('')
-const tSubmitting = ref(false)
-const tSubmitted = ref(false)
-const tError = ref('')
-
-async function submitTestimonial() {
-  if (!tName.value.trim() || tQuote.value.trim().length < 20) return
-  tSubmitting.value = true
-  tError.value = ''
-  try {
-    await $fetch(`${config.public.apiBase}/testimonials`, {
-      method: 'POST',
-      body: { name: tName.value, role: tRole.value || undefined, quote: tQuote.value },
-    })
-    tSubmitted.value = true
-  }
-  catch {
-    tError.value = 'Something went wrong. Please try again.'
-  }
-  finally {
-    tSubmitting.value = false
-  }
-}
 
 const pillars = [
   { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting', iconSize: 'h-6 w-6' },
@@ -228,9 +146,9 @@ onMounted(() => {
             </UiAppButton>
           </NuxtLink>
           <NuxtLink to="/programs">
-            <button class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all">
+            <UiAppButton variant="ghost-inverse" size="lg">
               View Programs
-            </button>
+            </UiAppButton>
           </NuxtLink>
         </div>
 
@@ -287,10 +205,7 @@ onMounted(() => {
     <!-- ═══ FACILITIES SHOWCASE ═══ -->
     <section class="section-padding">
       <div class="section-container">
-        <div v-scroll="'fade-up'" class="text-center mb-12">
-          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">World-Class Amenities</p>
-          <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Our Facilities</h2>
-        </div>
+        <UiSectionHeading v-scroll="'fade-up'" eyebrow="Built for the Game" title="Our Facilities" class="mb-12" />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
@@ -353,10 +268,7 @@ onMounted(() => {
     <section class="section-padding bg-surface">
       <div class="section-container">
         <div v-scroll="'fade-up'" class="flex flex-col sm:flex-row items-start sm:items-end justify-between mb-10 gap-4">
-          <div>
-            <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Train With Us</p>
-            <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">Popular Programs</h2>
-          </div>
+          <UiSectionHeading eyebrow="From First Serve to First Tournament" title="Popular Programs" align="left" />
           <NuxtLink to="/programs" class="inline-flex items-center gap-1 text-sm font-medium text-accent hover:underline underline-offset-4">
             View all programs
             <ChevronRight class="h-4 w-4" />
@@ -425,11 +337,8 @@ onMounted(() => {
       </div>
       <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 lg:px-8">
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-8">
-          <div v-for="(stat, i) in stats" :key="stat.label" v-scroll:[i*100]="'fade-up'" :ref="(el) => { stat.el.value = el as HTMLElement }" class="text-center">
-            <p class="font-display text-4xl sm:text-5xl text-accent tracking-tight">
-              {{ stat.count.value }}<span class="text-accent/60">{{ stat.suffix }}</span>
-            </p>
-            <p class="mt-2 text-sm uppercase tracking-wider text-white/70">{{ stat.label }}</p>
+          <div v-for="(stat, i) in stats" :key="stat.label" v-scroll:[i*100]="'fade-up'">
+            <HomeStatCounter :value-label="stat.value_label" :label="stat.label" />
           </div>
         </div>
       </div>
@@ -439,10 +348,7 @@ onMounted(() => {
     <section v-if="todaySchedule.length > 0" class="section-padding bg-surface">
       <div class="section-container">
         <div class="max-w-2xl mx-auto">
-          <div class="text-center mb-8">
-            <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">{{ today }}'s Schedule</p>
-            <h2 class="font-display text-3xl uppercase tracking-tight text-ink">What's On Today</h2>
-          </div>
+          <UiSectionHeading :eyebrow="`${today}'s Schedule`" title="What's On Today" class="mb-8" />
 
           <div class="space-y-3">
             <div
@@ -469,10 +375,7 @@ onMounted(() => {
     <!-- ═══ TESTIMONIALS ═══ -->
     <section class="section-padding">
       <div class="section-container">
-        <div v-scroll="'fade-up'" class="text-center mb-10">
-          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Community Voices</p>
-          <h2 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">What Players Say</h2>
-        </div>
+        <UiSectionHeading v-scroll="'fade-up'" eyebrow="Community Voices" title="What Players Say" class="mb-10" />
 
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div
@@ -500,63 +403,7 @@ onMounted(() => {
 
         <!-- Leave a testimonial -->
         <div class="mt-12 max-w-xl mx-auto">
-          <div class="rounded-2xl border border-border bg-surface p-6">
-            <h3 class="font-display text-lg uppercase tracking-wider text-ink mb-1">Share Your Experience</h3>
-            <p class="text-xs text-ink-muted mb-5">Your review will be shown after approval.</p>
-
-            <div v-if="tSubmitted" class="flex items-center gap-3 rounded-xl bg-accent/10 border border-accent/20 px-4 py-3">
-              <span class="h-2 w-2 rounded-full bg-accent" />
-              <p class="text-sm font-medium text-accent">Thank you! Your testimonial is pending review.</p>
-            </div>
-
-            <form v-else class="space-y-4" @submit.prevent="submitTestimonial">
-              <div class="grid grid-cols-2 gap-4">
-                <div>
-                  <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Name *</label>
-                  <input
-                    v-model="tName"
-                    type="text"
-                    required
-                    maxlength="100"
-                    placeholder="Your name"
-                    class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-                <div>
-                  <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Role</label>
-                  <input
-                    v-model="tRole"
-                    type="text"
-                    maxlength="100"
-                    placeholder="e.g. Badminton Player"
-                    class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
-                  />
-                </div>
-              </div>
-              <div>
-                <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-1.5 block">Your Review * <span class="normal-case font-normal">(min 20 chars)</span></label>
-                <textarea
-                  v-model="tQuote"
-                  required
-                  rows="3"
-                  maxlength="500"
-                  placeholder="Tell us about your experience at BSA..."
-                  class="w-full rounded-lg border border-border bg-canvas px-3 py-2.5 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
-                />
-              </div>
-              <p v-if="tError" class="text-xs text-error">{{ tError }}</p>
-              <UiAppButton
-                type="submit"
-                variant="primary"
-                size="sm"
-                :loading="tSubmitting"
-                :disabled="!tName.trim() || tQuote.trim().length < 20"
-              >
-                <Send class="h-3.5 w-3.5 mr-1.5" />
-                Submit Review
-              </UiAppButton>
-            </form>
-          </div>
+          <HomeTestimonialForm />
         </div>
       </div>
     </section>
@@ -565,11 +412,7 @@ onMounted(() => {
     <section class="section-padding bg-ink">
       <div class="section-container">
         <!-- Heading -->
-        <div v-scroll="'fade-up'" class="text-center mb-10">
-          <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Visual Tour</p>
-          <h2 class="font-display text-4xl sm:text-5xl uppercase tracking-tight text-white">Life at BSA</h2>
-          <p class="mt-3 text-sm text-white/50 max-w-sm mx-auto">Courts, gym, sauna — see what's waiting for you.</p>
-        </div>
+        <UiSectionHeading v-scroll="'fade-up'" eyebrow="Visual Tour" title="Life at BSA" subtitle="Courts, gym, sauna — see what's waiting for you." inverse class="mb-10" />
 
         <!-- Bento grid: 1 large (2×2) + 4 cells -->
         <div class="grid grid-cols-2 lg:grid-cols-4 auto-rows-[200px] lg:auto-rows-[240px] gap-3">
@@ -660,10 +503,10 @@ onMounted(() => {
             </UiAppButton>
           </NuxtLink>
           <a :href="`tel:+977${BRAND.phone}`">
-            <button class="inline-flex items-center gap-2 rounded-xl border border-white/30 bg-white/10 backdrop-blur-sm px-6 py-3 text-sm font-bold uppercase tracking-wider text-white hover:bg-white/20 transition-all">
-              <Phone class="h-4 w-4" />
+            <UiAppButton variant="ghost-inverse" size="lg">
+              <Phone class="h-4 w-4 mr-2" />
               Call {{ BRAND.phone }}
-            </button>
+            </UiAppButton>
           </a>
         </div>
       </div>
