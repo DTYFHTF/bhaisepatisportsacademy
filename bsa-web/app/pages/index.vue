@@ -46,7 +46,7 @@ const { settings } = useSettings()
 const pillars = [
   { icon: Trophy, title: 'Competition Ready', desc: 'Professional courts with tournament-grade equipment and lighting', iconSize: 'h-6 w-6' },
   { icon: Zap, title: 'Elite Coaching', desc: 'Trained coaches for every skill level, from beginner to competitive', iconSize: 'h-8 w-8' },
-  { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together', iconSize: 'h-6 w-6' },
+  { icon: Users, title: 'Community Driven', desc: 'A growing community of players and families. Train together, grow together', iconSize: 'h-6 w-6' },
 ]
 
 // Hero media: poster image everywhere; video only on desktop viewports for

@@ -33,7 +33,7 @@ export default <Config>{
         ink: {
           DEFAULT: '#0A0A0F',     // Primary text (near-black)
           muted: '#4A4A65',       // Secondary text
-          faint: '#8A8AA5',       // Tertiary text
+          faint: '#6E6E8A',       // Tertiary text (≥4.5:1 on white, WCAG AA)
         },
 
         // BSA Red — energetic primary brand color

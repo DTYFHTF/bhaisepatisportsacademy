@@ -2,10 +2,35 @@
 
 Format: [Keep a Changelog](https://keepachangelog.com/). Dates are commit dates. From 2026-07 onward, every merged change adds an entry (see [CONTRIBUTING.md](CONTRIBUTING.md) Definition of Done).
 
-## [Unreleased]
+## [Unreleased] — 2026-07-09 roadmap execution
 
 ### Added
-- Production documentation set in `docs/`: ARCHITECTURE, COMPONENTS, DESIGN_SYSTEM, SECURITY, SEO, PERFORMANCE, ACCESSIBILITY, ANIMATION_GUIDELINES, CONTENT_STRATEGY, AUDIT, ROADMAP, CONTRIBUTING, CHANGELOG (full project audit of 2026-07-09; no code changes).
+- Production documentation set in `docs/` (full project audit of 2026-07-09).
+- **Prerendered static HTML (SSG)**: `ssr: true` + Nitro prerender for all public routes; transactional routes (`/checkout`, `/track`, `/order`, `/p`, `/shop`) stay client-only. Crawlers and link previews now receive real content.
+- **SEO layer**: `usePageSeo()` composable (canonical + OG/Twitter per page, applied to every public page), `SportsActivityLocation` JSON-LD sitewide, `FAQPage` JSON-LD, static `sitemap.xml`, robots `Sitemap:` line, www→apex 301.
+- **CI gates**: backend deploys now run `php artisan test` + `composer audit`; frontend deploys run `npm audit` (high+); Dependabot for npm/composer/actions.
+- Reusable UI: `SectionHeading`, `StatCounter`, `TestimonialForm`, `useCountUp`, `useDialogBehavior`; `AppButton` `ghost-inverse` variant; page transitions.
+- Accessibility: `prefers-reduced-motion` honored globally (reveals, parallax, counters, hero video), skip-to-content link, dialog Esc/focus management + `aria-modal`, form error ARIA, JS-gated scroll-reveal styles (content visible without JS).
+
+### Changed
+- Fonts self-hosted (Bebas Neue + Inter variable, 57 KB latin woff2, preloaded); Google Fonts CSS and its two third-party connections removed.
+- Hero video renders only on desktop viewports with motion allowed; mobile gets the poster image; one source instead of three; pause control added.
+- Heading utility classes repointed from the never-loaded Playfair Display serif to Bebas Neue.
+- Map coordinates corrected from central Kathmandu to the academy's actual location (from its Google Maps place entry).
+- `ink-faint` darkened to meet WCAG AA contrast on white.
+- Homepage pillar no longer claims "500+ active members" (unverified; conflicted with the academy's own 200+ stat).
+- `.htaccess`: HSTS + Permissions-Policy added, deprecated X-XSS-Protection removed, SPA fallback now targets `200.html`.
+
+### Removed
+- Stale deploy workflows (`deploy-web.yml`, `deploy-api.yml`) targeting the retired server — they raced the current workflows on every push.
+- Dead code: `constants.old.ts` (empty), `ServiceCard`/`ServiceGrid` (unreferenced), `utils/animations.ts` (unreferenced), `loading.vue` (not a Nuxt convention).
+- Unused dependencies: `fuse.js`, `vee-validate`, `@vee-validate/zod`, `zod`, `@vueuse/motion`.
+
+### Security
+- OTP codes are no longer returned in API responses outside local environments (previously any env with missing SMS credentials leaked them).
+- `composer update` cleared 28 advisories (incl. Filament RichEditor XSS); `npm audit fix` cleared 26 (incl. critical shell-quote).
+- API subdomain `robots.txt` now disallows all crawling.
+- Still requires owner action: rotate the Google Maps API key leaked in git history ([SECURITY.md](SECURITY.md) S1).
 
 ## Pre-changelog history (reconstructed from git)
 

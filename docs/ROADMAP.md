@@ -7,34 +7,34 @@
 
 | # | Item | Effort | Impact | Notes |
 |---|---|---|---|---|
-| 1.1 | Rotate + restrict Google Maps API key (leaked in git history) | S | ★★★ | [SECURITY.md](SECURITY.md) S1 |
-| 1.2 | Consolidate duplicate deploy workflows (2 per app → 1) | S | ★★★ | Deployment race today. S2 |
+| 1.1 | Rotate + restrict Google Maps API key (leaked in git history) | S | ★★★ | ⏳ **owner action** — needs Google Cloud Console access |
+| 1.2 | ✅ Consolidate duplicate deploy workflows | S | ★★★ | Done — stale pair deleted, test/audit gates added |
 | 1.3 | **Owner decisions**: Shop live or hidden? Kitchen real? Services page? | S | ★★★ | Blocks 1.4/3.x. Documented in [AUDIT.md](AUDIT.md) |
-| 1.4 | Remove confirmed dead code: `constants.old.ts`, beauty leftovers (FabricStory, WaxType, Look*, StyleExplanationService), unused deps (fuse.js, vee-validate, @vee-validate/zod, zod) | M | ★★ | Zero-risk deletions first |
-| 1.5 | Fix orphaned serif heading classes in `main.css` | S | ★★ | [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) |
-| 1.6 | Gate OTP `dev_otp` fallback on local env | S | ★★ | S5 |
-| 1.7 | Fix `storeLat/storeLng` to real Bhaisepati coordinates | S | ★ | |
-| 1.8 | `prefers-reduced-motion` global kill switch | S | ★★ | [ACCESSIBILITY.md](ACCESSIBILITY.md) A1 |
+| 1.4 | ✅ Dead code + unused deps removed (constants.old, ServiceCard/Grid, animations.ts, loading.vue, fuse.js, vee-validate, zod, @vueuse/motion). Backend beauty leftovers (WaxType, Look*, FabricStory, StyleExplanationService) await owner shop/kitchen decision | M | ★★ | Partially done |
+| 1.5 | ✅ Orphaned serif heading classes fixed | S | ★★ | Done |
+| 1.6 | ✅ OTP dev fallback gated to local env | S | ★★ | Done |
+| 1.7 | ✅ Real coordinates set (from the academy Maps place) | S | ★ | Done |
+| 1.8 | ✅ Reduced-motion respected globally | S | ★★ | Done |
 
 ## Phase 2 — Performance
 
 | # | Item | Effort | Impact |
 |---|---|---|---|
-| 2.1 | Replace Pixabay hero videos: self-hosted compressed clip or static hero photo; poster-only on mobile | M | ★★★ |
+| 2.1 | 🔶 Hero video gated (desktop + motion-ok only, single source, pause control); self-hosted real footage still pending photography | M | ★★★ |
 | 2.2 | Migrate imagery to Cloudinary + `<NuxtImg>` with dimensions/srcset | M | ★★★ |
-| 2.3 | Self-host fonts (Bebas + Inter 2–3 weights), preload, `font-display: swap` | S | ★★ |
-| 2.4 | Admin: rate-limit Filament login, HSTS header, security header pass | S | ★★ |
-| 2.5 | `composer audit` + `npm audit` in CI; Dependabot | S | ★★ |
+| 2.3 | ✅ Fonts self-hosted (57 KB, variable Inter), preloaded, swap | S | ★★ |
+| 2.4 | 🔶 HSTS + Permissions-Policy done; Filament v3 has built-in login throttling — verify config; 2FA still recommended | S | ★★ |
+| 2.5 | ✅ Audit gates in both deploy workflows + Dependabot; all current advisories cleared | S | ★★ |
 | 2.6 | Bundle audit with `nuxi analyze`; set budgets in [PERFORMANCE.md](PERFORMANCE.md) | S | ★ |
 
 ## Phase 3 — SEO (highest business leverage)
 
 | # | Item | Effort | Impact |
 |---|---|---|---|
-| 3.1 | Prerender: `ssr: true` + Nitro prerender of public routes (hosting unchanged) | L | ★★★ |
-| 3.2 | `useSeoMeta` per page: OG/Twitter + branded OG image | M | ★★★ |
-| 3.3 | Real sitemap.xml + robots `Sitemap:` + canonical + www/apex 301 | S | ★★ |
-| 3.4 | JSON-LD: SportsActivityLocation sitewide, FAQPage on /faq | S | ★★ |
+| 3.1 | ✅ Prerendering live for all public routes | L | ★★★ |
+| 3.2 | 🔶 usePageSeo() with OG/Twitter on all pages; branded OG image pending photography | M | ★★★ |
+| 3.3 | ✅ Done | S | ★★ |
+| 3.4 | ✅ Done | S | ★★ |
 | 3.5 | Google Business Profile + Search Console, submit sitemap | S | ★★★ |
 | 3.6 | Location-aware titles/copy pass ("Bhaisepati", "Lalitpur") | S | ★★ |
 
@@ -52,18 +52,18 @@
 
 | # | Item | Effort | Impact |
 |---|---|---|---|
-| 5.1 | Extract `SectionHeading`, `MediaCard`, `StatCounter`/`useCountUp`, `TestimonialForm`; add `AppButton` ghost-inverse variant | M | ★★ |
+| 5.1 | 🔶 SectionHeading, StatCounter/useCountUp, TestimonialForm, ghost-inverse done; MediaCard pending | M | ★★ |
 | 5.2 | Replace emoji icons with SVG; unify elevation levels; resolve `energy`/`court` color roles | S | ★ |
 | 5.3 | Footer upgrade: map, hours, quick links, trust signals | S | ★★ |
 | 5.4 | Inner-page hierarchy pass (programs, facilities, about) | M | ★★ |
 
 ## Phase 6 — Animation polish
 
-6.1 Page transitions (Nuxt `pageTransition`, per [ANIMATION_GUIDELINES.md](ANIMATION_GUIDELINES.md)) — S/★ · 6.2 Replace `@vueuse/motion` in Modal/Sheet with CSS transitions, drop the dep — S/★ · 6.3 Micro-interaction pass on buttons/cards — S/★.
+6.1 ✅ Page transitions done · 6.2 ✅ @vueuse/motion replaced with CSS transitions and removed · 6.3 Micro-interaction pass on buttons/cards — S/★ (pending).
 
 ## Phase 7 — Accessibility completion
 
-7.1 Overlay focus-trap/Esc/focus-return verification & fixes — M/★★ · 7.2 Form error announcements (`aria-describedby`/`aria-invalid`) — S/★★ · 7.3 Skip link, contrast token fixes, JS-gated scroll-reveal styles — S/★★ · 7.4 axe + keyboard pass across all pages — M/★★.
+7.1 🔶 Esc/focus-return/aria-modal done (full focus *trap* still pending) · 7.2 ✅ done for testimonial form; apply pattern to booking/checkout — S/★★ · 7.3 ✅ done · 7.4 axe + keyboard pass across all pages — M/★★ (pending).
 
 ## Phase 8 — Advanced features (each needs its own spec before build)
 

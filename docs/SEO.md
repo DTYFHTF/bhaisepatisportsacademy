@@ -1,6 +1,6 @@
 # SEO
 
-> Audit of 2026-07-09. The site is technically invisible to most non-Google crawlers today.
+> Audit of 2026-07-09. **Update (same day): prerendering, OG/Twitter tags, canonicals, JSON-LD, sitemap and robots fixes are implemented** — pending deploy. Remaining: branded OG image, GBP/Search Console registration, location copy pass.
 
 ## The Core Problem
 
