@@ -131,11 +131,31 @@ const pillars = [
   { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together', iconSize: 'h-6 w-6' },
 ]
 
+// Hero media: poster image everywhere; video only on desktop viewports for
+// users who allow motion (saves multi-MB downloads on mobile networks).
+const showHeroVideo = ref(false)
+const heroVideoRef = ref<HTMLVideoElement | null>(null)
+const heroVideoPaused = ref(false)
+
+function toggleHeroVideo() {
+  const video = heroVideoRef.value
+  if (!video) return
+  if (video.paused) {
+    video.play()
+    heroVideoPaused.value = false
+  }
+  else {
+    video.pause()
+    heroVideoPaused.value = true
+  }
+}
+
 // Hero parallax — skipped for users who prefer reduced motion
 const heroImgRef = ref<HTMLElement | null>(null)
 const reducedMotion = ref(false)
 onMounted(() => {
   reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  showHeroVideo.value = !reducedMotion.value && window.matchMedia('(min-width: 1024px)').matches
   if (reducedMotion.value) return
 
   const handleScroll = () => {
@@ -153,21 +173,27 @@ onMounted(() => {
   <div>
     <!-- ═══ HERO ═══ -->
     <section class="relative min-h-[100vh] flex items-center justify-center overflow-hidden">
-      <!-- Video background (free stock, no brand). Falls back to poster image if video unavailable. -->
+      <!-- Hero media: poster always; stock video only on desktop + motion-ok
+           (placeholder until academy footage exists — see docs/CONTENT_STRATEGY.md) -->
       <div ref="heroImgRef" class="absolute inset-0 hero-parallax-img" style="transform: scale(1.15)">
+        <img
+          :src="IMAGES.hero"
+          alt=""
+          fetchpriority="high"
+          class="absolute inset-0 w-full h-full object-cover"
+        />
         <video
+          v-if="showHeroVideo"
+          ref="heroVideoRef"
           autoplay
           muted
           loop
           playsinline
-          :poster="IMAGES.hero"
+          aria-hidden="true"
           class="absolute inset-0 w-full h-full object-cover"
         >
-          <!-- Badminton & sports training – Mixkit free stock -->
           <!-- Pixabay free license – no attribution required -->
           <source src="https://cdn.pixabay.com/video/2022/08/10/127261-738976637_large.mp4" type="video/mp4" />
-          <source src="https://cdn.pixabay.com/video/2021/11/08/94908-644654820_large.mp4" type="video/mp4" />
-          <source src="https://cdn.pixabay.com/video/2019/11/22/29341-375268663_large.mp4" type="video/mp4" />
         </video>
       </div>
       <!-- Dark gradient overlay -->
@@ -230,6 +256,17 @@ onMounted(() => {
         <span class="text-xs uppercase tracking-wider text-white/50">Scroll</span>
         <div class="h-8 w-[1px] bg-gradient-to-b from-white/50 to-transparent animate-pulse" />
       </div>
+
+      <!-- Pause control for the background video (WCAG 2.2.2) -->
+      <button
+        v-if="showHeroVideo"
+        class="absolute bottom-8 right-6 z-10 rounded-full border border-white/30 bg-black/40 backdrop-blur-sm p-2.5 text-white/80 hover:text-white hover:bg-black/60 transition-colors"
+        :aria-label="heroVideoPaused ? 'Play background video' : 'Pause background video'"
+        @click="toggleHeroVideo"
+      >
+        <svg v-if="heroVideoPaused" class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z" /></svg>
+        <svg v-else class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 5h4v14H6zM14 5h4v14h-4z" /></svg>
+      </button>
     </section>
 
     <!-- ═══ TRUST PILLARS ═══ -->
