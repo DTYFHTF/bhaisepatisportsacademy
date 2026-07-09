@@ -2,7 +2,40 @@
 export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
-  ssr: false,
+
+  // Prerendered static HTML (SSG): real content for crawlers and link
+  // previews, still deployed as plain files — no Node process on the server.
+  ssr: true,
+
+  nitro: {
+    prerender: {
+      crawlLinks: true,
+      routes: [
+        '/',
+        '/programs',
+        '/facilities',
+        '/kitchen',
+        '/book',
+        '/about',
+        '/story',
+        '/faq',
+        '/privacy',
+        '/terms',
+        '/refund-policy',
+      ],
+    },
+  },
+
+  routeRules: {
+    // Transactional/dynamic routes stay client-only (browser APIs, tokens,
+    // per-user state); served via the 200.html SPA fallback.
+    '/checkout': { ssr: false },
+    '/track': { ssr: false },
+    '/order/**': { ssr: false },
+    '/p/**': { ssr: false },
+    '/shop': { ssr: false },
+    '/shop/**': { ssr: false },
+  },
 
   modules: [
     '@nuxtjs/tailwindcss',
@@ -49,6 +82,7 @@ export default defineNuxtConfig({
 
   runtimeConfig: {
     public: {
+      siteUrl: process.env.NUXT_PUBLIC_SITE_URL || 'https://bhaisepatisportsacademy.com.np',
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
       cloudinaryCloudName: process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
       googleMapsKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_KEY || '',

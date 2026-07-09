@@ -7,8 +7,11 @@
       <NuxtPage />
     </main>
     <LayoutAppFooter />
-    <LayoutCartDrawer />
-    <LayoutBookingDrawer />
-    <UiAppToast />
+    <!-- Interactive-only overlays driven by persisted client state -->
+    <ClientOnly>
+      <LayoutCartDrawer />
+      <LayoutBookingDrawer />
+      <UiAppToast />
+    </ClientOnly>
   </div>
 </template>

@@ -48,6 +48,8 @@ const navLinks = [
 
       <!-- Action buttons -->
       <div class="flex items-center gap-3">
+        <!-- Cart/booking badges read persisted client state — render client-side only -->
+        <ClientOnly>
         <!-- Cart badge -->
         <button
           v-if="cart.itemCount > 0"
@@ -79,6 +81,7 @@ const navLinks = [
             {{ booking.itemCount }}
           </span>
         </button>
+        </ClientOnly>
 
         <!-- CTA -->
         <NuxtLink to="/book" class="hidden sm:block">

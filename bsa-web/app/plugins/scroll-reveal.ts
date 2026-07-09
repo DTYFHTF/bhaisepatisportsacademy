@@ -1,4 +1,11 @@
 export default defineNuxtPlugin((nuxtApp) => {
+  // SSR: register a no-op so v-scroll renders without attributes; the real
+  // behavior attaches on the client after hydration.
+  if (import.meta.server) {
+    nuxtApp.vueApp.directive('scroll', { getSSRProps: () => ({}) })
+    return
+  }
+
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
 
   nuxtApp.vueApp.directive('scroll', {

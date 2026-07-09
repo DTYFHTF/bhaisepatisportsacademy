@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "bsa-web/.output/public", "-p", "4173", "--silent"],
+      "port": 4173
+    },
+    {
+      "name": "web-dev",
+      "runtimeExecutable": "npm",
+      "runtimeArgs": ["run", "dev", "--prefix", "bsa-web"],
+      "port": 3000
+    }
+  ]
+}

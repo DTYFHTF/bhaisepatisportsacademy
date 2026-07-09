@@ -1,4 +1,6 @@
-# SPA Fallback — serve index.html for all client-side routes
+# Prerendered static site (SSG). Real routes are directories with their own
+# index.html; anything else (client-only routes like /checkout, /p/*) falls
+# back to the SPA shell 200.html emitted by `nuxi generate`.
 # Deploy the contents of .output/public/ to the document root (bhaisepatisportacademy/bsa-web/)
 
 Options -MultiViews -Indexes
@@ -14,7 +16,7 @@ Options -MultiViews -Indexes
   # Don't rewrite real files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
-  RewriteRule ^(.*)$ /index.html [L]
+  RewriteRule ^(.*)$ /200.html [L]
 </IfModule>
 
 # ── Security headers ─────────────────────────────────────────
