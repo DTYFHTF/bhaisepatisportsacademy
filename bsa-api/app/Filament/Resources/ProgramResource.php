@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -76,6 +77,14 @@ class ProgramResource extends Resource
 
                 TagsInput::make('features')->placeholder('Add feature'),
 
+                FileUpload::make('image_url')
+                    ->label('Program Image')
+                    ->image()
+                    ->imageEditor()
+                    ->directory('programs')
+                    ->visibility('public')
+                    ->columnSpanFull(),
+
                 Grid::make(3)->schema([
                     Toggle::make('is_popular')->label('Popular'),
                     Toggle::make('is_active')->label('Active')->default(true),
@@ -90,6 +99,7 @@ class ProgramResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')->searchable()->sortable(),
+                Tables\Columns\ImageColumn::make('image_url')->label('Image')->circular()->size(40),
                 TextColumn::make('category')->badge(),
                 TextColumn::make('level')->badge(),
                 TextColumn::make('price')

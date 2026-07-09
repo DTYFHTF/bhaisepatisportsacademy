@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ChevronRight, Clock, Users, Zap, RefreshCw } from 'lucide-vue-next'
+import { ChevronRight, Clock, Users, Zap, RefreshCw, ImageOff } from 'lucide-vue-next'
 import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, PROGRAMS, BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
@@ -14,7 +14,7 @@ const config = useRuntimeConfig()
 const { data: apiPrograms, status, refresh } = await useFetch<{
   id: string; slug: string; name: string; description: string; category: string; level: string;
   age_group: string; duration: string; sessions_per_week: number; price: number;
-  is_popular: boolean; features: string[]; sort_order: number
+  is_popular: boolean; features: string[]; sort_order: number; image_url: string | null
 }[]>(`${config.public.apiBase}/programs`, {
   server: false,
   onResponseError() {
@@ -41,6 +41,7 @@ const programs = computed(() => {
         price: p.price,
         isPopular: p.isPopular,
         features: p.features,
+        imageUrl: p.imageUrl,
       }))
     }
     return []
@@ -57,6 +58,7 @@ const programs = computed(() => {
       price: p.price,
       isPopular: p.is_popular,
       features: p.features,
+      imageUrl: p.image_url ?? undefined,
     }))
   }
   return []
@@ -166,7 +168,7 @@ const filteredPrograms = computed(() => {
             <!-- Program Image -->
             <div class="relative h-44 overflow-hidden">
               <img
-                :src="PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
+                :src="program.imageUrl || PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
                 :alt="program.name"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />

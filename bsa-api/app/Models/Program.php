@@ -23,6 +23,21 @@ class Program extends Model
         ];
     }
 
+    public function getImageUrlAttribute($value): ?string
+    {
+        if (!$value) {
+            return null;
+        }
+
+        // If it's already a full URL (from upload or external), return as-is
+        if (str_starts_with($value, 'http://') || str_starts_with($value, 'https://')) {
+            return $value;
+        }
+
+        // Otherwise, it's a relative storage path — serve via the public disk URL
+        return asset('storage/' . $value);
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);

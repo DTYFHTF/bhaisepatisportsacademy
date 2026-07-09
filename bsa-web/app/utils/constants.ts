@@ -102,6 +102,7 @@ export interface ProgramDef {
   price: number // paisa
   isPopular: boolean
   features: string[]
+  imageUrl?: string
 }
 
 export const PROGRAMS: ProgramDef[] = [
