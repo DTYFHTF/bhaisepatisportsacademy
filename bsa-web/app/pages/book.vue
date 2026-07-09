@@ -3,7 +3,7 @@ import { Calendar, Clock, ArrowLeft, Phone } from 'lucide-vue-next'
 import { BRAND, COURT_BOOKING } from '~/utils/constants'
 import { formatPrice, formatTime } from '~/utils/formatters'
 
-useSeoMeta({
+usePageSeo({
   title: 'Book a Court | Bhaisepati Sports Academy',
   description: 'Book a badminton court at BSA Bhaisepati. Select your time, fill in your details, and confirm via WhatsApp.',
 })

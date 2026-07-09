@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: 'Cancellation Policy | Bhaisepati Sports Academy' })
+usePageSeo({
+  title: 'Cancellation & Refund Policy | Bhaisepati Sports Academy',
+  description: 'Cancellation and refund terms for court bookings and training programs at BSA.',
+})
 </script>
 
 <template>

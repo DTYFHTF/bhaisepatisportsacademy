@@ -2,7 +2,7 @@
 import { MapPin, Phone, Clock, Trophy, Users, Heart, Target } from 'lucide-vue-next'
 import { BRAND, IMAGES, GALLERY_IMAGES } from '~/utils/constants'
 
-useSeoMeta({
+usePageSeo({
   title: 'About | Bhaisepati Sports Academy',
   description: 'BSA is a community sports academy in Bhaisepati, Lalitpur with badminton courts, gym, and sauna facilities.',
 })

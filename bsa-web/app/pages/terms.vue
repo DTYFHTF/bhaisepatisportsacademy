@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { BRAND } from '~/utils/constants'
 
-useHead({ title: 'Terms & Conditions | Bhaisepati Sports Academy' })
+usePageSeo({
+  title: 'Terms & Conditions | Bhaisepati Sports Academy',
+  description: 'Terms for court bookings, program enrollment, and facility use at Bhaisepati Sports Academy.',
+})
 </script>
 
 <template>

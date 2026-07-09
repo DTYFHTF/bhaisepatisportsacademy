@@ -5,6 +5,11 @@ import { formatPrice } from '~/utils/formatters'
 
 const config = useRuntimeConfig()
 
+usePageSeo({
+  title: 'Badminton Courts, Gym & Training in Bhaisepati, Lalitpur | BSA',
+  description: 'Bhaisepati Sports Academy — professional badminton courts, fully equipped gym, and sauna & steam recovery under one roof. Book a court or join a program today.',
+})
+
 const { data: rawStats } = await useFetch<{ value_label: string; label: string }[]>(
   `${config.public.apiBase}/stats`, { server: false },
 )

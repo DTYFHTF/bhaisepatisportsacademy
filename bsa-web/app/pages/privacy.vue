@@ -1,5 +1,8 @@
 <script setup lang="ts">
-useHead({ title: 'Privacy Policy | Bhaisepati Sports Academy' })
+usePageSeo({
+  title: 'Privacy Policy | Bhaisepati Sports Academy',
+  description: 'How Bhaisepati Sports Academy collects, uses, and protects your personal information.',
+})
 </script>
 
 <template>

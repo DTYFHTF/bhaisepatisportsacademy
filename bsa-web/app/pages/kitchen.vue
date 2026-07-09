@@ -3,7 +3,7 @@ import { ChevronRight } from 'lucide-vue-next'
 import { BRAND, IMAGES, KITCHEN_IMAGES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
-useSeoMeta({
+usePageSeo({
   title: 'Kitchen | Bhaisepati Sports Academy',
   description: 'Fuel your training with BSA Kitchen. Pre-workout snacks, post-workout recovery meals, and fresh drinks.',
 })

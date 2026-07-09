@@ -2,7 +2,7 @@
 import { ChevronRight, Dumbbell, Flame, Phone } from 'lucide-vue-next'
 import { BRAND, IMAGES } from '~/utils/constants'
 
-useSeoMeta({
+usePageSeo({
   title: 'Facilities | Bhaisepati Sports Academy',
   description: 'Professional badminton courts, fully equipped gym, and sauna & steam recovery at BSA Bhaisepati.',
 })

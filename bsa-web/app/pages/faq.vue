@@ -1,7 +1,10 @@
 <script setup lang="ts">
 import { BRAND } from '~/utils/constants'
 
-useHead({ title: 'FAQ | Bhaisepati Sports Academy' })
+usePageSeo({
+  title: 'FAQ | Bhaisepati Sports Academy',
+  description: 'Court booking, programs, pricing, equipment, and membership questions answered — Bhaisepati Sports Academy, Lalitpur.',
+})
 
 const faqs = [
   {
@@ -45,6 +48,22 @@ const faqs = [
     a: 'Yes, we have parking space for bikes and scooters. Limited car parking is also available.',
   },
 ]
+
+// FAQPage structured data so answers can appear in search results
+useHead({
+  script: [{
+    type: 'application/ld+json',
+    innerHTML: JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'FAQPage',
+      'mainEntity': faqs.map(f => ({
+        '@type': 'Question',
+        'name': f.q,
+        'acceptedAnswer': { '@type': 'Answer', 'text': f.a },
+      })),
+    }),
+  }],
+})
 
 const openIndex = ref<number | null>(null)
 

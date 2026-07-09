@@ -4,7 +4,7 @@ import { PROGRAM_CATEGORIES, PROGRAM_CATEGORY_LABELS, BRAND, IMAGES, PROGRAM_IMA
 import type { ProgramCategory } from '~/types/service'
 import { formatPrice } from '~/utils/formatters'
 
-useSeoMeta({
+usePageSeo({
   title: 'Programs | Bhaisepati Sports Academy',
   description: 'Professional badminton training, gym memberships, and fitness programs at BSA. From beginners to competitive players.',
 })
