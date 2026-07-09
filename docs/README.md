@@ -29,6 +29,30 @@ Build a **modern, energetic, and dynamic** sports academy website that highlight
 
 ## Documentation Index
 
+### Production docs (source of truth — updated 2026-07-09)
+
+The site is **live in production** at https://bhaisepatisportsacademy.com.np/. These documents describe the *actual* implementation, audit findings, and the improvement plan. When they conflict with the legacy design docs below, these win.
+
+| Document | Contents |
+|---|---|
+| [ARCHITECTURE.md](ARCHITECTURE.md) | Real system architecture, deployment, known debt, open questions |
+| [AUDIT.md](AUDIT.md) | Full scored audit: UI/UX, branding, storytelling, tech (2026-07-09) |
+| [ROADMAP.md](ROADMAP.md) | Prioritized phases with effort/impact estimates |
+| [COMPONENTS.md](COMPONENTS.md) | Component inventory, reusable patterns, demo leftovers |
+| [DESIGN_SYSTEM.md](DESIGN_SYSTEM.md) | Tokens as implemented + convergence rules |
+| [SECURITY.md](SECURITY.md) | Security audit findings and standing policy |
+| [SEO.md](SEO.md) | SEO audit (SPA shell problem) and fix order |
+| [PERFORMANCE.md](PERFORMANCE.md) | Performance findings and budgets |
+| [ACCESSIBILITY.md](ACCESSIBILITY.md) | WCAG 2.1 AA gaps and process |
+| [ANIMATION_GUIDELINES.md](ANIMATION_GUIDELINES.md) | Motion system, rules, approved vocabulary |
+| [CONTENT_STRATEGY.md](CONTENT_STRATEGY.md) | Narrative spine, voice, factual-accuracy flags |
+| [CONTRIBUTING.md](CONTRIBUTING.md) | Setup, workflow rules, code standards, definition of done |
+| [CHANGELOG.md](CHANGELOG.md) | Change history |
+
+### Legacy design-phase docs (aspirational — written before/during the demo build)
+
+These predate production and describe intent, not necessarily reality (e.g. the table below says PostgreSQL; production runs MySQL). Kept for context.
+
 | # | Document | Description |
 |---|---|---|
 | 01 | [Brand Identity](01-brand-identity.md) | Positioning, voice, visual DNA, and brand principles |
@@ -62,7 +86,7 @@ Build a **modern, energetic, and dynamic** sports academy website that highlight
 | Image CDN | Cloudinary |
 | Payments | Khalti + eSewa (Nepal) + COD |
 | SMS | Sparrow SMS |
-| Database | SQLite (dev) / PostgreSQL (prod) |
+| Database | SQLite (dev) / MySQL (prod) |
 | State | Pinia |
 | Analytics | Umami (privacy-first) |
 
