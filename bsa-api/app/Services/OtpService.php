@@ -39,7 +39,13 @@ class OtpService
             return ['dev_otp' => null];
         }
 
-        // Dev mode: no SMS configured - log and return the code so it can be shown in the UI
+        // SMS not configured. Only local environments may expose the code in the
+        // response; anywhere else this would let callers mint their own OTPs.
+        if (! app()->environment('local')) {
+            Log::error('OTP requested but SMS is not configured; code not delivered.');
+            return ['dev_otp' => null];
+        }
+
         Log::info("[DEV] OTP for {$phone}: {$otp}");
 
         return ['dev_otp' => (string) $otp];
