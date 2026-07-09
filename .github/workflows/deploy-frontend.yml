@@ -30,6 +30,11 @@ jobs:
         working-directory: bsa-web
         run: npm ci
 
+      # ── 3b. Fail on high/critical vulnerabilities in production deps ─────────
+      - name: Audit production dependencies
+        working-directory: bsa-web
+        run: npm audit --omit=dev --audit-level=high
+
       # ── 4. Build static SPA ──────────────────────────────────────────────────
       #   Output lands in bsa-web/.output/public/
       - name: Generate static site
