@@ -1,6 +1,11 @@
 export default defineNuxtPlugin((nuxtApp) => {
+  const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
   nuxtApp.vueApp.directive('scroll', {
     mounted(el: HTMLElement, binding) {
+      // Content stays fully visible; no reveal choreography
+      if (reducedMotion) return
+
       const animation = binding.value || 'fade-up'
       const delay = binding.arg ? Number(binding.arg) : 0
 

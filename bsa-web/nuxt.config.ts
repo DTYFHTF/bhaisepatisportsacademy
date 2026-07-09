@@ -29,6 +29,11 @@ export default defineNuxtConfig({
         { name: 'description', content: 'Bhaisepati Sports Academy | Badminton training, gym & fitness, and recovery facilities in Bhaisepati, Kathmandu. Enroll in programs today.' },
         { name: 'theme-color', content: '#0A0A0F' },
       ],
+      script: [
+        // Marks JS availability before first paint; scroll-reveal hidden states
+        // are scoped to html.js so content is never invisible without JS.
+        { innerHTML: 'document.documentElement.classList.add("js")', tagPosition: 'head' },
+      ],
       link: [
         { rel: 'icon', type: 'image/png', href: '/favicon.png' },
         { rel: 'apple-touch-icon', href: '/favicon.png' },
@@ -47,8 +52,9 @@ export default defineNuxtConfig({
       apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://localhost:8000/api',
       cloudinaryCloudName: process.env.NUXT_PUBLIC_CLOUDINARY_CLOUD_NAME || '',
       googleMapsKey: process.env.NUXT_PUBLIC_GOOGLE_MAPS_KEY || '',
-      storeLat: 27.7172,
-      storeLng: 85.3240,
+      // Bhaisepati Sports Academy — from the academy's own Google Maps place entry
+      storeLat: 27.6455713,
+      storeLng: 85.2968519,
       umamiHost: process.env.NUXT_PUBLIC_UMAMI_HOST || '',
       umamiWebsiteId: process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID || '',
     },

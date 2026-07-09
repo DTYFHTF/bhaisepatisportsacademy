@@ -126,9 +126,13 @@ const pillars = [
   { icon: Users, title: 'Community Driven', desc: 'Join 500+ active members. Train together, grow together', iconSize: 'h-6 w-6' },
 ]
 
-// Hero parallax
+// Hero parallax — skipped for users who prefer reduced motion
 const heroImgRef = ref<HTMLElement | null>(null)
+const reducedMotion = ref(false)
 onMounted(() => {
+  reducedMotion.value = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (reducedMotion.value) return
+
   const handleScroll = () => {
     if (heroImgRef.value) {
       const y = window.scrollY

@@ -17,9 +17,11 @@
     @apply outline-2 outline-offset-2 outline-accent;
   }
 
-  /* Smooth scrolling */
-  html {
-    scroll-behavior: smooth;
+  /* Smooth scrolling — only when the user allows motion */
+  @media (prefers-reduced-motion: no-preference) {
+    html {
+      scroll-behavior: smooth;
+    }
   }
 
   /* Remove default button styles */
@@ -29,30 +31,30 @@
 }
 
 @layer components {
-  /* Display typography using Playfair Display */
+  /* Display typography — Bebas Neue, uppercase athletic voice */
   .text-display-2xl {
-    @apply font-serif text-6xl font-normal tracking-tight;
+    @apply font-display text-6xl uppercase tracking-tight;
   }
 
   .text-display-xl {
-    @apply font-serif text-5xl font-normal tracking-tight;
+    @apply font-display text-5xl uppercase tracking-tight;
   }
 
   .text-display-lg {
-    @apply font-serif text-4xl font-normal tracking-tight;
+    @apply font-display text-4xl uppercase tracking-tight;
   }
 
-  /* Heading typography — Playfair Display for h1–h4 */
+  /* Heading typography — Bebas Neue for h1–h4 */
   .text-heading-xl {
-    @apply font-serif text-3xl font-medium;
+    @apply font-display text-3xl uppercase tracking-tight;
   }
 
   .text-heading-lg {
-    @apply font-serif text-2xl font-medium;
+    @apply font-display text-2xl uppercase tracking-wide;
   }
 
   .text-heading-md {
-    @apply font-serif text-xl font-medium;
+    @apply font-display text-xl uppercase tracking-wide;
   }
 
   /* Label / overline */
@@ -77,57 +79,75 @@
   }
 }
 
-/* ── Scroll Reveal Animations ────────────────────────── */
+/* ── Reduced motion: disable all non-essential animation ── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 
-[data-scroll] {
+  [data-scroll] {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}
+
+/* ── Scroll Reveal Animations ────────────────────────── */
+/* Hidden state applies only once JS has run (html.js), so content
+   is never invisible for users without JS or failed hydration. */
+
+html.js [data-scroll] {
   opacity: 0;
   will-change: transform, opacity;
   transition: transform 0.7s cubic-bezier(0.16, 1, 0.3, 1),
               opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1);
 }
-[data-scroll].is-visible {
+html.js [data-scroll].is-visible {
   opacity: 1;
 }
 
-[data-scroll="fade-up"] {
+html.js [data-scroll="fade-up"] {
   transform: translateY(40px);
 }
-[data-scroll="fade-up"].is-visible {
+html.js [data-scroll="fade-up"].is-visible {
   transform: translateY(0);
 }
 
-[data-scroll="fade-down"] {
+html.js [data-scroll="fade-down"] {
   transform: translateY(-40px);
 }
-[data-scroll="fade-down"].is-visible {
+html.js [data-scroll="fade-down"].is-visible {
   transform: translateY(0);
 }
 
-[data-scroll="fade-left"] {
+html.js [data-scroll="fade-left"] {
   transform: translateX(-50px);
 }
-[data-scroll="fade-left"].is-visible {
+html.js [data-scroll="fade-left"].is-visible {
   transform: translateX(0);
 }
 
-[data-scroll="fade-right"] {
+html.js [data-scroll="fade-right"] {
   transform: translateX(50px);
 }
-[data-scroll="fade-right"].is-visible {
+html.js [data-scroll="fade-right"].is-visible {
   transform: translateX(0);
 }
 
-[data-scroll="scale-in"] {
+html.js [data-scroll="scale-in"] {
   transform: scale(0.92);
 }
-[data-scroll="scale-in"].is-visible {
+html.js [data-scroll="scale-in"].is-visible {
   transform: scale(1);
 }
 
-[data-scroll="zoom-in"] {
+html.js [data-scroll="zoom-in"] {
   transform: scale(0.8);
 }
-[data-scroll="zoom-in"].is-visible {
+html.js [data-scroll="zoom-in"].is-visible {
   transform: scale(1);
 }
 
