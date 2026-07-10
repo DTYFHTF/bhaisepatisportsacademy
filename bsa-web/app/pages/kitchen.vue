@@ -12,7 +12,7 @@ const config = useRuntimeConfig()
 const { get: media } = useSiteMedia()
 const { data: menu } = await useFetch<{
   id: string; slug: string; name: string; description: string; price: number;
-  category: string; is_popular: boolean
+  category: string; isPopular: boolean; imageUrl: string | null
 }[]>(`${config.public.apiBase}/kitchen`, { server: false })
 
 const KITCHEN_CATEGORIES: Record<string, string> = {
@@ -109,7 +109,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
             <!-- Item Image -->
             <div class="relative h-36 overflow-hidden">
               <img
-                :src="KITCHEN_IMAGES[item.category] || IMAGES.food"
+                :src="item.imageUrl || KITCHEN_IMAGES[item.category] || IMAGES.food"
                 :alt="item.name"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
@@ -118,7 +118,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
                 <span class="rounded-full bg-energy px-2.5 py-0.5 text-xs font-bold uppercase tracking-wider text-white shadow-md">
                   {{ KITCHEN_CATEGORIES[item.category] ?? item.category }}
                 </span>
-                <span v-if="item.is_popular" class="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-white shadow-md">
+                <span v-if="item.isPopular" class="rounded-full bg-accent px-2.5 py-0.5 text-xs font-bold text-white shadow-md">
                   Popular
                 </span>
               </div>
