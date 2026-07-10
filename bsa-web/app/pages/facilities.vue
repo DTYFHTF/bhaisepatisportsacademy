@@ -9,7 +9,7 @@ usePageSeo({
 
 const config = useRuntimeConfig()
 const { data: facilities } = await useFetch<{
-  id: string; name: string; category: string; description: string; features: string[]; image_url: string | null
+  id: string; name: string; category: string; description: string; features: string[]; imageUrl: string | null; hours: string | null; capacity: string | null
 }[]>(`${config.public.apiBase}/facilities`, { server: false })
 
 // Fallback images per category
@@ -95,7 +95,7 @@ const categoryImage = (cat: string, imgUrl: string | null) => {
                 class="relative aspect-[4/3] rounded-2xl overflow-hidden border border-border group"
               >
                 <img
-                  :src="categoryImage(facility.category, facility.image_url)"
+                  :src="categoryImage(facility.category, facility.imageUrl)"
                   :alt="facility.name"
                   class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 />

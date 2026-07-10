@@ -13,7 +13,7 @@ const config = useRuntimeConfig()
 
 const { data: programs } = await useFetch<{
   id: string; name: string; description: string; category: string; level: string; duration: string;
-  sessionsPerWeek: number; price: number; isPopular: boolean; features: string[]
+  sessionsPerWeek: number; price: number; isPopular: boolean; features: string[]; imageUrl: string | null; coachName: string | null; highlight: string | null
 }[]>(`${config.public.apiBase}/programs`, { server: false })
 
 const activeCategory = ref<ProgramCategory | null>(null)
@@ -78,7 +78,7 @@ const filteredPrograms = computed(() => {
             <!-- Program Image -->
             <div class="relative h-44 overflow-hidden">
               <img
-                :src="PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
+                :src="program.imageUrl || PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
                 :alt="program.name"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
