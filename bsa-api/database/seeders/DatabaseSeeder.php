@@ -37,6 +37,7 @@ class DatabaseSeeder extends Seeder
             ServiceSeeder::class,
             ProgramSeeder::class,
             FacilitySeeder::class,
+            CoachSeeder::class,
             ScheduleSeeder::class,
             TestimonialSeeder::class,
             KitchenSeeder::class,

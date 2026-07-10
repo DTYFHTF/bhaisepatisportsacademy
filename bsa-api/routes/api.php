@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\CoachController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\KitchenController;
 use App\Http\Controllers\OrderController;
@@ -24,6 +25,10 @@ Route::get('/programs/{slug}', [ProgramController::class, 'show']);
 // Facilities
 Route::get('/facilities', [FacilityController::class, 'index']);
 Route::get('/facilities/{slug}', [FacilityController::class, 'show']);
+
+// Coaches
+Route::get('/coaches', [CoachController::class, 'index']);
+Route::get('/coaches/{slug}', [CoachController::class, 'show']);
 
 // Schedule
 Route::get('/schedule', [ScheduleController::class, 'index']);
