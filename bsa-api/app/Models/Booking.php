@@ -21,6 +21,7 @@ class Booking extends Model
             'total_duration' => 'integer',
             'scheduled_date' => 'date',
             'scheduled_time' => 'string',
+            'age'            => 'integer',
         ];
     }
 

@@ -173,6 +173,51 @@ class BookingController extends Controller
         ]);
     }
 
+    public function storeTrialBooking(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'customer_name'    => 'required|string|max:255',
+            'customer_phone'   => 'required|string|size:10',
+            'customer_email'   => 'nullable|email|max:255',
+            'scheduled_date'   => 'required|date|after:today',
+            'scheduled_time'   => 'required|string|regex:/^\d{2}:\d{2}$/',
+            'age'              => 'nullable|integer|min:5|max:120',
+            'experience_level' => 'required|in:beginner,intermediate,advanced',
+            'goals'            => 'nullable|string|max:500',
+            'notes'            => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        try {
+            $booking = Booking::create([
+                'type'              => 'trial',
+                'ref'               => Booking::generateRef(),
+                'customer_name'     => $data['customer_name'],
+                'customer_phone'    => $data['customer_phone'],
+                'customer_email'    => $data['customer_email'] ?? null,
+                'scheduled_date'    => $data['scheduled_date'],
+                'scheduled_time'    => $data['scheduled_time'],
+                'status'            => BookingStatus::PENDING,
+                'age'               => $data['age'] ?? null,
+                'experience_level'  => $data['experience_level'],
+                'goals'             => $data['goals'] ?? null,
+                'notes'             => $data['notes'] ?? null,
+            ]);
+
+            return response()->json([
+                'booking' => $booking,
+                'message' => 'Trial booking created successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to create trial booking.'], 500);
+        }
+    }
+
     public function show(string $ref): JsonResponse
     {
         $booking = Booking::where('ref', $ref)->with('items.service')->firstOrFail();

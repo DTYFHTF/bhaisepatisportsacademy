@@ -162,7 +162,7 @@ const filteredPrograms = computed(() => {
           Drop by for a trial session or call us to discuss your training goals.
         </p>
         <div class="mt-6">
-          <NuxtLink to="/book">
+          <NuxtLink to="/book-trial">
             <UiAppButton variant="primary" size="lg">
               Book a Trial Session
               <ChevronRight class="h-4 w-4 ml-1" />

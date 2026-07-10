@@ -3,37 +3,40 @@
 namespace App\Filament\Resources;
 
 use App\Enums\BookingStatus;
-use App\Filament\Resources\BookingResource\Pages;
+use App\Filament\Resources\TrialBookingResource\Pages;
 use App\Models\Booking;
-use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
-class BookingResource extends Resource
+class TrialBookingResource extends Resource
 {
     protected static ?string $model = Booking::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-calendar-days';
+    protected static ?string $navigationIcon = 'heroicon-o-sparkles';
 
-    protected static ?int $navigationSort = 2;
+    protected static ?int $navigationSort = 3;
 
-    protected static ?string $navigationLabel = 'Bookings';
+    protected static ?string $navigationLabel = 'Trial Sessions';
+
+    protected static ?string $navigationGroup = 'Bookings';
 
     protected static ?string $recordTitleAttribute = 'ref';
 
     public static function form(Form $form): Form
     {
         return $form->schema([
-            Section::make('Customer')
+            Section::make('Customer Information')
                 ->icon('heroicon-o-user')
+                ->description('Details of the person booking the trial session.')
                 ->schema([
                     Grid::make(2)->schema([
                         TextInput::make('ref')
@@ -57,10 +60,24 @@ class BookingResource extends Resource
                             ->email()
                             ->maxLength(255),
                     ]),
+                    Grid::make(2)->schema([
+                        TextInput::make('age')
+                            ->numeric()
+                            ->minValue(5)
+                            ->maxValue(120),
+                        Select::make('experience_level')
+                            ->options([
+                                'beginner' => 'Beginner',
+                                'intermediate' => 'Intermediate',
+                                'advanced' => 'Advanced',
+                            ])
+                            ->required(),
+                    ]),
                 ]),
 
-            Section::make('Schedule')
-                ->icon('heroicon-o-clock')
+            Section::make('Session Details')
+                ->icon('heroicon-o-calendar')
+                ->description('When and what the trial session covers.')
                 ->schema([
                     Grid::make(2)->schema([
                         DatePicker::make('scheduled_date')
@@ -70,18 +87,14 @@ class BookingResource extends Resource
                             ->required()
                             ->placeholder('10:00'),
                     ]),
-                    Grid::make(2)->schema([
-                        TextInput::make('total_duration')
-                            ->numeric()
-                            ->suffix('min')
-                            ->disabled(),
-                        TextInput::make('total')
-                            ->numeric()
-                            ->prefix('NPR')
-                            ->disabled()
-                            ->formatStateUsing(fn (?int $state) => $state ? number_format($state / 100, 0) : '0'),
-                    ]),
-                    Textarea::make('notes')->rows(2),
+                    Textarea::make('goals')
+                        ->label('Goals / Interests')
+                        ->placeholder('e.g., improve fitness, learn badminton basics, try a new sport')
+                        ->rows(3)
+                        ->maxLength(500),
+                    Textarea::make('notes')
+                        ->rows(2)
+                        ->placeholder('Any additional notes or requirements'),
                 ]),
         ]);
     }
@@ -89,13 +102,22 @@ class BookingResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->modifyQueryUsing(fn ($query) => $query->where('type', 'court'))
+            ->modifyQueryUsing(fn ($query) => $query->where('type', 'trial'))
             ->columns([
                 TextColumn::make('ref')->label('Ref')->searchable()->sortable(),
-                TextColumn::make('customer_name')->searchable(),
-                TextColumn::make('customer_phone'),
-                TextColumn::make('scheduled_date')->date()->sortable(),
-                TextColumn::make('scheduled_time'),
+                TextColumn::make('customer_name')->label('Name')->searchable(),
+                TextColumn::make('customer_phone')->label('Phone'),
+                TextColumn::make('age')->label('Age'),
+                TextColumn::make('experience_level')
+                    ->label('Level')
+                    ->badge()
+                    ->color(fn (string $state) => match ($state) {
+                        'beginner' => 'info',
+                        'intermediate' => 'warning',
+                        'advanced' => 'success',
+                    }),
+                TextColumn::make('scheduled_date')->label('Date')->date()->sortable(),
+                TextColumn::make('scheduled_time')->label('Time'),
                 TextColumn::make('status')->badge()
                     ->color(fn (BookingStatus $state) => match ($state) {
                         BookingStatus::PENDING   => 'warning',
@@ -104,14 +126,16 @@ class BookingResource extends Resource
                         BookingStatus::NO_SHOW   => 'danger',
                         BookingStatus::CANCELLED => 'gray',
                     }),
-                TextColumn::make('total')
-                    ->formatStateUsing(fn (int $state) => 'NPR ' . number_format($state / 100, 0))
-                    ->sortable(),
-                TextColumn::make('total_duration')->suffix(' min'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('status')
                     ->options(collect(BookingStatus::cases())->mapWithKeys(fn ($s) => [$s->value => $s->name])),
+                Tables\Filters\SelectFilter::make('experience_level')
+                    ->options([
+                        'beginner' => 'Beginner',
+                        'intermediate' => 'Intermediate',
+                        'advanced' => 'Advanced',
+                    ]),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
@@ -124,19 +148,12 @@ class BookingResource extends Resource
             ->defaultSort('scheduled_date', 'desc');
     }
 
-    public static function getRelations(): array
-    {
-        return [
-            BookingResource\RelationManagers\ItemsRelationManager::class,
-        ];
-    }
-
     public static function getPages(): array
     {
         return [
-            'index'  => Pages\ListBookings::route('/'),
-            'create' => Pages\CreateBooking::route('/create'),
-            'edit'   => Pages\EditBooking::route('/{record}/edit'),
+            'index'  => Pages\ListTrialBookings::route('/'),
+            'create' => Pages\CreateTrialBooking::route('/create'),
+            'edit'   => Pages\EditTrialBooking::route('/{record}/edit'),
         ];
     }
 }
