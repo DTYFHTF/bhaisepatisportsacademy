@@ -9,11 +9,11 @@ const { data: rawStats } = await useFetch<{ value_label: string; label: string }
   `${config.public.apiBase}/stats`, { server: false },
 )
 
-const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string; image_url: string | null }[]>(
+const { data: facilities } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; icon: string; imageUrl: string | null; hours: string | null; capacity: string | null }[]>(
   `${config.public.apiBase}/facilities`, { server: false },
 )
 
-const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; isPopular: boolean; sessionsPerWeek: number; duration: string; level: string }[]>(
+const { data: allPrograms } = await useFetch<{ id: string; name: string; category: string; description: string; features: string[]; price: number; isPopular: boolean; sessionsPerWeek: number; duration: string; level: string; imageUrl: string | null; coachName: string | null; highlight: string | null }[]>(
   `${config.public.apiBase}/programs`, { server: false },
 )
 
@@ -255,14 +255,14 @@ onMounted(() => {
           >
             <!-- Background image -->
             <img
-              v-if="facility.image_url"
-              :src="facility.image_url"
+              v-if="facility.imageUrl"
+              :src="facility.imageUrl"
               :alt="facility.name"
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
             />
             <!-- Overlay: dark gradient when image present, solid dark when not -->
             <div
-              v-if="facility.image_url"
+              v-if="facility.imageUrl"
               class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/60 to-black/30 transition-opacity duration-500 group-hover:from-black/95 group-hover:via-black/70"
             />
             <div v-else class="absolute inset-0 bg-ink" />
@@ -270,6 +270,18 @@ onMounted(() => {
             <div class="relative z-10 p-6">
               <h3 class="font-display text-xl uppercase tracking-wider text-white mb-2">{{ facility.name }}</h3>
               <p class="text-sm mb-4 leading-relaxed text-white/70">{{ facility.description }}</p>
+
+              <!-- Hours + capacity -->
+              <div v-if="facility.hours || facility.capacity" class="flex flex-wrap gap-x-4 gap-y-1 mb-4 text-xs text-white/80">
+                <span v-if="facility.hours" class="inline-flex items-center gap-1.5">
+                  <Clock class="h-3.5 w-3.5 text-accent" />
+                  {{ facility.hours }}
+                </span>
+                <span v-if="facility.capacity" class="inline-flex items-center gap-1.5">
+                  <Users class="h-3.5 w-3.5 text-accent" />
+                  {{ facility.capacity }}
+                </span>
+              </div>
 
               <ul class="space-y-2">
                 <li v-for="feature in facility.features.slice(0, 3)" :key="feature" class="flex items-center gap-2 text-sm text-white/70">
@@ -327,7 +339,7 @@ onMounted(() => {
             <!-- Program category image -->
             <div class="relative h-44 overflow-hidden">
               <img
-                :src="PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
+                :src="program.imageUrl || PROGRAM_IMAGES[program.category] || IMAGES.badmintonCourt"
                 :alt="program.name"
                 class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
               />
@@ -339,10 +351,18 @@ onMounted(() => {
               <span v-if="program.isPopular" class="absolute top-3 right-3 rounded-full bg-energy px-3 py-1 text-xs font-bold text-white shadow-md">
                 Popular
               </span>
+              <!-- Highlight hook, bottom of image -->
+              <p v-if="program.highlight" class="absolute bottom-3 left-3 right-3 text-sm font-medium text-white drop-shadow">
+                {{ program.highlight }}
+              </p>
             </div>
 
             <div class="p-6">
               <h3 class="font-display text-xl uppercase tracking-wider text-ink mb-2">{{ program.name }}</h3>
+              <p v-if="program.coachName" class="flex items-center gap-1.5 text-xs text-ink-muted mb-3">
+                <Users class="h-3.5 w-3.5 text-accent" />
+                with {{ program.coachName }}
+              </p>
               <p class="text-sm text-ink-muted mb-4 leading-relaxed">{{ program.description }}</p>
 
               <!-- Features -->
@@ -369,6 +389,9 @@ onMounted(() => {
         </div>
       </div>
     </section>
+
+    <!-- ═══ COACHES ═══ -->
+    <HomeCoachesSection />
 
     <!-- ═══ STATS COUNTER ═══ -->
     <section class="relative border-y border-border overflow-hidden">
