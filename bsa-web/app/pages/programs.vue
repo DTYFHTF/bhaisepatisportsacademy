@@ -10,6 +10,7 @@ useSeoMeta({
 })
 
 const config = useRuntimeConfig()
+const { get: media } = useSiteMedia()
 
 const { data: programs } = await useFetch<{
   id: string; name: string; description: string; category: string; level: string; duration: string;
@@ -29,7 +30,7 @@ const filteredPrograms = computed(() => {
     <!-- Header -->
     <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
       <div class="absolute inset-0">
-        <img :src="IMAGES.gymTraining" alt="BSA Programs" class="w-full h-full object-cover" />
+        <img :src="media('programsHeaderBanner', IMAGES.gymTraining)" alt="BSA Programs" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       </div>
       <div class="section-container relative z-10 pb-10 pt-20">
@@ -153,7 +154,7 @@ const filteredPrograms = computed(() => {
     <!-- CTA -->
     <section class="relative border-t border-border overflow-hidden">
       <div class="absolute inset-0">
-        <img :src="IMAGES.badmintonCourt" alt="" class="w-full h-full object-cover" />
+        <img :src="media('programsCtaBackground', IMAGES.badmintonCourt)" alt="" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-black/80" />
       </div>
       <div v-scroll="'fade-up'" class="relative z-10 mx-auto max-w-3xl px-4 py-16 text-center">

@@ -1,11 +1,22 @@
 <script setup lang="ts">
 import { MapPin, Phone, Clock, Trophy, Users, Heart, Target } from 'lucide-vue-next'
-import { BRAND, IMAGES, GALLERY_IMAGES } from '~/utils/constants'
+import { BRAND, IMAGES } from '~/utils/constants'
 
 useSeoMeta({
   title: 'About | Bhaisepati Sports Academy',
   description: 'BSA is a community sports academy in Bhaisepati, Lalitpur with badminton courts, gym, and sauna facilities.',
 })
+
+const { get: media } = useSiteMedia()
+
+const facilityGallery = computed(() => [
+  { src: media('aboutGalleryCourts', IMAGES.badmintonCourt), caption: 'Professional Courts' },
+  { src: media('aboutGalleryAction', IMAGES.badmintonPlayer), caption: 'Action on Court' },
+  { src: media('aboutGalleryGym', IMAGES.gym), caption: 'Fully Equipped Gym' },
+  { src: media('aboutGalleryStrength', IMAGES.gymTraining), caption: 'Strength Training' },
+  { src: media('aboutGallerySauna', IMAGES.sauna), caption: 'Sauna & Steam' },
+  { src: media('aboutGalleryTeam', IMAGES.teamSport), caption: 'Team Sessions' },
+])
 </script>
 
 <template>
@@ -13,7 +24,7 @@ useSeoMeta({
     <!-- Header -->
     <section class="relative overflow-hidden border-b border-border min-h-[350px] flex items-end">
       <div class="absolute inset-0">
-        <img :src="IMAGES.teamSport" alt="About BSA" class="w-full h-full object-cover" />
+        <img :src="media('aboutHeaderBanner', IMAGES.teamSport)" alt="About BSA" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       </div>
       <div class="section-container relative z-10 pb-10 pt-20 text-center">
@@ -40,7 +51,7 @@ useSeoMeta({
           </div>
           <!-- Image -->
           <div v-scroll="'fade-right'" class="relative aspect-[4/3] rounded-2xl overflow-hidden group">
-            <img :src="IMAGES.badmintonCourt" alt="BSA Badminton Courts" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            <img :src="media('aboutMissionImage', IMAGES.badmintonCourt)" alt="BSA Badminton Courts" class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
             <div class="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent" />
             <div class="absolute bottom-4 left-4 inline-flex items-center gap-2 rounded-full bg-accent px-4 py-2 shadow-lg">
               <span class="text-xs font-bold uppercase tracking-wider text-white">Since 2024</span>
@@ -96,7 +107,7 @@ useSeoMeta({
         </div>
         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
           <div
-            v-for="(img, i) in GALLERY_IMAGES"
+            v-for="(img, i) in facilityGallery"
             :key="img.caption"
             v-scroll="'scale-in'"
             class="relative aspect-[4/3] overflow-hidden rounded-2xl group cursor-pointer"

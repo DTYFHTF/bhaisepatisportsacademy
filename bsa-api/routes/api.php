@@ -13,6 +13,7 @@ use App\Http\Controllers\RestockController;
 use App\Http\Controllers\ScheduleController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SiteMediaController;
 use App\Http\Controllers\StatController;
 use App\Http\Controllers\TestimonialController;
 use App\Http\Middleware\TrackingTokenAuth;
@@ -61,6 +62,9 @@ Route::get('/products/{slug}', [ProductController::class, 'show']);
 
 // Site settings (public, cached)
 Route::get('/settings', [SettingsController::class, 'index']);
+
+// Site media (fixed-position images/videos across the site)
+Route::get('/site-media', [SiteMediaController::class, 'index']);
 
 // OTP
 Route::middleware('throttle:otp')->group(function () {

@@ -8,14 +8,19 @@ usePageSeo({
 })
 
 const config = useRuntimeConfig()
+const { get: media } = useSiteMedia()
 const { data: facilities } = await useFetch<{
   id: string; name: string; category: string; description: string; features: string[]; imageUrl: string | null; hours: string | null; capacity: string | null
 }[]>(`${config.public.apiBase}/facilities`, { server: false })
 
-// Fallback images per category
+// Fallback images per category — used only if that facility record has no uploaded photo
 const categoryImage = (cat: string, imgUrl: string | null) => {
   if (imgUrl) return imgUrl
-  const map: Record<string, string> = { BADMINTON: IMAGES.badmintonCourt, GYM: IMAGES.gym, SAUNA: IMAGES.sauna }
+  const map: Record<string, string> = {
+    BADMINTON: media('facilitiesFallbackBadminton', IMAGES.badmintonCourt),
+    GYM: media('facilitiesFallbackGym', IMAGES.gym),
+    SAUNA: media('facilitiesFallbackSauna', IMAGES.sauna),
+  }
   return map[cat] || IMAGES.badmintonCourt
 }
 </script>
@@ -25,7 +30,7 @@ const categoryImage = (cat: string, imgUrl: string | null) => {
     <!-- Header -->
     <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
       <div class="absolute inset-0">
-        <img :src="IMAGES.badmintonCourt" alt="BSA Facilities" class="w-full h-full object-cover" />
+        <img :src="media('facilitiesHeaderBanner', IMAGES.badmintonCourt)" alt="BSA Facilities" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       </div>
       <div class="section-container relative z-10 pb-10 pt-20">
@@ -119,7 +124,7 @@ const categoryImage = (cat: string, imgUrl: string | null) => {
     <!-- CTA -->
     <section class="relative border-t border-border overflow-hidden">
       <div class="absolute inset-0">
-        <img :src="IMAGES.gym" alt="" class="w-full h-full object-cover" />
+        <img :src="media('facilitiesCtaBackground', IMAGES.gym)" alt="" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-black/80" />
       </div>
       <div v-scroll="'fade-up'" class="relative z-10 mx-auto max-w-3xl px-4 py-16 text-center">

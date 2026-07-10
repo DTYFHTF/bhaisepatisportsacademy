@@ -28,6 +28,8 @@ class BookingResource extends Resource
     protected static ?string $navigationLabel = 'Bookings';
 
     protected static ?string $recordTitleAttribute = 'ref';
+        protected static ?string $navigationGroup = 'Bookings';
+
 
     public static function form(Form $form): Form
     {

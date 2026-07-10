@@ -4,6 +4,7 @@ import { BRAND, IMAGES, PROGRAM_IMAGES } from '~/utils/constants'
 import { formatPrice } from '~/utils/formatters'
 
 const config = useRuntimeConfig()
+const { get: media } = useSiteMedia()
 
 const { data: rawStats } = await useFetch<{ value_label: string; label: string }[]>(
   `${config.public.apiBase}/stats`, { server: false },
@@ -151,7 +152,7 @@ onMounted(() => {
           muted
           loop
           playsinline
-          :poster="IMAGES.hero"
+          :poster="media('homeHeroPoster', IMAGES.hero)"
           class="absolute inset-0 w-full h-full object-cover"
         >
           <!-- Badminton & sports training – Mixkit free stock -->
@@ -397,7 +398,7 @@ onMounted(() => {
     <section class="relative border-y border-border overflow-hidden">
       <!-- Stats background image -->
       <div class="absolute inset-0">
-        <img :src="IMAGES.teamSport" alt="" class="w-full h-full object-cover" />
+        <img :src="media('homeStatsBackground', IMAGES.teamSport)" alt="" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-black/80" />
       </div>
       <div class="relative z-10 mx-auto max-w-7xl px-4 py-16 lg:px-8">
@@ -556,7 +557,7 @@ onMounted(() => {
             class="col-span-2 row-span-2 relative overflow-hidden rounded-2xl group cursor-pointer"
           >
             <img
-              :src="IMAGES.badmintonCourt"
+              :src="media('homeGalleryCourts', IMAGES.badmintonCourt)"
               alt="Professional badminton courts"
               loading="lazy"
               class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
@@ -573,10 +574,10 @@ onMounted(() => {
           <!-- 4 smaller tiles -->
           <div
             v-for="(tile, i) in [
-              { src: IMAGES.gym,         caption: 'Gym Floor' },
-              { src: IMAGES.sauna,       caption: 'Sauna & Steam' },
-              { src: IMAGES.gymTraining, caption: 'Strength Training' },
-              { src: IMAGES.teamSport,   caption: 'Team Sessions' },
+              { src: media('homeGalleryGymFloor', IMAGES.gym),      caption: 'Gym Floor' },
+              { src: media('homeGallerySauna', IMAGES.sauna),       caption: 'Sauna & Steam' },
+              { src: media('homeGalleryStrength', IMAGES.gymTraining), caption: 'Strength Training' },
+              { src: media('homeGalleryTeam', IMAGES.teamSport),    caption: 'Team Sessions' },
             ]"
             :key="tile.caption"
             v-scroll:[i*100]="'fade-up'"
@@ -617,7 +618,7 @@ onMounted(() => {
     <section class="relative overflow-hidden">
       <!-- CTA background image -->
       <div class="absolute inset-0">
-        <img :src="IMAGES.gym" alt="" class="w-full h-full object-cover" />
+        <img :src="media('homeCtaBackground', IMAGES.gym)" alt="" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-r from-black/85 via-black/75 to-black/85" />
       </div>
       <div class="absolute inset-0 opacity-[0.03]" style="background-image: repeating-linear-gradient(-45deg, #fff 0, #fff 1px, transparent 0, transparent 50%); background-size: 40px 40px;" />

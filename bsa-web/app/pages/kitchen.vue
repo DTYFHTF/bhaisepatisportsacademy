@@ -9,6 +9,7 @@ usePageSeo({
 })
 
 const config = useRuntimeConfig()
+const { get: media } = useSiteMedia()
 const { data: menu } = await useFetch<{
   id: string; slug: string; name: string; description: string; price: number;
   category: string; is_popular: boolean
@@ -44,7 +45,7 @@ const whatsappOrder = (item: { name: string; price: number }) => {
     <!-- Header -->
     <section class="relative overflow-hidden border-b border-border min-h-[300px] flex items-end">
       <div class="absolute inset-0">
-        <img :src="IMAGES.food" alt="BSA Kitchen" class="w-full h-full object-cover" />
+        <img :src="media('kitchenHeaderBanner', IMAGES.food)" alt="BSA Kitchen" class="w-full h-full object-cover" />
         <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20" />
       </div>
       <div class="section-container relative z-10 pb-10 pt-20">
