@@ -26,19 +26,6 @@ const minDate = computed(() => {
   return d.toISOString().split('T')[0]
 })
 
-// Generate available time slots in 30-min intervals
-// This allows efficient court utilization: if someone books 30min, the next 30min slot is also available
-const availableTimeSlots = computed(() => {
-  const slots: string[] = []
-  // Operating hours: 6 AM to 9 PM
-  for (let hour = 6; hour < 21; hour++) {
-    for (let min = 0; min < 60; min += 30) {
-      const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`
-      slots.push(timeStr)
-    }
-  }
-  return slots
-})
 
 const canProceed = computed(() => {
   if (step.value === 'slot') return preferredDate.value && preferredTime.value
@@ -52,7 +39,55 @@ const totalPrice = computed(() => {
 })
 
 const isSubmitting = ref(false)
+const isLoadingSlots = ref(false)
 const config = useRuntimeConfig()
+
+// Generate all potential time slots (static list for initial render)
+const allTimeSlots = computed(() => {
+  const slots: string[] = []
+  for (let hour = 6; hour < 21; hour++) {
+    for (let min = 0; min < 60; min += 30) {
+      const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+      slots.push(timeStr)
+    }
+  }
+  return slots
+})
+
+// Available slots (filtered based on date and duration)
+const availableSlots = ref<string[]>([])
+
+// Fetch available slots when date or duration changes
+const fetchAvailableSlots = async () => {
+  if (!preferredDate.value) return
+
+  isLoadingSlots.value = true
+  try {
+    const response = await $fetch(`${config.public.apiBase}/bookings/available-slots`, {
+      method: 'GET',
+      query: {
+        date: preferredDate.value,
+        duration: duration.value,
+      },
+    })
+    availableSlots.value = response.availableSlots
+    // Clear selected time if it's no longer available
+    if (preferredTime.value && !response.availableSlots.includes(preferredTime.value)) {
+      preferredTime.value = ''
+    }
+  } catch (error) {
+    console.error('Failed to fetch available slots:', error)
+    // Fallback to all slots if API fails
+    availableSlots.value = allTimeSlots.value
+  } finally {
+    isLoadingSlots.value = false
+  }
+}
+
+// Watch for date and duration changes to update available slots
+watch([preferredDate, duration], () => {
+  fetchAvailableSlots()
+})
 
 function nextStep() {
   if (step.value === 'slot') step.value = 'details'
@@ -157,21 +192,26 @@ async function confirmBooking() {
               </div>
             </div>
 
-            <!-- Time (Dropdown with 30-min intervals) -->
+            <!-- Time (Dropdown with 30-min intervals, filtered by availability) -->
             <div>
               <label for="time" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Time</label>
               <select
                 id="time"
                 v-model="preferredTime"
-                class="w-full max-w-xs rounded-lg border border-border bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+                :disabled="!preferredDate || isLoadingSlots || availableSlots.length === 0"
+                class="w-full max-w-xs rounded-lg border border-border bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                <option value="">Choose a time slot...</option>
-                <option v-for="t in availableTimeSlots" :key="t" :value="t">
+                <option value="">
+                  {{ isLoadingSlots ? 'Loading available times...' : availableSlots.length === 0 ? 'No slots available' : 'Choose a time slot...' }}
+                </option>
+                <option v-for="t in availableSlots" :key="t" :value="t">
                   {{ t }}
                 </option>
               </select>
               <p class="text-xs text-ink-muted mt-2">
-                ✓ {{ duration }}min slots available. Book flexibly — no wasted time!
+                <span v-if="availableSlots.length > 0">✓ {{ availableSlots.length }} slots available. Only showing times with no overlaps.</span>
+                <span v-else-if="preferredDate && !isLoadingSlots">No available slots for this date and duration.</span>
+                <span v-else>Select a date to see available times.</span>
               </p>
             </div>
 

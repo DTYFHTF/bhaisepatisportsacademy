@@ -115,6 +115,64 @@ class BookingController extends Controller
         }
     }
 
+    public function getAvailableSlots(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'date'     => 'required|date|after:today',
+            'duration' => 'required|integer|in:30,60,90,120',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $date = $validator->validated()['date'];
+        $duration = $validator->validated()['duration'];
+
+        // Get all confirmed or pending bookings for this date
+        $bookedSlots = Booking::where('scheduled_date', $date)
+            ->whereIn('status', ['PENDING', 'CONFIRMED'])
+            ->select('scheduled_time', 'total_duration')
+            ->get();
+
+        // Convert booked slots to minutes from midnight for easier math
+        $bookedRanges = $bookedSlots->map(function ($booking) {
+            $timeParts = explode(':', $booking->scheduled_time);
+            $startMinutes = (int) $timeParts[0] * 60 + (int) $timeParts[1];
+            $endMinutes = $startMinutes + $booking->total_duration;
+            return ['start' => $startMinutes, 'end' => $endMinutes];
+        });
+
+        // Generate all potential slots in 30-minute intervals (6 AM to 8:30 PM)
+        $allSlots = [];
+        for ($hour = 6; $hour < 21; $hour++) {
+            for ($min = 0; $min < 60; $min += 30) {
+                $allSlots[] = sprintf('%02d:%02d', $hour, $min);
+            }
+        }
+
+        // Filter out slots that would overlap with existing bookings
+        $availableSlots = array_filter($allSlots, function ($slot) use ($bookedRanges, $duration) {
+            $timeParts = explode(':', $slot);
+            $slotStartMinutes = (int) $timeParts[0] * 60 + (int) $timeParts[1];
+            $slotEndMinutes = $slotStartMinutes + $duration;
+
+            // Check if this slot overlaps with any booked slot
+            foreach ($bookedRanges as $booked) {
+                // Overlap occurs if: slot start < booked end AND slot end > booked start
+                if ($slotStartMinutes < $booked['end'] && $slotEndMinutes > $booked['start']) {
+                    return false; // This slot overlaps, exclude it
+                }
+            }
+            return true; // No overlap, include it
+        });
+
+        return response()->json([
+            'availableSlots' => array_values($availableSlots), // Re-index array
+            'bookedSlots'    => $bookedSlots,
+        ]);
+    }
+
     public function show(string $ref): JsonResponse
     {
         $booking = Booking::where('ref', $ref)->with('items.service')->firstOrFail();
