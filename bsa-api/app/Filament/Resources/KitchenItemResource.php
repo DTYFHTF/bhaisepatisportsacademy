@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\KitchenItemResource\Pages;
 use App\Models\KitchenItem;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -15,6 +16,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -75,6 +77,28 @@ class KitchenItemResource extends Resource
                     TextInput::make('sort_order')->numeric()->default(0),
                 ]),
             ]),
+
+            Section::make('Image')
+                ->icon('heroicon-o-photo')
+                ->description('Upload a photo of this menu item — it goes straight to Cloudinary and appears on the site.')
+                ->schema([
+                    FileUpload::make('cloudinary_id')
+                        ->label('Item image')
+                        ->image()
+                        ->disk('cloudinary')
+                        ->directory('bsa/kitchen')
+                        ->visibility('public')
+                        ->imagePreviewHeight('240')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192)
+                        ->columnSpanFull(),
+                    TextInput::make('image_url')
+                        ->label('Image URL (auto-filled on upload)')
+                        ->url()
+                        ->readOnly()
+                        ->placeholder('Auto-filled after upload')
+                        ->columnSpanFull(),
+                ]),
         ]);
     }
 
@@ -82,6 +106,7 @@ class KitchenItemResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_url')->label('')->height(40)->square(),
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('category')->badge(),
                 TextColumn::make('price')

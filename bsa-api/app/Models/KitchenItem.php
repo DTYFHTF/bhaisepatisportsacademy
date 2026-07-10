@@ -21,6 +21,20 @@ class KitchenItem extends Model
         ];
     }
 
+    /**
+     * Auto-generate the optimized Cloudinary delivery URL from an uploaded
+     * asset id (mirrors ProductImage / Program / Facility).
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (KitchenItem $item) {
+            if ($item->cloudinary_id) {
+                $cloud = config('cloudinary.cloud_name', env('CLOUDINARY_CLOUD_NAME', 'dhknx0eac'));
+                $item->image_url = "https://res.cloudinary.com/{$cloud}/image/upload/f_auto,q_auto/{$item->cloudinary_id}";
+            }
+        });
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
