@@ -46,6 +46,7 @@ const formattedDate = computed(() => {
 async function submitBooking() {
   isSubmitting.value = true
   try {
+    // Save trial booking to database first
     const response = await $fetch(`${config.public.apiBase}/bookings/trial`, {
       method: 'POST',
       body: {
@@ -62,6 +63,12 @@ async function submitBooking() {
     })
 
     successRef.value = response.booking.ref
+
+    // Then open WhatsApp with the trial details, same as court booking
+    const message = `Hi! I've booked a trial session at BSA.\n\nBooking Ref: ${successRef.value}\nDate: ${formattedDate.value}\nTime: ${preferredTime.value}\nExperience: ${experienceLevel.value}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${age.value ? `\nAge: ${age.value}` : ''}${goals.value ? `\nGoals: ${goals.value}` : ''}${notes.value ? `\nNotes: ${notes.value}` : ''}`
+    const encoded = encodeURIComponent(message)
+    window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
+
     step.value = 'success'
   } catch (error: any) {
     alert(`Error: ${error.data?.error || 'Failed to book trial session'}`)
@@ -358,7 +365,7 @@ function resetForm() {
                 :disabled="isSubmitting"
                 :class="['flex-1 px-6 py-3 rounded-full font-medium transition-colors', isSubmitting ? 'bg-surface text-ink-muted cursor-not-allowed' : 'bg-accent text-white hover:bg-accent-hover']"
               >
-                {{ isSubmitting ? 'Booking...' : 'Confirm Trial Booking' }}
+                {{ isSubmitting ? 'Saving...' : 'Confirm via WhatsApp' }}
               </button>
             </div>
           </div>

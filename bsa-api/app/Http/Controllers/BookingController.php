@@ -9,6 +9,7 @@ use App\Models\Service;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
@@ -111,6 +112,7 @@ class BookingController extends Controller
                 'message' => 'Court booking created successfully.',
             ], 201);
         } catch (\Exception $e) {
+            Log::error('Court booking creation failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to create booking.'], 500);
         }
     }
@@ -202,6 +204,8 @@ class BookingController extends Controller
                 'customer_email'    => $data['customer_email'] ?? null,
                 'scheduled_date'    => $data['scheduled_date'],
                 'scheduled_time'    => $data['scheduled_time'],
+                'total_duration'    => 0,
+                'total'             => 0,
                 'status'            => BookingStatus::PENDING,
                 'age'               => $data['age'] ?? null,
                 'experience_level'  => $data['experience_level'],
@@ -214,6 +218,7 @@ class BookingController extends Controller
                 'message' => 'Trial booking created successfully.',
             ], 201);
         } catch (\Exception $e) {
+            Log::error('Trial booking creation failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to create trial booking.'], 500);
         }
     }
