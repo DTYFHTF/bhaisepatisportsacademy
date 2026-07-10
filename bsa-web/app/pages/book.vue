@@ -26,7 +26,19 @@ const minDate = computed(() => {
   return d.toISOString().split('T')[0]
 })
 
-const availableTimes = COURT_BOOKING.timeSlots
+// Generate available time slots in 30-min intervals
+// This allows efficient court utilization: if someone books 30min, the next 30min slot is also available
+const availableTimeSlots = computed(() => {
+  const slots: string[] = []
+  // Operating hours: 6 AM to 9 PM
+  for (let hour = 6; hour < 21; hour++) {
+    for (let min = 0; min < 60; min += 30) {
+      const timeStr = `${String(hour).padStart(2, '0')}:${String(min).padStart(2, '0')}`
+      slots.push(timeStr)
+    }
+  }
+  return slots
+})
 
 const canProceed = computed(() => {
   if (step.value === 'slot') return preferredDate.value && preferredTime.value
@@ -91,7 +103,7 @@ function confirmBooking() {
               <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Duration</label>
               <div class="flex gap-2">
                 <button
-                  v-for="d in [60, 90, 120]"
+                  v-for="d in [30, 60, 90, 120]"
                   :key="d"
                   class="rounded-lg border px-4 py-2 text-sm font-medium transition-colors"
                   :class="duration === d ? 'border-accent bg-accent text-canvas' : 'border-border text-ink-muted hover:border-accent/30'"
@@ -102,20 +114,22 @@ function confirmBooking() {
               </div>
             </div>
 
-            <!-- Time -->
+            <!-- Time (Dropdown with 30-min intervals) -->
             <div>
-              <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Time</label>
-              <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
-                <button
-                  v-for="t in availableTimes"
-                  :key="t"
-                  class="rounded-lg border px-3 py-2.5 text-sm font-medium transition-colors"
-                  :class="preferredTime === t ? 'border-accent bg-accent text-canvas' : 'border-border text-ink-muted hover:border-accent/30'"
-                  @click="preferredTime = t"
-                >
-                  {{ formatTime(t) }}
-                </button>
-              </div>
+              <label for="time" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Time</label>
+              <select
+                id="time"
+                v-model="preferredTime"
+                class="w-full max-w-xs rounded-lg border border-border bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
+              >
+                <option value="">Choose a time slot...</option>
+                <option v-for="t in availableTimeSlots" :key="t" :value="t">
+                  {{ t }}
+                </option>
+              </select>
+              <p class="text-xs text-ink-muted mt-2">
+                ✓ {{ duration }}min slots available. Book flexibly — no wasted time!
+              </p>
             </div>
 
             <!-- Court preference -->

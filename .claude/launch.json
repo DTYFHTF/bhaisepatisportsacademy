@@ -2,16 +2,23 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "static-preview",
-      "runtimeExecutable": "npx",
-      "runtimeArgs": ["http-server", "bsa-web/.output/public", "-p", "4173", "--silent"],
-      "port": 4173
+      "name": "api-dev",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["artisan", "serve", "--port=8001"],
+      "cwd": "bsa-api",
+      "port": 8001
     },
     {
       "name": "web-dev",
       "runtimeExecutable": "npm",
       "runtimeArgs": ["run", "dev", "--prefix", "bsa-web"],
       "port": 3000
+    },
+    {
+      "name": "static-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["http-server", "bsa-web/.output/public", "-p", "4173", "--silent"],
+      "port": 4173
     }
   ]
 }
