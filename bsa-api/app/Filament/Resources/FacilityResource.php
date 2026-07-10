@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\FacilityResource\Pages;
 use App\Models\Facility;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -16,6 +17,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -56,9 +58,20 @@ class FacilityResource extends Resource
 
                 Grid::make(2)->schema([
                     Select::make('category')
-                        ->options(['badminton' => 'Badminton', 'gym' => 'Gym', 'sauna' => 'Sauna'])
+                        ->options(['BADMINTON' => 'Badminton', 'GYM' => 'Gym', 'SAUNA' => 'Sauna'])
                         ->required(),
-                    TextInput::make('icon')->maxLength(100)->placeholder('e.g. heroicon-o-trophy'),
+                    TextInput::make('icon')->maxLength(100)->placeholder('e.g. 🏸 or heroicon-o-trophy'),
+                ]),
+
+                Grid::make(2)->schema([
+                    TextInput::make('hours')
+                        ->label('Opening Hours')
+                        ->maxLength(255)
+                        ->placeholder('e.g. 6:00 AM – 9:00 PM'),
+                    TextInput::make('capacity')
+                        ->label('Capacity')
+                        ->maxLength(255)
+                        ->placeholder('e.g. 6 courts / 20+ people'),
                 ]),
 
                 TagsInput::make('features')->placeholder('Add feature'),
@@ -68,6 +81,28 @@ class FacilityResource extends Resource
                     TextInput::make('sort_order')->numeric()->default(0),
                 ]),
             ]),
+
+            Section::make('Image')
+                ->icon('heroicon-o-photo')
+                ->description('Upload a photo for this facility — it goes straight to Cloudinary and appears on the site.')
+                ->schema([
+                    FileUpload::make('cloudinary_id')
+                        ->label('Facility image')
+                        ->image()
+                        ->disk('cloudinary')
+                        ->directory('bsa/facilities')
+                        ->visibility('public')
+                        ->imagePreviewHeight('240')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192)
+                        ->columnSpanFull(),
+                    TextInput::make('image_url')
+                        ->label('Image URL (auto-filled on upload)')
+                        ->url()
+                        ->readOnly()
+                        ->placeholder('Auto-filled after upload')
+                        ->columnSpanFull(),
+                ]),
         ]);
     }
 
@@ -75,6 +110,7 @@ class FacilityResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_url')->label('')->height(40)->square(),
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('category')->badge(),
                 TextColumn::make('icon'),
@@ -83,7 +119,7 @@ class FacilityResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
-                    ->options(['badminton' => 'Badminton', 'gym' => 'Gym', 'sauna' => 'Sauna']),
+                    ->options(['BADMINTON' => 'Badminton', 'GYM' => 'Gym', 'SAUNA' => 'Sauna']),
             ])
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([

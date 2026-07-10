@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Grid;
 use Filament\Forms\Components\Section;
 use Filament\Forms\Components\Select;
@@ -16,6 +17,7 @@ use Filament\Forms\Set;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Support\Str;
@@ -56,7 +58,7 @@ class ProgramResource extends Resource
 
                 Grid::make(3)->schema([
                     Select::make('category')
-                        ->options(['badminton' => 'Badminton', 'gym' => 'Gym', 'sauna' => 'Sauna'])
+                        ->options(['BADMINTON' => 'Badminton', 'FITNESS' => 'Fitness / Gym', 'RECOVERY' => 'Recovery / Sauna'])
                         ->required(),
                     Select::make('level')
                         ->options(['beginner' => 'Beginner', 'intermediate' => 'Intermediate', 'advanced' => 'Advanced', 'all' => 'All Levels'])
@@ -74,6 +76,18 @@ class ProgramResource extends Resource
                         ->helperText('In paisa (e.g. 300000 = NPR 3,000)'),
                 ]),
 
+                Grid::make(2)->schema([
+                    TextInput::make('coach_name')
+                        ->label('Lead Coach')
+                        ->maxLength(255)
+                        ->placeholder('e.g. Coach Ramesh Shrestha'),
+                    TextInput::make('highlight')
+                        ->label('Highlight / Hook')
+                        ->maxLength(255)
+                        ->placeholder('e.g. Most popular for first-timers')
+                        ->helperText('Short line shown on the program card'),
+                ]),
+
                 TagsInput::make('features')->placeholder('Add feature'),
 
                 Grid::make(3)->schema([
@@ -82,6 +96,28 @@ class ProgramResource extends Resource
                     TextInput::make('sort_order')->numeric()->default(0),
                 ]),
             ]),
+
+            Section::make('Image')
+                ->icon('heroicon-o-photo')
+                ->description('Upload a photo for this program — it goes straight to Cloudinary and appears on the site.')
+                ->schema([
+                    FileUpload::make('cloudinary_id')
+                        ->label('Program image')
+                        ->image()
+                        ->disk('cloudinary')
+                        ->directory('bsa/programs')
+                        ->visibility('public')
+                        ->imagePreviewHeight('240')
+                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                        ->maxSize(8192)
+                        ->columnSpanFull(),
+                    TextInput::make('image_url')
+                        ->label('Image URL (auto-filled on upload)')
+                        ->url()
+                        ->readOnly()
+                        ->placeholder('Auto-filled after upload')
+                        ->columnSpanFull(),
+                ]),
         ]);
     }
 
@@ -89,9 +125,11 @@ class ProgramResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('image_url')->label('')->height(40)->circular(),
                 TextColumn::make('name')->searchable()->sortable(),
                 TextColumn::make('category')->badge(),
                 TextColumn::make('level')->badge(),
+                TextColumn::make('coach_name')->label('Coach')->toggleable(),
                 TextColumn::make('price')
                     ->formatStateUsing(fn (int $state) => 'NPR ' . number_format($state / 100, 0))
                     ->sortable(),
@@ -101,7 +139,7 @@ class ProgramResource extends Resource
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('category')
-                    ->options(['badminton' => 'Badminton', 'gym' => 'Gym', 'sauna' => 'Sauna']),
+                    ->options(['BADMINTON' => 'Badminton', 'FITNESS' => 'Fitness / Gym', 'RECOVERY' => 'Recovery / Sauna']),
             ])
             ->actions([Tables\Actions\EditAction::make()])
             ->bulkActions([

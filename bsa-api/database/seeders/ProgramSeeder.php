@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 
 class ProgramSeeder extends Seeder
 {
+    // image_url is intentionally left null in seed data — the site shows a
+    // polished branded placeholder until an owner uploads a real photo via
+    // the admin (Programs → Image). Uploaded images are served from Cloudinary.
     public function run(): void
     {
         Program::truncate();
@@ -25,6 +28,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 300000,
                 'is_popular'        => true,
                 'sort_order'        => 1,
+                'coach_name'        => 'Coach Ramesh Shrestha',
+                'highlight'         => 'Most popular for first-timers',
                 'features'          => ['Basic stroke techniques', 'Court movement & footwork', 'Rules & scoring', 'Equipment guidance'],
             ],
             [
@@ -39,6 +44,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 500000,
                 'is_popular'        => true,
                 'sort_order'        => 2,
+                'coach_name'        => 'Coach Ramesh Shrestha',
+                'highlight'         => 'Step up your rally game',
                 'features'          => ['Advanced stroke techniques', 'Rally strategy', 'Match play & doubles', 'Video analysis'],
             ],
             [
@@ -53,6 +60,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 800000,
                 'is_popular'        => false,
                 'sort_order'        => 3,
+                'coach_name'        => 'Coach Sunita Rai',
+                'highlight'         => 'Train like a tournament player',
                 'features'          => ['Tournament preparation', 'Speed & agility drills', 'Match simulation', 'Fitness integration'],
             ],
             [
@@ -67,6 +76,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 250000,
                 'is_popular'        => true,
                 'sort_order'        => 4,
+                'coach_name'        => 'Coach Sunita Rai',
+                'highlight'         => 'Built for young players',
                 'features'          => ['Fun-first approach', 'Age-appropriate drills', 'Mini tournaments', 'Physical literacy'],
             ],
             [
@@ -81,6 +92,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 400000,
                 'is_popular'        => true,
                 'sort_order'        => 5,
+                'coach_name'        => 'Coach Bikash Tamang',
+                'highlight'         => 'Strength for every athlete',
                 'features'          => ['Full gym access', 'Strength equipment', 'Cardio machines', 'Flexible schedule'],
             ],
             [
@@ -95,6 +108,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 600000,
                 'is_popular'        => true,
                 'sort_order'        => 6,
+                'coach_name'        => 'All BSA coaches',
+                'highlight'         => 'Everything, one price',
                 'features'          => ['Unlimited court booking', 'Full gym access', 'Sauna & steam access', 'Priority scheduling'],
             ],
             // ── RECOVERY ─────────────────────────────────────────────────────
@@ -110,6 +125,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 150000,
                 'is_popular'        => true,
                 'sort_order'        => 7,
+                'coach_name'        => null,
+                'highlight'         => 'Recover, unlimited',
                 'features'          => ['Unlimited sauna access', 'Steam room included', 'Muscle recovery support', 'Relaxation sessions', 'Clean towels provided'],
             ],
             [
@@ -124,6 +141,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 220000,
                 'is_popular'        => false,
                 'sort_order'        => 8,
+                'coach_name'        => 'Coach Bikash Tamang',
+                'highlight'         => 'Train hard, recover smart',
                 'features'          => ['Sauna & steam access', 'Guided stretching sessions', 'Recovery nutrition tips', 'Flexibility coaching'],
             ],
             [
@@ -138,6 +157,8 @@ class ProgramSeeder extends Seeder
                 'price'             => 40000,
                 'is_popular'        => true,
                 'sort_order'        => 9,
+                'coach_name'        => null,
+                'highlight'         => 'No commitment, pure recovery',
                 'features'          => ['Single sauna session', 'Steam room access', 'Locker use included', 'Shower facilities'],
             ],
         ];

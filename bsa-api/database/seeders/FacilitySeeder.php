@@ -8,6 +8,9 @@ use Illuminate\Support\Str;
 
 class FacilitySeeder extends Seeder
 {
+    // image_url is intentionally left null in seed data — the site shows a
+    // polished branded placeholder until an owner uploads a real photo via
+    // the admin (Facilities → Image). Uploaded images are served from Cloudinary.
     public function run(): void
     {
         Facility::truncate();
@@ -19,7 +22,8 @@ class FacilitySeeder extends Seeder
                 'description' => 'Professional-grade badminton courts with proper lighting, regulation markings, and quality playing surface. Available for training and court booking.',
                 'category'    => 'BADMINTON',
                 'icon'        => '🏸',
-                'image_url'   => 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=1200&h=700&q=80',
+                'hours'       => '6:00 AM – 9:00 PM',
+                'capacity'    => '3 courts',
                 'sort_order'  => 1,
                 'features'    => ['Professional playing surface', 'Proper court lighting', 'Regulation markings', 'Equipment available', 'Court booking system'],
             ],
@@ -29,7 +33,8 @@ class FacilitySeeder extends Seeder
                 'description' => 'Fully equipped gym with modern strength training equipment. Designed for athletic conditioning and injury prevention.',
                 'category'    => 'GYM',
                 'icon'        => '💪',
-                'image_url'   => 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&h=700&q=80',
+                'hours'       => '6:00 AM – 9:00 PM',
+                'capacity'    => '20+ members',
                 'sort_order'  => 2,
                 'features'    => ['Modern equipment', 'Free weights & machines', 'Cardio zone', 'Mirrors & ventilation', 'Personal training available'],
             ],
@@ -39,7 +44,8 @@ class FacilitySeeder extends Seeder
                 'description' => 'Recover faster after intense training sessions. Our sauna and steam facilities help with muscle recovery and relaxation.',
                 'category'    => 'SAUNA',
                 'icon'        => '♨️',
-                'image_url'   => 'https://images.unsplash.com/photo-1520974048-a3a50c2b0eb0?auto=format&fit=crop&w=1200&h=700&q=80',
+                'hours'       => '7:00 AM – 8:00 PM',
+                'capacity'    => '8 people',
                 'sort_order'  => 3,
                 'features'    => ['Sauna therapy', 'Steam room', 'Muscle recovery', 'Post-workout relaxation', 'Clean & hygienic'],
             ],

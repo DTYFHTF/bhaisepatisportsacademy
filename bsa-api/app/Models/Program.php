@@ -23,6 +23,20 @@ class Program extends Model
         ];
     }
 
+    /**
+     * When a Cloudinary asset is uploaded via Filament, auto-generate the
+     * optimized delivery URL (f_auto,q_auto). Mirrors ProductImage.
+     */
+    protected static function booted(): void
+    {
+        static::saving(function (Program $program) {
+            if ($program->cloudinary_id) {
+                $cloud = config('cloudinary.cloud_name', env('CLOUDINARY_CLOUD_NAME', 'dhknx0eac'));
+                $program->image_url = "https://res.cloudinary.com/{$cloud}/image/upload/f_auto,q_auto/{$program->cloudinary_id}";
+            }
+        });
+    }
+
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
