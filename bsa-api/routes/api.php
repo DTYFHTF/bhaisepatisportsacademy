@@ -45,6 +45,7 @@ Route::get('/services/{slug}', [ServiceController::class, 'show']);
 
 // Bookings
 Route::post('/bookings', [BookingController::class, 'store']);
+Route::post('/bookings/court', [BookingController::class, 'storeCourtBooking']);
 Route::get('/bookings/{ref}', [BookingController::class, 'show']);
 
 // Products

@@ -74,6 +74,47 @@ class BookingController extends Controller
         });
     }
 
+    public function storeCourtBooking(Request $request): JsonResponse
+    {
+        $validator = Validator::make($request->all(), [
+            'customer_name'   => 'required|string|max:255',
+            'customer_phone'  => 'required|string|size:10',
+            'scheduled_date'  => 'required|date|after:today',
+            'scheduled_time'  => 'required|string|regex:/^\d{2}:\d{2}$/',
+            'total_duration'  => 'required|integer|in:30,60,90,120',
+            'total'           => 'required|integer|min:0',
+            'court_preference' => 'nullable|integer|min:1|max:3',
+            'notes'           => 'nullable|string|max:1000',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $data = $validator->validated();
+
+        try {
+            $booking = Booking::create([
+                'ref'              => Booking::generateRef(),
+                'customer_name'    => $data['customer_name'],
+                'customer_phone'   => $data['customer_phone'],
+                'scheduled_date'   => $data['scheduled_date'],
+                'scheduled_time'   => $data['scheduled_time'],
+                'total_duration'   => $data['total_duration'],
+                'total'            => $data['total'],
+                'status'           => BookingStatus::PENDING,
+                'notes'            => $data['notes'] ?? null,
+            ]);
+
+            return response()->json([
+                'booking' => $booking,
+                'message' => 'Court booking created successfully.',
+            ], 201);
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Failed to create booking.'], 500);
+        }
+    }
+
     public function show(string $ref): JsonResponse
     {
         $booking = Booking::where('ref', $ref)->with('items.service')->firstOrFail();

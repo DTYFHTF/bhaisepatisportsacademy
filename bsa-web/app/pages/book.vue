@@ -51,6 +51,9 @@ const totalPrice = computed(() => {
   return COURT_BOOKING.pricePerHour * hours
 })
 
+const isSubmitting = ref(false)
+const config = useRuntimeConfig()
+
 function nextStep() {
   if (step.value === 'slot') step.value = 'details'
   else if (step.value === 'details') step.value = 'confirm'
@@ -61,10 +64,50 @@ function goBack() {
   else if (step.value === 'confirm') step.value = 'details'
 }
 
-function confirmBooking() {
-  const message = `Hi! I'd like to book a badminton court at BSA.\n\nDate: ${preferredDate.value}\nTime: ${preferredTime.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${notes.value ? `\nNotes: ${notes.value}` : ''}`
-  const encoded = encodeURIComponent(message)
-  window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
+async function confirmBooking() {
+  isSubmitting.value = true
+
+  try {
+    // Save booking to database
+    const bookingData = {
+      customer_name: customerName.value,
+      customer_phone: customerPhone.value,
+      scheduled_date: preferredDate.value,
+      scheduled_time: preferredTime.value,
+      total_duration: duration.value,
+      total: totalPrice.value,
+      court_preference: selectedCourt.value,
+      notes: notes.value || null,
+    }
+
+    const response = await $fetch(`${config.public.apiBase}/bookings/court`, {
+      method: 'POST',
+      body: bookingData,
+    })
+
+    // If booking saved successfully, send WhatsApp message
+    const message = `Hi! I've submitted a court booking request at BSA.\n\nBooking Ref: ${response.booking.ref}\nDate: ${preferredDate.value}\nTime: ${preferredTime.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${notes.value ? `\nNotes: ${notes.value}` : ''}`
+    const encoded = encodeURIComponent(message)
+    window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
+
+    // Reset form and show success
+    setTimeout(() => {
+      customerName.value = ''
+      customerPhone.value = ''
+      notes.value = ''
+      preferredDate.value = ''
+      preferredTime.value = ''
+      selectedCourt.value = null
+      duration.value = 60
+      step.value = 'slot'
+      alert("Booking submitted! You'll receive a confirmation via WhatsApp.")
+    }, 1000)
+  } catch (error: any) {
+    console.error('Booking error:', error)
+    alert(error?.data?.message || 'Failed to submit booking. Please try again.')
+  } finally {
+    isSubmitting.value = false
+  }
 }
 </script>
 
@@ -280,10 +323,10 @@ function confirmBooking() {
               variant="primary"
               size="lg"
               class="w-full"
-              :disabled="!canProceed"
+              :disabled="!canProceed || isSubmitting"
               @click="step === 'confirm' ? confirmBooking() : nextStep()"
             >
-              {{ step === 'confirm' ? 'Confirm via WhatsApp' : 'Continue' }}
+              {{ isSubmitting ? 'Saving booking...' : step === 'confirm' ? 'Confirm via WhatsApp' : 'Continue' }}
             </UiAppButton>
           </div>
         </div>
