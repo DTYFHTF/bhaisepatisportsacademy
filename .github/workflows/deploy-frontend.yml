@@ -10,6 +10,11 @@ on:
   # Allow manual trigger from GitHub Actions tab
   workflow_dispatch:
 
+# Server docroot for bhaisepatisportsacademy.com.np, relative to the rishipa2
+# home dir. Confirm against `ls ~` on the server before relying on this.
+env:
+  DEPLOY_WEB_DIR: bhaisepatisportacademy/bsa-web
+
 jobs:
   build-deploy:
     runs-on: ubuntu-latest
@@ -48,17 +53,18 @@ jobs:
       - name: Write SSH key
         run: |
           mkdir -p ~/.ssh
-          printf '%s\n' "${{ secrets.SSH_KEY }}" > ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -p "${{ secrets.SSH_PORT }}" "${{ secrets.SSH_HOST }}" >> ~/.ssh/known_hosts
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
       # ── 6. rsync static files to server document root ────────────────────────
-      #   Destination: ~/bhaisepatisportacademy/bsa-web/
+      #   Destination: ${{ env.DEPLOY_WEB_DIR }} (must match the cPanel docroot
+      #   for bhaisepatisportsacademy.com.np — verify with `ls ~` on the server)
       #   --delete removes stale files; .user.ini is a cPanel file — never touch it
       - name: Deploy to server
         run: |
           rsync -rlptzv --delete \
             --exclude='.user.ini' \
-            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.SSH_PORT }}" \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }}" \
             bsa-web/.output/public/ \
-            "${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }}:~/bhaisepatisportacademy/bsa-web/"
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/${{ env.DEPLOY_WEB_DIR }}/"

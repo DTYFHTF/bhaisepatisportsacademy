@@ -21,19 +21,23 @@ export const BRAND = {
 
 // ─── Images (placeholder Unsplash) ────────────────────
 
+// Placeholder SVG gradient (real images pending academy photography; see ROADMAP 2.1, 4.1)
+// Once real photos are available, replace URLs with self-hosted images or Cloudinary CDN
+const PLACEHOLDER_SVG = 'data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 1920 1080%22%3E%3Cdefs%3E%3ClinearGradient id=%22g%22 x1=%220%25%22 y1=%220%25%22 x2=%22100%25%22 y2=%22100%25%22%3E%3Cstop offset=%220%25%22 style=%22stop-color:%235a5a6a;stop-opacity:1%22 /%3E%3Cstop offset=%22100%25%22 style=%22stop-color:%23333340;stop-opacity:1%22 /%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width=%221920%22 height=%221080%22 fill=%22url(%23g)%22 /%3E%3C/svg%3E'
+
 export const IMAGES = {
-  hero: 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=1920&q=80',
-  heroAlt: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&w=1920&q=80',
-  badmintonCourt: 'https://images.unsplash.com/photo-1613914153966-fd0cf11e0e8b?auto=format&fit=crop&w=1200&q=80',
-  badmintonPlayer: 'https://images.unsplash.com/photo-1547347298-4074fc3086f0?auto=format&fit=crop&w=800&q=80',
-  gym: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?auto=format&fit=crop&w=1200&q=80',
-  gymTraining: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&w=800&q=80',
-  sauna: 'https://images.unsplash.com/photo-1520974048-a3a50c2b0eb0?auto=format&fit=crop&w=1200&q=80',
-  recovery: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?auto=format&fit=crop&w=800&q=80',
-  food: 'https://images.unsplash.com/photo-1490645935967-10de6ba17061?auto=format&fit=crop&w=800&q=80',
-  smoothie: 'https://images.unsplash.com/photo-1505252585461-04db1eb84625?auto=format&fit=crop&w=800&q=80',
-  teamSport: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?auto=format&fit=crop&w=1200&q=80',
-  aboutFacility: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&w=1200&q=80',
+  hero: PLACEHOLDER_SVG,
+  heroAlt: PLACEHOLDER_SVG,
+  badmintonCourt: PLACEHOLDER_SVG,
+  badmintonPlayer: PLACEHOLDER_SVG,
+  gym: PLACEHOLDER_SVG,
+  gymTraining: PLACEHOLDER_SVG,
+  sauna: PLACEHOLDER_SVG,
+  recovery: PLACEHOLDER_SVG,
+  food: PLACEHOLDER_SVG,
+  smoothie: PLACEHOLDER_SVG,
+  teamSport: PLACEHOLDER_SVG,
+  aboutFacility: PLACEHOLDER_SVG,
 } as const
 
 // Gallery images for the facility photo grid

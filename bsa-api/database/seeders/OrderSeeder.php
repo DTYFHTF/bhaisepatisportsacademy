@@ -39,6 +39,11 @@ class OrderSeeder extends Seeder
 
     public function run(): void
     {
+        // Truncate related tables first
+        TrackingToken::truncate();
+        OrderStatusHistory::truncate();
+        Order::truncate();
+
         $racket     = Product::where('slug', 'yonex-nanoflare-racket')->firstOrFail();
         $shuttles   = Product::where('slug', 'feather-shuttlecocks-12pk')->firstOrFail();
         $shoes      = Product::where('slug', 'court-shoes-grip-pro')->firstOrFail();

@@ -16,8 +16,12 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // Disable FK checks so truncate() doesn't fail on MySQL
-        DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        // Disable FK checks - compatible with both MySQL and SQLite
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=0;');
+        } else {
+            DB::statement('PRAGMA foreign_keys=OFF;');
+        }
 
         // Admin user for Filament panel
         User::updateOrCreate(
@@ -36,9 +40,15 @@ class DatabaseSeeder extends Seeder
             ScheduleSeeder::class,
             TestimonialSeeder::class,
             KitchenSeeder::class,
+            LookSeeder::class,
             StatSeeder::class,
         ]);
 
-        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        // Re-enable FK checks
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('SET FOREIGN_KEY_CHECKS=1;');
+        } else {
+            DB::statement('PRAGMA foreign_keys=ON;');
+        }
     }
 }

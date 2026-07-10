@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Look;
+use App\Models\LookItem;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
 
@@ -10,6 +11,10 @@ class LookSeeder extends Seeder
 {
     public function run(): void
     {
+        // Truncate related tables first
+        LookItem::truncate();
+        Look::truncate();
+
         $racket   = Product::where('slug', 'yonex-nanoflare-racket')->firstOrFail();
         $shuttles = Product::where('slug', 'feather-shuttlecocks-12pk')->firstOrFail();
         $grip     = Product::where('slug', 'racket-grip-tape-3pk')->firstOrFail();
