@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { Calendar, Clock, ArrowLeft, CheckCircle2 } from 'lucide-vue-next'
-import { BRAND } from '~/utils/constants'
+import { BRAND, TRIAL_BOOKING } from '~/utils/constants'
 
 usePageSeo({
   title: 'Book a Trial Session | Bhaisepati Sports Academy',
@@ -24,11 +24,44 @@ const preferredTime = ref('')
 const notes = ref('')
 const isSubmitting = ref(false)
 const successRef = ref('')
+const isLoadingSlots = ref(false)
+const availableSlots = ref<string[]>([])
 
 const minDate = computed(() => {
   const d = new Date()
   d.setDate(d.getDate() + 1)
   return d.toISOString().split('T')[0]
+})
+
+// Fetch open slots whenever the date changes — trial sessions are a fixed
+// length, so duration never varies here (unlike court booking).
+const fetchAvailableSlots = async () => {
+  if (!preferredDate.value) return
+
+  isLoadingSlots.value = true
+  try {
+    const response = await $fetch(`${config.public.apiBase}/bookings/available-slots`, {
+      method: 'GET',
+      query: {
+        date: preferredDate.value,
+        duration: TRIAL_BOOKING.durationMinutes,
+      },
+    })
+    availableSlots.value = response.availableSlots
+    if (preferredTime.value && !response.availableSlots.includes(preferredTime.value)) {
+      preferredTime.value = ''
+    }
+  } catch (error) {
+    console.error('Failed to fetch available slots:', error)
+    availableSlots.value = []
+  } finally {
+    isLoadingSlots.value = false
+  }
+}
+
+watch(preferredDate, () => {
+  preferredTime.value = ''
+  fetchAvailableSlots()
 })
 
 const canProceed = computed(() => {
@@ -71,7 +104,14 @@ async function submitBooking() {
 
     step.value = 'success'
   } catch (error: any) {
-    alert(`Error: ${error.data?.error || 'Failed to book trial session'}`)
+    if (error?.response?.status === 409) {
+      alert(error.data?.message || 'That time slot was just booked by someone else. Please choose another time.')
+      preferredTime.value = ''
+      await fetchAvailableSlots()
+      step.value = 'details'
+    } else {
+      alert(error.data?.error || 'Failed to book trial session')
+    }
   } finally {
     isSubmitting.value = false
   }
@@ -236,12 +276,24 @@ function resetForm() {
                   <Clock class="h-4 w-4 inline mr-1" />
                   Time *
                 </label>
-                <input
+                <select
                   v-model="preferredTime"
-                  type="time"
-                  class="w-full px-4 py-3 rounded-lg border border-border bg-canvas text-ink focus:outline-none focus:ring-2 focus:ring-accent"
+                  :disabled="!preferredDate || isLoadingSlots || availableSlots.length === 0"
+                  class="w-full px-4 py-3 rounded-lg border border-border bg-canvas text-ink focus:outline-none focus:ring-2 focus:ring-accent disabled:opacity-50 disabled:cursor-not-allowed"
                   required
-                />
+                >
+                  <option value="">
+                    {{ isLoadingSlots ? 'Loading available times...' : availableSlots.length === 0 ? 'No slots available' : 'Choose a time slot...' }}
+                  </option>
+                  <option v-for="t in availableSlots" :key="t" :value="t">
+                    {{ t }}
+                  </option>
+                </select>
+                <p class="text-xs text-ink-muted mt-1">
+                  <span v-if="availableSlots.length > 0">✓ {{ availableSlots.length }} slots available</span>
+                  <span v-else-if="preferredDate && !isLoadingSlots">No available slots for this date.</span>
+                  <span v-else>Select a date to see available times.</span>
+                </p>
               </div>
             </div>
 

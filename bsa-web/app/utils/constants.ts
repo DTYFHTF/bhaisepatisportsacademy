@@ -279,6 +279,12 @@ export const COURT_BOOKING = {
   ],
 } as const
 
+// ─── Trial Booking ────────────────────────────────────
+
+export const TRIAL_BOOKING = {
+  durationMinutes: 60, // fixed length; must match BookingController::TRIAL_DURATION_MINUTES
+} as const
+
 // ─── OTP ──────────────────────────────────────────────
 
 export const OTP = {

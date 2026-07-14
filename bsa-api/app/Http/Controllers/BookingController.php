@@ -14,6 +14,49 @@ use Illuminate\Support\Facades\Validator;
 
 class BookingController extends Controller
 {
+    /**
+     * Trial sessions are a fixed length, unlike court bookings where the
+     * customer picks a duration. Used both to block the slot for others and
+     * to compute available slots for the trial booking page.
+     */
+    private const TRIAL_DURATION_MINUTES = 60;
+
+    /**
+     * Whether [date, time, time+duration) overlaps any PENDING/CONFIRMED
+     * booking already on the books. This is the single source of truth for
+     * slot availability — used both to list open slots and, critically, to
+     * reject a booking attempt server-side so two customers can never be
+     * given the same slot no matter how stale their client's slot list is.
+     */
+    private function hasOverlap(string $date, string $time, int $duration, ?string $excludeBookingId = null): bool
+    {
+        [$h, $m] = explode(':', $time);
+        $start = ((int) $h) * 60 + (int) $m;
+        $end = $start + $duration;
+
+        // whereDate(), not where() — scheduled_date is stored as a full
+        // datetime ("2026-08-01 00:00:00"), so a plain string-equality
+        // match against "2026-08-01" would silently match nothing.
+        $query = Booking::whereDate('scheduled_date', $date)
+            ->whereIn('status', ['PENDING', 'CONFIRMED']);
+
+        if ($excludeBookingId) {
+            $query->where('id', '!=', $excludeBookingId);
+        }
+
+        foreach ($query->get(['scheduled_time', 'total_duration']) as $booking) {
+            [$bh, $bm] = explode(':', $booking->scheduled_time);
+            $bookedStart = ((int) $bh) * 60 + (int) $bm;
+            $bookedEnd = $bookedStart + $booking->total_duration;
+
+            if ($start < $bookedEnd && $end > $bookedStart) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validator = Validator::make($request->all(), [
@@ -95,22 +138,30 @@ class BookingController extends Controller
         $data = $validator->validated();
 
         try {
-            $booking = Booking::create([
-                'ref'              => Booking::generateRef(),
-                'customer_name'    => $data['customer_name'],
-                'customer_phone'   => $data['customer_phone'],
-                'scheduled_date'   => $data['scheduled_date'],
-                'scheduled_time'   => $data['scheduled_time'],
-                'total_duration'   => $data['total_duration'],
-                'total'            => $data['total'],
-                'status'           => BookingStatus::PENDING,
-                'notes'            => $data['notes'] ?? null,
-            ]);
+            return DB::transaction(function () use ($data) {
+                if ($this->hasOverlap($data['scheduled_date'], $data['scheduled_time'], $data['total_duration'])) {
+                    return response()->json([
+                        'message' => 'That time slot was just booked by someone else. Please choose another time.',
+                    ], 409);
+                }
 
-            return response()->json([
-                'booking' => $booking,
-                'message' => 'Court booking created successfully.',
-            ], 201);
+                $booking = Booking::create([
+                    'ref'              => Booking::generateRef(),
+                    'customer_name'    => $data['customer_name'],
+                    'customer_phone'   => $data['customer_phone'],
+                    'scheduled_date'   => $data['scheduled_date'],
+                    'scheduled_time'   => $data['scheduled_time'],
+                    'total_duration'   => $data['total_duration'],
+                    'total'            => $data['total'],
+                    'status'           => BookingStatus::PENDING,
+                    'notes'            => $data['notes'] ?? null,
+                ]);
+
+                return response()->json([
+                    'booking' => $booking,
+                    'message' => 'Court booking created successfully.',
+                ], 201);
+            });
         } catch (\Exception $e) {
             Log::error('Court booking creation failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to create booking.'], 500);
@@ -131,20 +182,6 @@ class BookingController extends Controller
         $date = $validator->validated()['date'];
         $duration = $validator->validated()['duration'];
 
-        // Get all confirmed or pending bookings for this date
-        $bookedSlots = Booking::where('scheduled_date', $date)
-            ->whereIn('status', ['PENDING', 'CONFIRMED'])
-            ->select('scheduled_time', 'total_duration')
-            ->get();
-
-        // Convert booked slots to minutes from midnight for easier math
-        $bookedRanges = $bookedSlots->map(function ($booking) {
-            $timeParts = explode(':', $booking->scheduled_time);
-            $startMinutes = (int) $timeParts[0] * 60 + (int) $timeParts[1];
-            $endMinutes = $startMinutes + $booking->total_duration;
-            return ['start' => $startMinutes, 'end' => $endMinutes];
-        });
-
         // Generate all potential slots in 30-minute intervals (6 AM to 8:30 PM)
         $allSlots = [];
         for ($hour = 6; $hour < 21; $hour++) {
@@ -153,25 +190,13 @@ class BookingController extends Controller
             }
         }
 
-        // Filter out slots that would overlap with existing bookings
-        $availableSlots = array_filter($allSlots, function ($slot) use ($bookedRanges, $duration) {
-            $timeParts = explode(':', $slot);
-            $slotStartMinutes = (int) $timeParts[0] * 60 + (int) $timeParts[1];
-            $slotEndMinutes = $slotStartMinutes + $duration;
-
-            // Check if this slot overlaps with any booked slot
-            foreach ($bookedRanges as $booked) {
-                // Overlap occurs if: slot start < booked end AND slot end > booked start
-                if ($slotStartMinutes < $booked['end'] && $slotEndMinutes > $booked['start']) {
-                    return false; // This slot overlaps, exclude it
-                }
-            }
-            return true; // No overlap, include it
-        });
+        $availableSlots = array_values(array_filter(
+            $allSlots,
+            fn ($slot) => ! $this->hasOverlap($date, $slot, $duration)
+        ));
 
         return response()->json([
-            'availableSlots' => array_values($availableSlots), // Re-index array
-            'bookedSlots'    => $bookedSlots,
+            'availableSlots' => $availableSlots,
         ]);
     }
 
@@ -196,27 +221,35 @@ class BookingController extends Controller
         $data = $validator->validated();
 
         try {
-            $booking = Booking::create([
-                'type'              => 'trial',
-                'ref'               => Booking::generateRef(),
-                'customer_name'     => $data['customer_name'],
-                'customer_phone'    => $data['customer_phone'],
-                'customer_email'    => $data['customer_email'] ?? null,
-                'scheduled_date'    => $data['scheduled_date'],
-                'scheduled_time'    => $data['scheduled_time'],
-                'total_duration'    => 0,
-                'total'             => 0,
-                'status'            => BookingStatus::PENDING,
-                'age'               => $data['age'] ?? null,
-                'experience_level'  => $data['experience_level'],
-                'goals'             => $data['goals'] ?? null,
-                'notes'             => $data['notes'] ?? null,
-            ]);
+            return DB::transaction(function () use ($data) {
+                if ($this->hasOverlap($data['scheduled_date'], $data['scheduled_time'], self::TRIAL_DURATION_MINUTES)) {
+                    return response()->json([
+                        'message' => 'That time slot was just booked by someone else. Please choose another time.',
+                    ], 409);
+                }
 
-            return response()->json([
-                'booking' => $booking,
-                'message' => 'Trial booking created successfully.',
-            ], 201);
+                $booking = Booking::create([
+                    'type'              => 'trial',
+                    'ref'               => Booking::generateRef(),
+                    'customer_name'     => $data['customer_name'],
+                    'customer_phone'    => $data['customer_phone'],
+                    'customer_email'    => $data['customer_email'] ?? null,
+                    'scheduled_date'    => $data['scheduled_date'],
+                    'scheduled_time'    => $data['scheduled_time'],
+                    'total_duration'    => self::TRIAL_DURATION_MINUTES,
+                    'total'             => 0,
+                    'status'            => BookingStatus::PENDING,
+                    'age'               => $data['age'] ?? null,
+                    'experience_level'  => $data['experience_level'],
+                    'goals'             => $data['goals'] ?? null,
+                    'notes'             => $data['notes'] ?? null,
+                ]);
+
+                return response()->json([
+                    'booking' => $booking,
+                    'message' => 'Trial booking created successfully.',
+                ], 201);
+            });
         } catch (\Exception $e) {
             Log::error('Trial booking creation failed', ['error' => $e->getMessage()]);
             return response()->json(['error' => 'Failed to create trial booking.'], 500);

@@ -139,7 +139,14 @@ async function confirmBooking() {
     }, 1000)
   } catch (error: any) {
     console.error('Booking error:', error)
-    alert(error?.data?.message || 'Failed to submit booking. Please try again.')
+    if (error?.response?.status === 409) {
+      alert(error?.data?.message || 'That time slot was just booked by someone else. Please choose another time.')
+      preferredTime.value = ''
+      await fetchAvailableSlots()
+      step.value = 'slot'
+    } else {
+      alert(error?.data?.message || 'Failed to submit booking. Please try again.')
+    }
   } finally {
     isSubmitting.value = false
   }
