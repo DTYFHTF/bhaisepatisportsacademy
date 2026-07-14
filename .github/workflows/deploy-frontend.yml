@@ -26,14 +26,18 @@ jobs:
       # ── 2. Node.js ───────────────────────────────────────────────────────────
       - uses: actions/setup-node@v4
         with:
-          node-version: "20"
+          node-version: "24"
           cache: "npm"
           cache-dependency-path: bsa-web/package-lock.json
 
       # ── 3. Install dependencies ───────────────────────────────────────────────
+      #   Use `npm install` (not `npm ci`): the lockfile is generated on macOS
+      #   and npm omits Linux-only native optional deps (e.g. @emnapi/*), which
+      #   makes `npm ci` fail on the Linux runner. `npm install` reconciles the
+      #   platform-specific optional deps against the committed lockfile.
       - name: Install npm packages
         working-directory: bsa-web
-        run: npm ci
+        run: npm install --no-audit --no-fund
 
       # ── 3b. Fail on high/critical vulnerabilities in production deps ─────────
       - name: Audit production dependencies
