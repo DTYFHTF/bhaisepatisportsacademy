@@ -128,6 +128,8 @@ class BookingController extends Controller
             'total_duration'  => 'required|integer|in:30,60,90,120',
             'total'           => 'required|integer|min:0',
             'court_preference' => 'nullable|integer|min:1|max:3',
+            'experience_level' => 'nullable|in:beginner,intermediate,advanced',
+            'goals'           => 'nullable|string|max:500',
             'notes'           => 'nullable|string|max:1000',
         ]);
 
@@ -154,6 +156,8 @@ class BookingController extends Controller
                     'total_duration'   => $data['total_duration'],
                     'total'            => $data['total'],
                     'status'           => BookingStatus::PENDING,
+                    'experience_level' => $data['experience_level'] ?? null,
+                    'goals'            => $data['goals'] ?? null,
                     'notes'            => $data['notes'] ?? null,
                 ]);
 

@@ -85,6 +85,21 @@ class BookingResource extends Resource
                     ]),
                     Textarea::make('notes')->rows(2),
                 ]),
+
+            Section::make('Player Info')
+                ->icon('heroicon-o-user-circle')
+                ->description('Optional — collected on the booking form when the customer provides it.')
+                ->schema([
+                    Select::make('experience_level')
+                        ->options([
+                            'beginner' => 'Beginner',
+                            'intermediate' => 'Intermediate',
+                            'advanced' => 'Advanced',
+                        ]),
+                    Textarea::make('goals')
+                        ->label('Goals / Interests')
+                        ->rows(2),
+                ]),
         ]);
     }
 

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Calendar, Clock, ArrowLeft, Phone } from 'lucide-vue-next'
+import { Calendar, Clock, ArrowLeft, Phone, User, CheckCircle2 } from 'lucide-vue-next'
 import { BRAND, COURT_BOOKING } from '~/utils/constants'
 import { formatPrice, formatTime } from '~/utils/formatters'
 
@@ -10,7 +10,7 @@ usePageSeo({
 
 definePageMeta({ ssr: false })
 
-const step = ref<'slot' | 'details' | 'confirm'>('slot')
+const step = ref<'slot' | 'details' | 'confirm' | 'success'>('slot')
 
 const selectedCourt = ref<number | null>(null)
 const preferredDate = ref('')
@@ -18,7 +18,10 @@ const preferredTime = ref('')
 const duration = ref(60)
 const customerName = ref('')
 const customerPhone = ref('')
+const experienceLevel = ref<'' | 'beginner' | 'intermediate' | 'advanced'>('')
+const goals = ref('')
 const notes = ref('')
+const successRef = ref('')
 
 const minDate = computed(() => {
   const d = new Date()
@@ -99,6 +102,20 @@ function goBack() {
   else if (step.value === 'confirm') step.value = 'details'
 }
 
+function resetForm() {
+  customerName.value = ''
+  customerPhone.value = ''
+  experienceLevel.value = ''
+  goals.value = ''
+  notes.value = ''
+  preferredDate.value = ''
+  preferredTime.value = ''
+  selectedCourt.value = null
+  duration.value = 60
+  successRef.value = ''
+  step.value = 'slot'
+}
+
 async function confirmBooking() {
   isSubmitting.value = true
 
@@ -112,6 +129,8 @@ async function confirmBooking() {
       total_duration: duration.value,
       total: totalPrice.value,
       court_preference: selectedCourt.value,
+      experience_level: experienceLevel.value || null,
+      goals: goals.value || null,
       notes: notes.value || null,
     }
 
@@ -120,23 +139,14 @@ async function confirmBooking() {
       body: bookingData,
     })
 
+    successRef.value = response.booking.ref
+
     // If booking saved successfully, send WhatsApp message
-    const message = `Hi! I've submitted a court booking request at BSA.\n\nBooking Ref: ${response.booking.ref}\nDate: ${preferredDate.value}\nTime: ${preferredTime.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${notes.value ? `\nNotes: ${notes.value}` : ''}`
+    const message = `Hi! I've submitted a court booking request at BSA.\n\nBooking Ref: ${successRef.value}\nDate: ${preferredDate.value}\nTime: ${preferredTime.value}\nDuration: ${duration.value} min${selectedCourt.value ? `\nCourt: ${selectedCourt.value}` : ''}\nName: ${customerName.value}\nPhone: ${customerPhone.value}${experienceLevel.value ? `\nExperience: ${experienceLevel.value}` : ''}${goals.value ? `\nGoals: ${goals.value}` : ''}${notes.value ? `\nNotes: ${notes.value}` : ''}`
     const encoded = encodeURIComponent(message)
     window.open(`https://wa.me/977${BRAND.phone}?text=${encoded}`, '_blank')
 
-    // Reset form and show success
-    setTimeout(() => {
-      customerName.value = ''
-      customerPhone.value = ''
-      notes.value = ''
-      preferredDate.value = ''
-      preferredTime.value = ''
-      selectedCourt.value = null
-      duration.value = 60
-      step.value = 'slot'
-      alert("Booking submitted! You'll receive a confirmation via WhatsApp.")
-    }, 1000)
+    step.value = 'success'
   } catch (error: any) {
     console.error('Booking error:', error)
     if (error?.response?.status === 409) {
@@ -158,22 +168,77 @@ async function confirmBooking() {
     <!-- Header -->
     <section class="border-b border-border">
       <div class="section-container py-8">
-        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Step {{ step === 'slot' ? 1 : step === 'details' ? 2 : 3 }} of 3</p>
+        <p class="text-xs font-medium uppercase tracking-[0.2em] text-accent mb-2">Court Booking</p>
         <h1 class="font-display text-3xl sm:text-4xl uppercase tracking-tight text-ink">
-          {{ step === 'slot' ? 'Select Time Slot' : step === 'details' ? 'Your Details' : 'Confirm Booking' }}
+          {{ step === 'slot' ? 'Select Time Slot' : step === 'details' ? 'Your Details' : step === 'confirm' ? 'Confirm Booking' : 'Booking Confirmed' }}
         </h1>
       </div>
     </section>
 
     <div class="section-container py-8">
-      <div class="grid lg:grid-cols-3 gap-8">
+      <!-- Step indicator -->
+      <div v-if="step !== 'success'" class="flex items-center max-w-xl mb-10">
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white" :class="step === 'slot' ? 'bg-accent' : 'bg-green-500'">
+            <span v-if="step !== 'slot'">✓</span><span v-else>1</span>
+          </div>
+          <span class="text-xs font-medium hidden sm:inline" :class="step === 'slot' ? 'text-ink' : 'text-ink-muted'">Time Slot</span>
+        </div>
+        <div class="h-0.5 flex-1 mx-3 bg-border" />
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold text-white" :class="step === 'details' ? 'bg-accent' : step === 'confirm' ? 'bg-green-500' : 'bg-surface border border-border text-ink-muted'">
+            <span v-if="step === 'confirm'">✓</span><span v-else>2</span>
+          </div>
+          <span class="text-xs font-medium hidden sm:inline" :class="step === 'details' || step === 'confirm' ? 'text-ink' : 'text-ink-muted'">Details</span>
+        </div>
+        <div class="h-0.5 flex-1 mx-3 bg-border" />
+        <div class="flex items-center gap-2">
+          <div class="h-8 w-8 rounded-full flex items-center justify-center text-xs font-bold" :class="step === 'confirm' ? 'bg-accent text-white' : 'bg-surface border border-border text-ink-muted'">
+            3
+          </div>
+          <span class="text-xs font-medium hidden sm:inline" :class="step === 'confirm' ? 'text-ink' : 'text-ink-muted'">Confirm</span>
+        </div>
+      </div>
+
+      <!-- Success -->
+      <div v-if="step === 'success'" class="max-w-lg mx-auto text-center py-12">
+        <div class="flex justify-center mb-6">
+          <div class="p-4 bg-energy/10 rounded-full">
+            <CheckCircle2 class="h-12 w-12 text-energy" />
+          </div>
+        </div>
+        <h2 class="font-display text-3xl uppercase tracking-tight text-ink mb-3">Court Booked!</h2>
+        <p class="text-ink-muted mb-6 leading-relaxed">
+          Your court booking request has been submitted. We'll confirm it shortly.
+        </p>
+        <div class="bg-surface p-6 rounded-2xl border border-border mb-8">
+          <p class="text-sm text-ink-muted mb-2">Your booking reference</p>
+          <p class="font-display text-2xl text-ink mb-4 font-mono">{{ successRef }}</p>
+          <p class="text-sm text-ink-muted">
+            We'll confirm your slot via WhatsApp. Check your phone or wait for our call.
+          </p>
+        </div>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+          <NuxtLink to="/" class="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-accent text-white hover:bg-accent-hover transition-colors font-medium">
+            Back to Home
+          </NuxtLink>
+          <button @click="resetForm" class="inline-flex items-center gap-2 px-6 py-3 rounded-full border border-border bg-canvas text-ink hover:bg-surface transition-colors font-medium">
+            Book Another
+          </button>
+        </div>
+      </div>
+
+      <div v-else class="grid lg:grid-cols-3 gap-8">
         <!-- Main content -->
         <div class="lg:col-span-2">
           <!-- Step: Slot Selection -->
           <div v-if="step === 'slot'" class="space-y-6">
             <!-- Date -->
             <div>
-              <label for="date" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Date</label>
+              <label for="date" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 flex items-center gap-1.5">
+                <Calendar class="h-3.5 w-3.5 text-accent" />
+                Select Date
+              </label>
               <input
                 id="date"
                 v-model="preferredDate"
@@ -201,7 +266,10 @@ async function confirmBooking() {
 
             <!-- Time (Dropdown with 30-min intervals, filtered by availability) -->
             <div>
-              <label for="time" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Select Time</label>
+              <label for="time" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 flex items-center gap-1.5">
+                <Clock class="h-3.5 w-3.5 text-accent" />
+                Select Time
+              </label>
               <select
                 id="time"
                 v-model="preferredTime"
@@ -253,7 +321,10 @@ async function confirmBooking() {
             </button>
 
             <div>
-              <label for="name" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Full Name</label>
+              <label for="name" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 flex items-center gap-1.5">
+                <User class="h-3.5 w-3.5 text-accent" />
+                Full Name
+              </label>
               <input
                 id="name"
                 v-model="customerName"
@@ -264,7 +335,10 @@ async function confirmBooking() {
             </div>
 
             <div>
-              <label for="phone" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Phone Number</label>
+              <label for="phone" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 flex items-center gap-1.5">
+                <Phone class="h-3.5 w-3.5 text-accent" />
+                Phone Number
+              </label>
               <input
                 id="phone"
                 v-model="customerPhone"
@@ -273,6 +347,35 @@ async function confirmBooking() {
                 class="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent"
                 placeholder="98XXXXXXXX"
               />
+            </div>
+
+            <div>
+              <label class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Experience Level (optional)</label>
+              <div class="flex gap-2">
+                <button
+                  v-for="level in ['beginner', 'intermediate', 'advanced']"
+                  :key="level"
+                  type="button"
+                  class="rounded-lg border px-4 py-2 text-sm font-medium capitalize transition-colors"
+                  :class="experienceLevel === level ? 'border-accent bg-accent text-canvas' : 'border-border text-ink-muted hover:border-accent/30'"
+                  @click="experienceLevel = experienceLevel === level ? '' : level as typeof experienceLevel"
+                >
+                  {{ level }}
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <label for="goals" class="text-xs font-medium uppercase tracking-wider text-ink-muted mb-2 block">Goals (optional)</label>
+              <textarea
+                id="goals"
+                v-model="goals"
+                rows="2"
+                maxlength="500"
+                class="w-full rounded-lg border border-border bg-surface px-4 py-3 text-sm text-ink focus:border-accent focus:outline-none focus:ring-1 focus:ring-accent resize-none"
+                placeholder="e.g., improve fitness, prep for a tournament"
+              />
+              <p class="text-xs text-ink-muted mt-1">{{ goals.length }}/500</p>
             </div>
 
             <div>
@@ -304,6 +407,12 @@ async function confirmBooking() {
                 <p class="text-xs font-medium uppercase tracking-wider text-accent mb-1">Contact</p>
                 <p class="text-sm text-ink">{{ customerName }}</p>
                 <p class="text-sm text-ink-muted">{{ customerPhone }}</p>
+              </div>
+
+              <div v-if="experienceLevel || goals" class="border-t border-accent/10 pt-3">
+                <p class="text-xs font-medium uppercase tracking-wider text-accent mb-1">Player Info</p>
+                <p v-if="experienceLevel" class="text-sm text-ink capitalize">{{ experienceLevel }} level</p>
+                <p v-if="goals" class="text-sm text-ink-muted">{{ goals }}</p>
               </div>
 
               <div class="border-t border-accent/10 pt-3 flex justify-between font-medium text-ink">
