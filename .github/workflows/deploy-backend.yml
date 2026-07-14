@@ -22,7 +22,7 @@ jobs:
       run:
         working-directory: bsa-api
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
@@ -61,7 +61,7 @@ jobs:
 
     steps:
       # ── 1. Checkout ──────────────────────────────────────────────────────────
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
 
       # ── 2. PHP + Composer ────────────────────────────────────────────────────
       - name: Setup PHP
