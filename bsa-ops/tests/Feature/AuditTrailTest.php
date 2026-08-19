@@ -53,6 +53,44 @@ class AuditTrailTest extends TestCase
         }
     }
 
+    /**
+     * The causer is a bigint-keyed User at the desk but a uuid-keyed Member
+     * when the sale comes through the portal API, so that column has to
+     * hold both.
+     */
+    public function test_member_initiated_purchases_record_the_member_as_causer(): void
+    {
+        $product = \App\Models\Product::create([
+            'sku' => 'KIT-TEA', 'name' => 'Milk tea', 'category' => 'kitchen',
+            'unit' => 'cup', 'price' => 4000, 'member_price' => 3000,
+            'track_stock' => false, 'is_taxable' => false,
+        ]);
+        $member = $this->makeMember();
+
+        $token = $this->postJson('/api/v1/portal/login', [
+            'member_code' => $member->member_code,
+            'phone' => $member->phone,
+        ])->assertOk()->json('token');
+
+        $this->withToken($token)->postJson('/api/v1/portal/products', [
+            'items' => [['product_id' => $product->id, 'quantity' => 1]],
+        ])->assertOk();
+
+        $causerIds = Activity::whereNotNull('causer_id')->pluck('causer_id');
+
+        foreach ($causerIds as $causerId) {
+            $this->assertNotEmpty($causerId);
+            // A uuid causer must survive intact, not be truncated to digits.
+            if (str_contains((string) $causerId, '-')) {
+                $this->assertMatchesRegularExpression(
+                    '/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i',
+                    (string) $causerId,
+                    'causer_id was truncated — check the activity_log column type.',
+                );
+            }
+        }
+    }
+
     public function test_money_movements_are_attributed_to_the_staff_member(): void
     {
         $gym = $this->makeDepartment();
