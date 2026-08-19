@@ -33,21 +33,27 @@ jobs:
           MYSQL_DATABASE: bsa_ops_test
         ports:
           - 3306:3306
-        # Mirrors the cPanel server's configuration. In particular
-        # explicit_defaults_for_timestamp=OFF, under which a NOT NULL
-        # timestamp with no default becomes an invalid zero date — MySQL 8
-        # defaults this ON, so without it CI would pass and the live
-        # migration would fail.
         options: >-
           --health-cmd="mysqladmin ping -proot"
           --health-interval=10s
           --health-timeout=5s
           --health-retries=10
-          --explicit_defaults_for_timestamp=OFF
-          --sql-mode=STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION
 
     steps:
       - uses: actions/checkout@v5
+
+      # Match the cPanel server's MySQL configuration. Chiefly
+      # explicit_defaults_for_timestamp=OFF, under which a NOT NULL
+      # timestamp with no default resolves to a zero date and is rejected —
+      # MySQL 8 ships this ON, so without it CI goes green while the live
+      # migration fails. Set as GLOBALs because service `options` are
+      # docker flags, not mysqld flags.
+      - name: Match production MySQL configuration
+        run: |
+          mysql -h 127.0.0.1 -P 3306 -uroot -proot -e "
+            SET GLOBAL explicit_defaults_for_timestamp = OFF;
+            SET GLOBAL sql_mode = 'STRICT_TRANS_TABLES,NO_ZERO_IN_DATE,NO_ZERO_DATE,ERROR_FOR_DIVISION_BY_ZERO,NO_ENGINE_SUBSTITUTION';
+            SELECT @@explicit_defaults_for_timestamp AS explicit_defaults, @@sql_mode AS sql_mode;"
 
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
