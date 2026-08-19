@@ -1,0 +1,166 @@
+name: Deploy Ops
+
+# Triggers on every push to main that touches the operations platform
+on:
+  push:
+    branches: [main]
+    paths:
+      - "bsa-ops/**"
+      - "!bsa-ops/.env*"
+      - ".github/workflows/deploy-ops.yml"
+  workflow_dispatch:
+
+# Server dir for the ops platform, relative to the rishipa2 home dir. The
+# ops.bhaisepatisportsacademy.com.np docroot points at <this>/public.
+env:
+  DEPLOY_OPS_DIR: bhaisepatisportacademy/bsa-ops
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: bsa-ops
+
+    # Production runs MySQL while local dev runs sqlite, so the suite is
+    # exercised against a real MySQL here — a schema or query that only
+    # works on sqlite fails the build instead of the live migration.
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: bsa_ops_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -proot"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          extensions: mbstring, xml, ctype, iconv, intl, pdo_sqlite, pdo_mysql, bcmath, gd, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer packages (with dev, for tests)
+        run: composer install --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Audit dependencies
+        run: composer audit
+
+      - name: Prepare test env
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+        env:
+          APP_ENV: testing
+
+      # Fast feedback: the whole suite on sqlite in-memory.
+      - name: Run tests (sqlite)
+        run: php artisan test
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: sqlite
+          DB_DATABASE: ':memory:'
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          QUEUE_CONNECTION: sync
+
+      # Fidelity: the same suite against the engine production uses.
+      - name: Run tests (MySQL)
+        run: php artisan test
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bsa_ops_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          QUEUE_CONNECTION: sync
+
+      # Proves migrations AND the demo seeders run clean on MySQL, which is
+      # what the live migration will do on first deploy.
+      - name: Migrate + seed on MySQL
+        run: php artisan migrate:fresh --seed
+        env:
+          APP_ENV: testing
+          DB_CONNECTION: mysql
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_DATABASE: bsa_ops_test
+          DB_USERNAME: root
+          DB_PASSWORD: root
+          SESSION_DRIVER: array
+          CACHE_STORE: array
+          QUEUE_CONNECTION: sync
+
+  build-deploy:
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2
+          coverage: none
+
+      - name: Install Composer packages
+        working-directory: bsa-ops
+        run: composer install --no-dev --optimize-autoloader --no-interaction --prefer-dist
+
+      - name: Write SSH key
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "${{ secrets.VPS_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
+
+      - name: Ensure target directory exists
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.VPS_PORT }}" \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            'mkdir -p ~/${{ env.DEPLOY_OPS_DIR }}'
+
+      - name: Rsync ops files
+        run: |
+          rsync -rlptzv --delete \
+            --exclude='.env' \
+            --exclude='storage/app/public/' \
+            --exclude='storage/logs/' \
+            --exclude='bootstrap/cache/' \
+            --exclude='.git/' \
+            --exclude='database/database.sqlite' \
+            -e "ssh -i ~/.ssh/deploy_key -p ${{ secrets.VPS_PORT }}" \
+            bsa-ops/ \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:~/${{ env.DEPLOY_OPS_DIR }}/"
+
+      # OPS_ENV secret holds the full production .env content.
+      - name: Write .env on server
+        env:
+          OPS_ENV: ${{ secrets.OPS_ENV }}
+        run: |
+          printf '%s' "$OPS_ENV" | base64 | \
+            ssh -i ~/.ssh/deploy_key -p "${{ secrets.VPS_PORT }}" \
+              "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+              "base64 -d > ~/${{ env.DEPLOY_OPS_DIR }}/.env"
+
+      - name: Artisan post-deploy
+        run: |
+          ssh -i ~/.ssh/deploy_key -p "${{ secrets.VPS_PORT }}" \
+            "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            'cd ~/${{ env.DEPLOY_OPS_DIR }} && php artisan config:clear && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan filament:optimize-clear && php artisan migrate --force && php artisan filament:assets && (php artisan storage:link 2>/dev/null || true)'

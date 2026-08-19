@@ -1,0 +1,28 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    public function up(): void
+    {
+        Schema::create('payment_refunds', function (Blueprint $table) {
+            $table->uuid('id')->primary();
+            $table->foreignUuid('payment_id')->constrained();
+            $table->unsignedBigInteger('amount'); // paisa
+            $table->string('method', 20); // PaymentMethod enum
+            $table->text('reason');
+            $table->foreignId('refunded_by')->nullable()->constrained('users')->nullOnDelete();
+            $table->timestamp('refunded_at');
+            $table->text('notes')->nullable();
+            $table->timestamps();
+        });
+    }
+
+    public function down(): void
+    {
+        Schema::dropIfExists('payment_refunds');
+    }
+};
