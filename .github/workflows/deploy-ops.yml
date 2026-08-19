@@ -13,7 +13,7 @@ on:
 # Server dir for the ops platform, relative to the rishipa2 home dir. The
 # ops.bhaisepatisportsacademy.com.np docroot points at <this>/public.
 env:
-  DEPLOY_OPS_DIR: bhaisepatisportacademy/bsa-ops
+  DEPLOY_OPS_DIR: bsa-ops
 
 jobs:
   test:
