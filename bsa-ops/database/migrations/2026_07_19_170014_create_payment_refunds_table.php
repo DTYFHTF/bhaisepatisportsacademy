@@ -15,7 +15,7 @@ return new class extends Migration
             $table->string('method', 20); // PaymentMethod enum
             $table->text('reason');
             $table->foreignId('refunded_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('refunded_at');
+            $table->timestamp('refunded_at')->useCurrent();
             $table->text('notes')->nullable();
             $table->timestamps();
         });

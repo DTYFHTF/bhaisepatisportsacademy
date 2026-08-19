@@ -14,7 +14,7 @@ return new class extends Migration
             $table->foreignUuid('department_id')->constrained();
             // Which subscription granted entry / had a session consumed
             $table->foreignUuid('member_subscription_id')->nullable()->constrained()->nullOnDelete();
-            $table->timestamp('checked_in_at');
+            $table->timestamp('checked_in_at')->useCurrent();
             $table->string('source', 20); // CheckInSource enum
             $table->boolean('was_allowed')->default(true);
             $table->string('denial_reason', 40)->nullable(); // DenialReason enum

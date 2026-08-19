@@ -22,7 +22,7 @@ return new class extends Migration
             $table->uuid('reference_id')->nullable();
             $table->string('notes')->nullable();
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('occurred_at');
+            $table->timestamp('occurred_at')->useCurrent();
             $table->timestamp('created_at')->nullable(); // append-only: no updated_at
 
             $table->index(['product_id', 'occurred_at']);

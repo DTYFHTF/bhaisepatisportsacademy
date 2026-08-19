@@ -23,7 +23,7 @@ return new class extends Migration
             $table->string('cheque_bank', 80)->nullable();
             $table->date('cheque_date')->nullable();
             $table->foreignId('received_by')->nullable()->constrained('users')->nullOnDelete();
-            $table->timestamp('received_at');
+            $table->timestamp('received_at')->useCurrent();
             $table->timestamp('verified_at')->nullable();
             $table->foreignId('verified_by')->nullable()->constrained('users')->nullOnDelete();
             $table->text('notes')->nullable();

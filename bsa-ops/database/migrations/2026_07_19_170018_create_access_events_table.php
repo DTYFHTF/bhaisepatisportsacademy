@@ -19,7 +19,7 @@ return new class extends Migration
             $table->foreignUuid('department_id')->nullable()->constrained()->nullOnDelete();
             $table->string('decision', 10); // AccessDecision enum
             $table->string('deny_reason', 40)->nullable(); // DenialReason enum
-            $table->timestamp('occurred_at');
+            $table->timestamp('occurred_at')->useCurrent();
             $table->json('raw_payload')->nullable();
             $table->timestamp('created_at')->nullable(); // append-only: no updated_at
 

@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('deposit_amount')->default(0); // paisa (card deposit)
             $table->timestamp('deposit_refunded_at')->nullable();
             $table->string('status', 20)->default('active'); // CredentialStatus enum
-            $table->timestamp('issued_at');
+            $table->timestamp('issued_at')->useCurrent();
             $table->timestamp('revoked_at')->nullable();
             $table->string('revoke_reason')->nullable();
             $table->foreignId('issued_by')->nullable()->constrained('users')->nullOnDelete();
