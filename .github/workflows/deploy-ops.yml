@@ -130,11 +130,21 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -p "${{ secrets.VPS_PORT }}" "${{ secrets.VPS_HOST }}" >> ~/.ssh/known_hosts
 
-      - name: Ensure target directory exists
+      # These directories are deliberately excluded from the rsync (we never
+      # want to ship a stale cache or clobber uploads), which means they do
+      # not exist at all on a first deploy — artisan then refuses to boot.
+      - name: Ensure runtime directories exist
         run: |
           ssh -i ~/.ssh/deploy_key -p "${{ secrets.VPS_PORT }}" \
             "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            'mkdir -p ~/${{ env.DEPLOY_OPS_DIR }}'
+            'mkdir -p ~/${{ env.DEPLOY_OPS_DIR }}/bootstrap/cache \
+                      ~/${{ env.DEPLOY_OPS_DIR }}/storage/app/public \
+                      ~/${{ env.DEPLOY_OPS_DIR }}/storage/framework/cache/data \
+                      ~/${{ env.DEPLOY_OPS_DIR }}/storage/framework/sessions \
+                      ~/${{ env.DEPLOY_OPS_DIR }}/storage/framework/views \
+                      ~/${{ env.DEPLOY_OPS_DIR }}/storage/logs && \
+             chmod -R 775 ~/${{ env.DEPLOY_OPS_DIR }}/bootstrap/cache \
+                          ~/${{ env.DEPLOY_OPS_DIR }}/storage'
 
       - name: Rsync ops files
         run: |
